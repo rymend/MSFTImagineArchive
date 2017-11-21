@@ -63,9 +63,9 @@ In this exercise, you will import Matplotlib into the Jupyter notebook you have 
 	import seaborn as sns
 	```
 
-	The first statement is one of several [magic commands](http://ipython.readthedocs.io/en/stable/interactive/magics.html) supported by the Python kernel that you selected when you created the notebook. It enables Jupyter to render Matplotlib output in a notebook. And it must appear before any references to Matplotlib itself.
+	The first statement is one of several [magic commands](http://ipython.readthedocs.io/en/stable/interactive/magics.html) supported by the Python kernel that you selected when you created the notebook. It enables Jupyter to render Matplotlib output in a notebook without making repeated calls to [show](https://matplotlib.org/devdocs/api/_as_gen/matplotlib.pyplot.show.html). And it must appear before any references to Matplotlib itself.
 
-1. To make sure Matplotlib output can be rendered inline, execute the following code in a new cell to plot the [ROC curve](https://en.wikipedia.org/wiki/Receiver_operating_characteristic) for the machine-learning model you built in the previous lab: 
+1. To see Matplotlib at work, execute the following code in a new cell to plot the [ROC curve](https://en.wikipedia.org/wiki/Receiver_operating_characteristic) for the machine-learning model you built in the previous lab: 
 
 	```python
 	from sklearn.metrics import roc_curve
@@ -83,7 +83,7 @@ In this exercise, you will import Matplotlib into the Jupyter notebook you have 
    
    _ROC curve generated with Matplotlib_
    
-The dotted line in the middle of the graph represents a 50-50 chance of obtaining a correct answer. The blue curve represents the accuracy of your model. More importantly, the fact that this chart appears in the notebook at all confirms that the notebook supports inline plots.
+The dotted line in the middle of the graph represents a 50-50 chance of obtaining a correct answer. The blue curve represents the accuracy of your model. More importantly, the fact that this chart appears at all demonstrates that you can use Matplotlib in a Jupyter notebook.
 
 <a name="Exercise2"></a>
 ## Exercise 2: Predict on-time arrivals ##
@@ -185,7 +185,6 @@ In this exercise, you will combine the ```predict_delay``` function you created 
 	plt.xticks(alabels, labels)
 	plt.ylabel('Probability of On-Time Arrival')
 	plt.ylim((0.0, 1.0))
-	plt.show()
 	```
 
 1. Confirm that the output looks like this:
