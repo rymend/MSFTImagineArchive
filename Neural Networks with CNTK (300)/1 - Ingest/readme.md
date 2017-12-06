@@ -85,7 +85,7 @@ You now have a storage account in which you can store blobs, and a container to 
 <a name="Exercise2"></a>
 ## Exercise 2: Upload data to blob storage ##
 
-In this exercise, you will the MNIST dataset to your local computer, and then upload it to the container you created in the previous exercise.
+In this exercise, you will the MNIST dataset to your local computer, and then upload it to the container you created in the previous exercise. The dataset comprises four compressed GZ files containing images for training and testing as well as labels for training and testing.
 
 1. Download the files from the following URLs and save them on your hard disk:
 
