@@ -1,6 +1,8 @@
 ![](Images/header.png)
 
-TODO: Add introduction.
+In the [previous lab](#), you uploaded four files comprising the [MNIST database](http://yann.lecun.com/exdb/mnist/) to Azure blob storage. MNIST is a popular dataset for training and evaluating machine-learning handwriting-recognition models. It contains 60,000 scanned and normalized images of the digits 0 through 9 drawn by high school students. It also includes a set of 10,000 test images for evaluating a model's accuracy.
+
+In this lab, you will prepare the data to be used in a machine-learning model by converting it into a format supported by the [Microsoft Cognitive Toolkit](https://www.microsoft.com/en-us/research/product/cognitive-toolkit/), also known as CNTK. And you will Microsoft's Azure Machine Learning Workbench, a free cross-platform tool for wrangling data and building machine-learning models, to do the conversion.
 
 ![](Images/road-map-2.png)
 
@@ -19,8 +21,9 @@ In this hands-on lab, you will learn how to:
 The following are required to complete this hands-on lab:
 
 - An active Microsoft Azure subscription. If you don't have one, [sign up for a free trial](http://aka.ms/WATK-FreeTrial).
-- tk
-- tk
+- A computer running Windows 10, Windows Server 2016, macOS Sierra, or macOS High Sierra
+- [Azure Machine Learning Workbench](https://docs.microsoft.com/en-us/azure/machine-learning/preview/quickstart-installation)
+- [Docker](https://www.docker.com/)
 
 ---
 
@@ -29,124 +32,284 @@ The following are required to complete this hands-on lab:
 
 This hands-on lab includes the following exercises:
 
-- [Exercise 1: tk](#Exercise1)
-- [Exercise 2: tk](#Exercise2)
-- [Exercise 3: tk](#Exercise3)
+- [Exercise 1: Install Workbench and create a project](#Exercise1)
+- [Exercise 2: Customize the project files](#Exercise2)
+- [Exercise 3: Convert the data into CNTK format](#Exercise3)
 
-Estimated time to complete this lab: **tk** minutes.
+Estimated time to complete this lab: **30** minutes.
 
 <a name="Exercise1"></a>
-## Exercise 1: tk ##
+## Exercise 1: Install Workbench and create a project ##
 
 TODO: Add introduction.
 
-1. Open the [Azure Portal](https://portal.azure.com) in your browser. If asked to log in, do so using your Microsoft account.
+1. Azure Machine Learning Workbench runs jobs in Docker containers, and as such, it requires that Docker be installed on your computer. If you haven't installed Docker, go to https://www.docker.com/ and download and install [Docker for Windows](https://www.docker.com/docker-windows) or [Docker for Mac](https://www.docker.com/docker-mac). If you are not sure whether Docker is installed on your computer, open a Command Prompt window (Windows) or a terminal window (macOS) and type the following command:
 
-1. tk.
+	```
+	docker -v
+	```
 
-	![tk](Images/tk.png)
+	If a Docker version number is displayed, then Docker is installed.
 
-	_tk_
+1. If Azure Machine Learning Workbench isn't installed on your computer, go to https://docs.microsoft.com/azure/machine-learning/preview/quickstart-installation and follow the instructions there to install it, create a Machine Learning Experimentation account, and sign in to Machine Learning Workbench for the first time. The experimentation account is required in order to use Azure Machine Learning Workbench. Stop when you reach the section entitled "Create a new project."
 
-1. tk.
+1. Launch Azure Machine Learning Workbench if it isn't already running. Then click the **+** sign in the "Projects" panel and select **New Project**.
 
-	![tk](Images/tk.png)
+	![Creating a new project](Images/new-project-1.png)
 
-	_tk_
+	_Creating a new project_
 
-1. tk.
+1. Enter a project name such as "MNIST-Lab" and a project description. For **Project directory**, specify the location where you would like for the project directory to be created. Make sure **Blank Project** is selected as the project type, and then click the **Create** button.
 
-	![tk](Images/tk.png)
+	![Creating a new project](Images/new-project-2.png)
 
-	_tk_
+	_Creating a new project_
 
-1. tk.
+1. Open a File Explorer window (Windows) or a Finder window (macOS) and navigate to the directory that you specified in the previous step. Confirm that it contains a subdirectory with the same name as the project. Open the subdirectory and examine its contents. Confirm that it contains a subdirectory named "aml_config" and a pair of Python scripts named **train.py** and **score.py**, as shown below.
 
-	![tk](Images/tk.png)
+	> The "aml_config" directory contains tk.
 
-	_tk_
+	![Inspecting the project directory](Images/project-directory.png)
 
-1. tk.
+	_Inspecting the project directory_
 
-	![tk](Images/tk.png)
-
-	_tk_
-
-TODO: Add closing.
+The files in the project directory are merely starter files that will need to be modified in order to build a machine-learning model. But before you can build a model, you need to prepare the data that will be used to train it.
 
 <a name="Exercise2"></a>
-## Exercise 2: tk ##
+## Exercise 2: Customize the project files ##
 
-TODO: Add introduction.
+One of the tasks at which Machine Learning Workbench excels is in helping you prepare data for training machine-learning models. For example, its [Derive Column by Example](https://docs.microsoft.com/azure/machine-learning/preview/data-prep-derive-column-by-example) lets you create new feature columns with information derived from the data in other columns, and it uses AI to learn by example so that you do the first few transformations, and it does the rest. It also has features for replacing missing values, trimming strings, and other common data-cleaning operations.
 
-1. tk.
+The MNIST data that you uploaded to blob storage in the previous lab doesn't require cleaning in the conventional sense, but it does need to be converted into a format that is compatible with CNTK. In this exercise, you will use Machine Learning Workbench to perform the conversion.
 
-	![tk](Images/tk.png)
+1. Return to Machine Learning Workbench and click the folder icon in the ribbon on the left to display all the files in the project. Then expand the treeview to show the files in the "aml_config" directory and click **docker.runconfig**. This file contains configuration information used when the project is executed in a Docker container.
 
-	_tk_
+	![Opening docker.runconfig](Images/open-run-config.png)
 
-1. tk.
+	_Opening docker.runconfig_
 
-	![tk](Images/tk.png)
+1. Click the down-arrow next to **Edit** and select **Edit as text in Workbench** to enter editing mode.
 
-	_tk_
+	![Editing docker.runconfig](Images/edit-run-config.png)
 
-1. tk.
+	_Editing docker.runconfig_
 
-	![tk](Images/tk.png)
+1. Replace lines 10-15 of **docker.runconfig** with the following statements:
 
-	_tk_
+	```
+	# Environment variables set for the run.
+	EnvironmentVariables:
+	  "AZ_STORAGE_CONNSTR": "CONNECTION_STRING"
+	
+	# Framework to execute inside. Allowed values are "Python" and "PySpark".
+	Framework: "Python"
+	```
 
-1. tk.
+1. Open the [Azure Portal](https://portal.azure.com) in your browser and open the storage account that you created in the previous lab.
 
-	![tk](Images/tk.png)
+	![Opening the storage account](Images/open-storage-account.png)
 
-	_tk_
+	_Opening the storage account_
 
-1. tk.
+1. Click the **Copy** button to the right of the first connection string to copy the storage account's connection string to the clipboard. This connection string allows scripts and programs to access blobs stored in the storage account, even if the blobs are private.
 
-	![tk](Images/tk.png)
+	![Copying the connection string](Images/copy-connection-string.png)
 
-	_tk_
+	_Copying the connection string_
 
-TODO: Add closing.
+1. Return to Machine Learning Workbench and replace CONNECTION_STRING on line 12 of **docker.runconfig** with the connection string on the clipboard. This assigns the connection string to an environment variable so it can be retrieved at run-time by Python scripts.
+
+1. On line 30 of **docker.runconfig**, change the value of ```PrepareEnvironment``` from false to true:
+
+	```
+	PrepareEnvironment: false
+	```
+
+	This configures the project to automatically prepare the environment by loading dependencies when the project is run.
+
+1. Select **Save** from the **File** menu to save the modified **docker.runconfig** file.
+
+1. Open **docker.compute** for editing in Machine Learning Workbench. Then change the value of ```baseDockerImage``` on line 8 to "blaize/mlspark-brainscript," as shown here:
+
+	```
+	baseDockerImage: "blaize/mlspark-brainscript"
+	```
+
+	This changes the base Docker image used for the Docker container to a custom image that adds support for BrainScript to the Docker image that Machine Learning Workbench uses by default. [BrainScript](https://docs.microsoft.com/cognitive-toolkit/brainscript-basic-concepts) is the language used by CNTK to define neural networks.
+
+	> You won't be using BrainScript in this lab, but you *will* use it in the next lab when you use CNTK to build a neural network.
+
+1. Use the **File** > **Save** command to save the modified **docker.compute** file.
+
+1. Right-click (on a Mac, Control-click) inside Machine Learning Workbench's project panel and use the **New Item** command to add a file named **mnist_utils.py** to the project.
+
+1. Open **mnist_utils.py** for editing in Machine Learning Workbench and paste in the following code:
+
+	```Python
+	from __future__ import print_function
+	try: 
+	    from urllib.request import urlretrieve 
+	except ImportError: 
+	    from urllib import urlretrieve
+	import sys
+	import gzip
+	import shutil
+	import os
+	import struct
+	import numpy as np
+	
+	def loadData(src, cimg):
+	    print ('Downloading ' + src)
+	    gzfname, h = urlretrieve(src, './delete.me')
+	    print ('Done.')
+	    try:
+	        with gzip.open(gzfname) as gz:
+	            n = struct.unpack('I', gz.read(4))
+	            # Read magic number.
+	            if n[0] != 0x3080000:
+	                raise Exception('Invalid file: unexpected magic number.')
+	            # Read number of entries.
+	            n = struct.unpack('>I', gz.read(4))[0]
+	            if n != cimg:
+	                raise Exception('Invalid file: expected {0} entries.'.format(cimg))
+	            crow = struct.unpack('>I', gz.read(4))[0]
+	            ccol = struct.unpack('>I', gz.read(4))[0]
+	            if crow != 28 or ccol != 28:
+	                raise Exception('Invalid file: expected 28 rows/cols per image.')
+	            # Read data.
+	            res = np.fromstring(gz.read(cimg * crow * ccol), dtype = np.uint8)
+	    finally:
+	        os.remove(gzfname)
+	    return res.reshape((cimg, crow * ccol))
+	
+	def loadLabels(src, cimg):
+	    print ('Downloading ' + src)
+	    gzfname, h = urlretrieve(src, './delete.me')
+	    print ('Done.')
+	    try:
+	        with gzip.open(gzfname) as gz:
+	            n = struct.unpack('I', gz.read(4))
+	            # Read magic number.
+	            if n[0] != 0x1080000:
+	                raise Exception('Invalid file: unexpected magic number.')
+	            # Read number of entries.
+	            n = struct.unpack('>I', gz.read(4))
+	            if n[0] != cimg:
+	                raise Exception('Invalid file: expected {0} rows.'.format(cimg))
+	            # Read labels.
+	            res = np.fromstring(gz.read(cimg), dtype = np.uint8)
+	    finally:
+	        os.remove(gzfname)
+	    return res.reshape((cimg, 1))
+	
+	def load(dataSrc, labelsSrc, cimg):
+	    data = loadData(dataSrc, cimg)
+	    labels = loadLabels(labelsSrc, cimg)
+	    return np.hstack((data, labels))
+	
+	def savetxt(filename, ndarray):
+	    with open(filename, 'w') as f:
+	        labels = list(map(' '.join, np.eye(10, dtype=np.uint).astype(str)))
+	        for row in ndarray:
+	            row_str = row.astype(str)
+	            label_str = labels[row[-1]]
+	            feature_str = ' '.join(row_str[:-1])
+	            f.write('|labels {} |features {}\n'.format(label_str, feature_str))
+	```
+
+	This file contains helper functions for loading data from blob storage and writing structured text files to the local file system.
+
+1. Use the **File** > **Save** command to save the modified **mnist_utils.py** file.
+
+1. Right-click (on a Mac, Control-click) inside Machine Learning Workbench's project panel and use the **New Item** command to add a file named **convert.py** to the project.
+
+1. Open **convert.py** for editing in Machine Learning Workbench and paste in the following code:
+
+	```Python
+	from __future__ import print_function
+	import os
+	import mnist_utils as ut
+	from azure.storage.blob import (
+	    BlockBlobService,
+	    ContainerPermissions,
+	    BlobPermissions,
+	    PublicAccess,
+	)
+	from datetime import datetime, timedelta
+	
+	block_blob_service = BlockBlobService(connection_string=os.environ['AZ_STORAGE_CONNSTR'])
+	
+	# Function for getting a SAS URL for blobs
+	def getUrl(blobName):
+	    container = 'mnist-data'
+	    token = block_blob_service.generate_blob_shared_access_signature(
+	            container,
+	            blobName,
+	            BlobPermissions.READ,
+	            datetime.utcnow() + timedelta(hours=1),
+	        )
+	    return block_blob_service.make_blob_url(container, blobName, sas_token=token)
+	
+	if __name__ == "__main__":
+	
+	    # Convert the data to the CNTK Format
+	    os.chdir(os.path.abspath(os.path.dirname(__file__)))
+	    train = ut.load(getUrl('train-images-idx3-ubyte.gz'),
+	        getUrl('train-labels-idx1-ubyte.gz'), 60000)
+	    print ('Writing train text file...')
+	    ut.savetxt(r'./Train-28x28_cntk_text.txt', train) 
+	    test = ut.load(getUrl('t10k-images-idx3-ubyte.gz'),
+	        getUrl('t10k-labels-idx1-ubyte.gz'), 10000)
+	    print ('Writing test text file...')
+	    ut.savetxt(r'./Test-28x28_cntk_text.txt', test)
+	
+	    cntkContainer = 'cntk-data'
+	
+	    # Upload the CNTK-formatted data to blob storage
+	    print ('Uploading results to Azure Storage.')
+	    block_blob_service.create_container(cntkContainer, metadata=None, public_access=None, fail_on_exist=False, timeout=None)
+	    block_blob_service.create_blob_from_path(cntkContainer, 'Train-28x28_cntk_text.txt', r'./Train-28x28_cntk_text.txt') 
+	    block_blob_service.create_blob_from_path(cntkContainer, 'Test-28x28_cntk_text.txt', r'./Test-28x28_cntk_text.txt')
+	```
+
+	This file contains code that loads MNIST training and testing data from blob storage, converts it to CNTK format, saves the converted data in text files in the local file system, and then uploads the text files from the local file system to a new container in blob storage.
+
+1. Use the **File** > **Save** command to save the modified **convert.py** file.
+
+The project now contains a Python script that converts the MNIST data in blob storage into CNTK data in blob storage, as well as a Python script containing helper functions used by that script. It also contains a Docker configuration file that holds the connection string that the scripts use to access the storage account, and a Docker compute file that specifies the base Docker image to use for the container in which the scripts run. Now it's time to put these scripts to work.
 
 <a name="Exercise3"></a>
-## Exercise 3: tk ##
+## Exercise 3: Convert the data into CNTK format ##
 
 TODO: Add introduction.
 
-1. tk.
+1. In Machine Learning Workbench, select **Docker** from the Run Configuration drop-down, and **convert.py** from the Script drop-down to configure Workbench to run **convert.py** in a Docker container. Then click the **Run** button.
+
+	> The first run may take a few minutes because Machine Learning Workbench has to download the base Docker image from Docker Hub. Subsequent runs will be much faster.
+
+	![Running convert.py](Images/run-scripts.png)
+
+	_Running convert.py_
+
+1. Wait for the job to complete.
 
 	![tk](Images/tk.png)
 
 	_tk_
 
-1. tk.
+1. Return to the the storage account that you created in the previous lab in the [Azure Portal](https://portal.azure.com). Confirm that the storage account now contains *two* containers: the container you created in the previous lab, and a container named "cntk-data" created by the **convert.py** script.
 
 	![tk](Images/tk.png)
 
 	_tk_
 
-1. tk.
+1. Open the "cntk-data" container and confirm that it contains tk blobs.
 
 	![tk](Images/tk.png)
 
 	_tk_
 
-1. tk.
-
-	![tk](Images/tk.png)
-
-	_tk_
-
-1. tk.
-
-	![tk](Images/tk.png)
-
-	_tk_
-
-TODO: Add closing.
+The raw MNIST data has been converted into CNTK format and is ready to be used to train a CNTK neural network. That sets the stage for the next lab, in which you will use CNTK and Machine Learning Workbench to build a neural network.
 
 <a name="Summary"></a>
 ## Summary ##
