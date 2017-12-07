@@ -74,7 +74,7 @@ The [Azure Portal](https://portal.azure.com) allows you to perform basic storage
 
 1. The storage account currently has no containers. Before you create a blob, you must create a container to store it in. A container is similar to a folder in a file system. A storage account can have an unlimited number of containers, and a container can store an unlimited number of blobs. Container names must be from 3 to 63 characters in length and may contain numbers, dashes, and lowercase letters.
 
-	Click **+ Container** to create a new container. Enter "mnist-data" as the container name, and select **Container** as the **Public access level** so that blobs stored in this container are public rather than private. Then click **OK**.
+	Click **+ Container** to create a new container. Enter "mnist-data" as the container name, and accept the default **Public access level** of **Private** so blobs stored in this container are not publicly accessible. Then click **OK**.
 
     ![Creating a container](Images/create-container.png)
 
