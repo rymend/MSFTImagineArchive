@@ -78,7 +78,7 @@ The files in the project directory are merely starter files that will need to be
 
 One of the tasks at which Machine Learning Workbench excels is in helping you prepare data for training machine-learning models. For example, its [Derive Column by Example](https://docs.microsoft.com/azure/machine-learning/preview/data-prep-derive-column-by-example) lets you create new feature columns with information derived from the data in other columns, and it uses AI to learn by example. You do the first few transformations, and it does the rest. It also has features for replacing missing values, trimming strings, and other common data-cleaning operations.
 
-The MNIST data that you uploaded to blob storage in the previous lab doesn't require cleaning in the conventional sense, but it does need to be converted into a format that is compatible with CNTK. In this exercise, you will write Python scripts to perform the conversion.
+The MNIST data that you uploaded to blob storage in the previous lab doesn't require cleaning in the conventional sense, but it does need to be converted into a format that is compatible with CNTK. In this exercise, you will write Python scripts to perform the conversion, and configure the project to execute them.
 
 1. Return to Machine Learning Workbench and click the folder icon in the ribbon on the left to display all the files in the project. Then expand the treeview to show the files in the "aml_config" directory and click **docker.runconfig**. This file contains configuration information used when the project is executed in a Docker container.
 
@@ -331,7 +331,7 @@ _CNTK-formatted data_
 <a name="Summary"></a>
 ## Summary ##
 
-The raw MNIST data has been converted into CNTK format and is ready to be used to train a neural network. This sets the stage for the next lab in this series — [Using the Microsoft Cognitive Toolkit (CNTK) to Build Neural Networks, Part 3](#) — in which you will use CNTK and Machine Learning Workbench to build a neural network.
+The raw MNIST data has been converted into CNTK format and is ready to be used to train a neural network. This sets the stage for the next lab in this series — [Using the Microsoft Cognitive Toolkit (CNTK) to Build Neural Networks, Part 3](#) — in which you will use CNTK and Machine Learning Workbench to build a set of neural networks and compare their accuracy.
 
 ---
 
