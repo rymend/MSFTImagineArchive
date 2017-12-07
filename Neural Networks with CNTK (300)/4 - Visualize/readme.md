@@ -19,8 +19,10 @@ In this hands-on lab, you will learn how to:
 The following are required to complete this hands-on lab:
 
 - An active Microsoft Azure subscription. If you don't have one, [sign up for a free trial](http://aka.ms/WATK-FreeTrial).
-- tk
-- tk
+- [Docker](https://www.docker.com/)
+- [node.js](https://nodejs.org/en/)
+
+If you haven't completed the [previous lab in this series](#), you must do so before starting this lab.
 
 ---
 

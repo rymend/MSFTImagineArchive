@@ -25,6 +25,8 @@ The following are required to complete this hands-on lab:
 - [Azure Machine Learning Workbench](https://docs.microsoft.com/en-us/azure/machine-learning/preview/quickstart-installation)
 - [Docker](https://www.docker.com/)
 
+If you haven't completed the [previous lab in this series](#), you must do so before starting this lab.
+
 ---
 
 <a name="Exercises"></a>
