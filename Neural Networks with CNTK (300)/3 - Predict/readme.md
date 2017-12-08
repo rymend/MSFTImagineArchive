@@ -109,7 +109,7 @@ It's time to leverage the work you performed in the first two labs by using the 
 	    trainModel('01-OneHidden.cntk')
 	```
 
-	This Python script downloads the CNTK-formatted training and testing files that you created in the previous lab from blob storage and invokes the ```cntk``` command from the Cognitive Toolkit (remember, you are executing code in a Docker container created from a Docker image that contains the Cognitive Toolkit) to train and score a nueral network. It passes as input the ```cntk``` command the path to a BrainScript file that, in this case, is named **01-OneHidden.cntk**. The output from the command is a set of binary files that comprise a "compiled" neural network. The Python script above uploads these files to a new container in blob storage.
+	This Python script downloads the CNTK-formatted training and testing files that you created in the previous lab from blob storage and invokes the ```cntk``` command from the Cognitive Toolkit (remember, you are executing code in a Docker container created from a Docker image that contains the Cognitive Toolkit) to train and score a neural network. It passes as input the ```cntk``` command the path to a BrainScript file that, in this case, is named **01-OneHidden.cntk**. The output from the command is a set of binary files that comprise a "compiled" neural network. The Python script above uploads these files to a new container in blob storage.
 
 1. Add a file named **01-OneHidden.cntk** to the project and add the following code. Then save the file.
 
@@ -230,6 +230,8 @@ It's time to leverage the work you performed in the first two labs by using the 
 	    }
 	}
 	```
+
+	TODO: Add description.
 
 1. Select **Docker** from the Run Configuration drop-down and **train.py** from the Script drop-down to configure Workbench to run **train.py** in a Docker container. Then click **Run**.
 
