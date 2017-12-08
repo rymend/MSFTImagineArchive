@@ -8,9 +8,9 @@ command = trainNetwork:testNetwork
 precision = "float"; traceLevel = 1 ; deviceId = "auto"
 
 rootDir = "." ; dataDir = "./mnist" ;
-outputDir = "./Output" ;
+outputDir = "./models" ;
 
-modelPath = "$outputDir$/Models/05_OneConvRegr"
+modelPath = "$outputDir$/05_OneConvRegr"
 #stderr = "$outputDir$/05_OneConvRegr_bs_out"
 
 # TRAINING CONFIG

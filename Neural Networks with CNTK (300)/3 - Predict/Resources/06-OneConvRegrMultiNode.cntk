@@ -8,9 +8,9 @@ command = trainNetwork:testNetwork
 precision = "float"; traceLevel = 1 ; deviceId = "auto"
 
 rootDir = "." ; dataDir = "./mnist" ;
-outputDir = "./Output" ;
+outputDir = "./models" ;
 
-modelPath = "$outputDir$/Models/06_OneConvRegrMultiNode"
+modelPath = "$outputDir$/06_OneConvRegrMultiNode"
 #stderr = "$outputDir$/06_OneConvRegr_bs_out"
 
 parallelizationMethod=DataParallelSGD
