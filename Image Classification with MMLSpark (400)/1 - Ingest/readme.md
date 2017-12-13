@@ -109,11 +109,11 @@ The [Bing Image Search API](https://azure.microsoft.com/services/cognitive-servi
 
     _Opening the subscription_
 
-1. Click **Keys** in the menu on the left. Then click the **Copy** button to the right of **KEY 1** to copy the access key to the clipboard.
+1. Click **Keys** in the menu on the left. Then click the **Copy** button to the right of **KEY 1** to copy the API key to the clipboard.
 
-    ![Copying the access key](Images/copy-search-key.png)
+    ![Copying the API key](Images/copy-search-key.png)
 
-    _Copying the access key_
+    _Copying the API key_
 
 Finish up by pasting the key that is on the clipboard into your favorite text editor so you can easily retrieve it in the next exercise.
 
