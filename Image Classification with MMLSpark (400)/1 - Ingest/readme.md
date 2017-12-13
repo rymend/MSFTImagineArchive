@@ -85,37 +85,37 @@ The [Bing Image Search API](https://azure.microsoft.com/services/cognitive-servi
 
 1. Open the [Azure Portal](https://portal.azure.com) in your browser. If asked to log in, do so using your Microsoft account.
 
-1. tk.
+1. In the Azure Portal, click **+ New**. Type "bing search" (without quotation marks) into the search box and select **Bing Search v7 APIs** from the drop-down list. Then click the **Create** button at the bottom of the ensuing blade.
 
-	![tk](Images/tk.png)
+    ![Creating a new Bing Search API subscription](Images/new-search-api.png)
 
-	_tk_
+    _Creating a new Bing Search API subscription_
 
-1. tk.
+1. Type "bing-search-api" into the **Name** box and select **S1** as the **Pricing tier**. Select the same **Location** that you selected for the database in the previous exercise. Under **Resource group**, select **Use existing** and select the "MMLSparkResources" resource group that you created in [Exercise 1](#Exercise1). Check the **I confirm** box, and then click **Create**.
 
-	![tk](Images/tk.png)
+    ![Subscribing to the Bing Search API](Images/create-search-api.png)
 
-	_tk_
+    _Subscribing to the Bing Search API_
 
-1. tk.
+1. Click **Resource groups** in the ribbon on the left, and then click the subscription that you just created.
 
-	![tk](Images/tk.png)
+    ![Opening the subscription](Images/open-resource-group.png)
 
-	_tk_
+    _Opening the subscription_
 
-1. tk.
+1. Click the Bing Search subscription that you created a moment ago. TODO: Reshoot this screen.
 
-	![tk](Images/tk.png)
+    ![Opening the subscription](Images/open-search-api.png)
 
-	_tk_
+    _Opening the subscription_
 
-1. tk.
+1. Click **Keys** in the menu on the left. Then click the **Copy** button to the right of **KEY 1** to copy the access key to the clipboard.
 
-	![tk](Images/tk.png)
+    ![Copying the access key](Images/copy-search-key.png)
 
-	_tk_
+    _Copying the access key_
 
-TODO: Add closing.
+Finish up by pasting the key that is on the clipboard into your favorite text editor so you can easily retrieve it in the next exercise.
 
 <a name="Exercise3"></a>
 ## Exercise 3: Populate the database ##
