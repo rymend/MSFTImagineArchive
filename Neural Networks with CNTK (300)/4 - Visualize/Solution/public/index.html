@@ -1,174 +1,133 @@
 <html>
-<title>Draw an Image</title>
-<style>
-#canvas {
-	border:1px solid #000000;
-}
-
-</style>
-
-<script type="text/javascript">
-var canvas, ctx, flag = false,
-	prevX = 0,
-	currX = 0,
-	prevY = 0,
-	currY = 0
-
-
-function init() {
-	canvas = document.getElementById('canvas');
-	ctx = canvas.getContext("2d");
-	w = canvas.width;
-	h = canvas.height;
+	<title>Draw an Image</title>
+	<style>
+	#canvas {
+		border:1px solid #000000;
+		margin-top: 16px;
+		margin-bottom: 16px;
+	}
+	button {
+		width: 240px;
+		height: 64px;
+		margin-right: 20px;
+	}
+	</style>
 	
-	erase();
-
-	canvas.addEventListener("mousemove", function (e) {
-		findxy('move', e)
-	}, false);
-	canvas.addEventListener("mousedown", function (e) {
-		findxy('down', e)
-	}, false);
-	canvas.addEventListener("mouseup", function (e) {
-		findxy('up', e)
-	}, false);
-	canvas.addEventListener("mouseout", function (e) {
-		findxy('out', e)
-	}, false);
-}
-
-
-function draw() {
-      ctx.beginPath();
-      ctx.arc(currX, currY, 12, 0, 2 * Math.PI, false);
-      ctx.fillStyle = '#222222';
-      ctx.fill();
-      ctx.lineWidth = 12;
-      ctx.strokeStyle = '#222222';
-      ctx.stroke();
-}
-
-function erase() {
-	ctx.beginPath();
-	ctx.rect(0, 0, 500, 500);
-	ctx.fillStyle = "#ffffff";
-	ctx.fill();
-}
-
-
-function findxy(res, e) {
-	if (res == 'down') {
-		prevX = currX;
-		prevY = currY;
-		currX = e.clientX - canvas.offsetLeft;
-		currY = e.clientY - canvas.offsetTop;
-
-		flag = true;
-
+	<script type="text/javascript">
+	var canvas, ctx, flag = false,
+		prevX = 0,
+		currX = 0,
+		prevY = 0,
+		currY = 0;
+	
+	function init() {
+		canvas = document.getElementById('canvas');
+		ctx = canvas.getContext("2d");
+		var w = canvas.width;
+		var h = canvas.height;
+		
+		erase();
+	
+		canvas.addEventListener("mousemove", function (e) {
+			findxy('move', e);
+		}, false);
+		canvas.addEventListener("mousedown", function (e) {
+			findxy('down', e);
+		}, false);
+		canvas.addEventListener("mouseup", function (e) {
+			findxy('up', e);
+		}, false);
+		canvas.addEventListener("mouseout", function (e) {
+			findxy('out', e);
+		}, false);
 	}
-	if (res == 'up' || res == "out") {
-		flag = false;
+	
+	function draw() {
+		ctx.beginPath();
+		ctx.arc(currX, currY, 12, 0, 2 * Math.PI, false);
+		ctx.fillStyle = '#222222';
+		ctx.fill();
+		ctx.lineWidth = 12;
+		ctx.strokeStyle = '#222222';
+		ctx.stroke();
 	}
-	if (res == 'move') {
-		if (flag) {
+	
+	function erase() {
+		ctx.beginPath();
+		ctx.rect(0, 0, 500, 500);
+		ctx.fillStyle = "#ffffff";
+		ctx.fill();
+	}
+	
+	function findxy(res, e) {
+		if (res == 'down') {
 			prevX = currX;
 			prevY = currY;
 			currX = e.clientX - canvas.offsetLeft;
 			currY = e.clientY - canvas.offsetTop;
-			draw();
+			flag = true;
 		}
-	}
-}
-
-var batchStr = "";
-
-function addToBatch(){
-
-	var scaledCanvas = document.createElement('canvas');
-	scaledCanvas.width = 28;
-	scaledCanvas.height = 28;
-	var scaledCtx = scaledCanvas.getContext('2d');
-
-	scaledCtx.drawImage(canvas, 0,0,28,28);
-
-	var cntkline = "|labels "
-	var digit = parseInt(document.getElementById("digit").value);
-	for (var i = 0; i < 10; i++){
-		var label = "0 "
-		if (i == digit){
-			label = "1 "
+	
+		if (res == 'up' || res == "out") {
+			flag = false;
 		}
-		cntkline += label;
-	}
 	
-	cntkline += "|features"
-	
-	for (var y = 0; y < 28; y++){
-		for(var x = 0; x < 28; x++){
-			var pixel = scaledCtx.getImageData(x, y, 1, 1).data;
-			//console.log(pixel);
-			cntkline += " " + (255 - pixel[0]);
-
+		if (res == 'move') {
+			if (flag) {
+				prevX = currX;
+				prevY = currY;
+				currX = e.clientX - canvas.offsetLeft;
+				currY = e.clientY - canvas.offsetTop;
+				draw();
+			}
 		}
 	}
 	
-	batchStr = cntkline + "\n";
+	var batchStr = "";
 	
-	testBatch();
-
-	
-}
-
-function testBatch(){
-	var xhr = new XMLHttpRequest();
-	xhr.open('POST', '/testImage', true);
-	xhr.onload = function () {
-		console.log(this.responseText);
-		var data = JSON.parse(this.responseText);
-		var htmlStr = "<table>"
-		for (model in data) { 
-			htmlStr += "<tr><td>" + model + "</td><td>" + data[model] + "</td></tr>";
-		}
-		document.getElementById("results").innerHTML=htmlStr;
-	};
-	xhr.send(batchStr);
-
-
-}
-
-
-</script>
-    <body onload="init()">
-	
-	<div>
-	<ol>
-	<li>Use your pointing device (mouse, finger, or stylus) to draw a digit 0 through 9 in the box below</li>
-	<li>Select the digit you are drawing to test against from the drop down box</li>
-	<li>Next, click "Test Image". This will submit the image for testing to the neural network and return a result set.</li>
-	</ol>
-	</div>
-	
-	
-	<div>
-	I am drawing: <select id="digit">
-	<option value="0">0</option>
-	<option value="1">1</option>
-	<option value="2">2</option>
-	<option value="3">3</option>
-	<option value="4">4</option>
-	<option value="5">5</option>
-	<option value="6">6</option>
-	<option value="7">7</option>
-	<option value="8">8</option>
-	<option value="9">9</option>
-	</select><button onclick="addToBatch()">Test Image!</button><button onclick="erase()">Reset</button>
+	function testImage() {
+		var scaledCanvas = document.createElement('canvas');
+		scaledCanvas.width = 28;
+		scaledCanvas.height = 28;
+		var scaledCtx = scaledCanvas.getContext('2d');
+		scaledCtx.drawImage(canvas, 0,0,28,28);
+		var cntkline = "|features";
 		
-	</div>
-	<canvas id="canvas" width="500" height="500"></canvas>
-	<canvas id="scanvas"></canvas>
-	</select>
-	<div id="batch"></div>
-
-	<div id="results"></div>
+		for (var y = 0; y < 28; y++) {
+			for (var x = 0; x < 28; x++) {
+				var pixel = scaledCtx.getImageData(x, y, 1, 1).data;
+				cntkline += " " + (255 - pixel[0]);
+			}
+		}
+		
+		batchStr = cntkline + "\n";
+		
+		var xhr = new XMLHttpRequest();
+		xhr.open('POST', '/testImage', true);
+	
+		xhr.onload = function () {
+			console.log(this.responseText);
+			var data = JSON.parse(this.responseText);
+			alert("Detected a " + data.detected);
+		};
+	
+		xhr.send(batchStr);
+	}
+	</script>
+	
+	<body onload="init()">
+		<div id="instructions">
+			<span style="font-family: segoe ui">
+				Use your pointing device (mouse, finger, or stylus) to draw a digit 0 through 9 in the box below.
+				Then click the PREDICT button.
+			</span>
+		</div>
+	
+		<canvas id="canvas" width="500" height="500"></canvas>
+		
+		<div id="controls">
+			<button onclick="testImage()">PREDICT</button>
+			<button onclick="erase()">CLEAR</button>
+		</div>
 	</body>
-</html>
+	</html>
