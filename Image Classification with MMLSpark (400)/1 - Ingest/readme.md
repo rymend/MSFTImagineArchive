@@ -34,7 +34,7 @@ The following are required to complete this hands-on lab:
 This hands-on lab includes the following exercises:
 
 - [Exercise 1: Create an Azure SQL database](#Exercise1)
-- [Exercise 2: Get a Bing Image Search API key](#Exercise2)
+- [Exercise 2: Get a Bing Search API key](#Exercise2)
 - [Exercise 3: Populate the database](#Exercise3)
 
 Estimated time to complete this lab: **30** minutes.
@@ -79,7 +79,7 @@ In this exercise, you will use the Azure CLI to create an Azure SQL database in 
 TODO: Add closing.
 
 <a name="Exercise2"></a>
-## Exercise 2: Get a Bing Image Search API key ##
+## Exercise 2: Get a Bing Search API key ##
 
 The [Bing Image Search API](https://azure.microsoft.com/services/cognitive-services/bing-image-search-api/) is part of the [Microsoft Cognitive Services](https://azure.microsoft.com/services/cognitive-services/) suite of services and APIs for building intelligent applications. In [Exercise 3](#Exercise3), you will use the Bing Image Search API from a Python script to search the Web for images of paintings by famous artists. But in order to invoke the Bing Image Search API, you need an API key. In this exercise, you will use the Azure Portal to acquire an API key.
 
