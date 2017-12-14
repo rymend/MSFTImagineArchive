@@ -194,7 +194,7 @@ It's time to leverage the work you performed in the first two labs by using the 
 	}
 	```
 
-	This file contains [BrainScript](https://docs.microsoft.com/cognitive-toolkit/brainscript-basic-concepts) code that defines a neural network. It is a slightly modified version of a file of the same name that comes with CNTK. The first section — TRAINING CONFIG — defines a network with one hidden layer and identifies the shape and source of the training data. The TEST CONFIG section identifies the file containing testing data. The files containing the training and testing data are local versions of the files that you created in the previous lab downloaded from blob storage.
+	This file contains [BrainScript](https://docs.microsoft.com/cognitive-toolkit/brainscript-basic-concepts) code that defines a neural network. It is a slightly modified version of a file of the same name that comes with CNTK. The first section — TRAINING CONFIG — defines a network with one hidden layer and identifies the shape and source of the training data. The TEST CONFIG section identifies the file containing testing data. The files containing the training and testing data are local versions of the files that you created in the previous lab and downloaded from blob storage.
 
 1. Select **Docker** from the Run Configuration drop-down and **train.py** from the Script drop-down to configure Workbench to run **train.py** in a Docker container. Then click **Run**.
 
