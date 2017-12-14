@@ -76,7 +76,7 @@ In this exercise, you will use the Azure CLI to create an Azure SQL database in 
 	az sql db create --resource-group mmlsparklab-rg --server SERVER_NAME --name DATABASE_NAME --service-objective S0
 	```
 
-You now have a resource group that contains a database and a database server. If you would like to verify that they were created, open the [Azure Portal](https://portal.azure.com) in your browser, click **Resource groups** in the ribbon on the left, and then click the resource group named "mmlsparklab-rg." The resource group should contain two resources, as pictured below. The resource names will differ depending on how you named the database and database server.
+You now have a resource group that contains a database and a database server. If you would like to verify that they were created, open the [Azure Portal](https://portal.azure.com) in your browser, click **Resource groups** in the ribbon on the left side of the portal, and then click the resource group named "mmlsparklab-rg." The resource group should contain two resources, as pictured below. The resource names will differ depending on how you named the database and database server.
 
 ![Contents of the "mmlsparklab-rg" resource group](Images/resource-group.png)
 
@@ -95,19 +95,13 @@ The [Bing Image Search API](https://azure.microsoft.com/services/cognitive-servi
 
     _Creating a new Bing Search API subscription_
 
-1. Type "bing-search-api" into the **Name** box and select **S1** as the **Pricing tier**. Select the same **Location** that you selected for the database in the previous exercise. Under **Resource group**, select **Use existing** and select the "MMLSparkResources" resource group that you created in [Exercise 1](#Exercise1). Check the **I confirm** box, and then click **Create**.
+1. Type "bing-search-api" into the **Name** box and select **S1** as the **Pricing tier**. Select the same **Location** that you selected for the database in the previous exercise. Under **Resource group**, select **Use existing** and select the "mmlsparklab-rg" resource group that you created in [Exercise 1](#Exercise1). Check the **I confirm** box, and then click **Create**.
 
     ![Subscribing to the Bing Search API](Images/create-search-api.png)
 
     _Subscribing to the Bing Search API_
 
-1. Click **Resource groups** in the ribbon on the left, and then click the subscription that you just created.
-
-    ![Opening the subscription](Images/open-resource-group.png)
-
-    _Opening the subscription_
-
-1. Click the Bing Search subscription that you created a moment ago. TODO: Reshoot this screen.
+1. Click **Resource groups** in the ribbon on the left side of the portal, and then click the "mmlsparklab-rg" resource group to view its contents. Now click the Bing Search subscription that you created a moment ago.
 
     ![Opening the subscription](Images/open-search-api.png)
 
