@@ -122,7 +122,7 @@ The MNIST data that you uploaded to blob storage in the previous lab doesn't req
 1. On line 30 of **docker.runconfig**, change the value of ```PrepareEnvironment``` from false to true:
 
 	```
-	PrepareEnvironment: false
+	PrepareEnvironment: true
 	```
 
 	This configures the project to automatically prepare the environment by loading dependencies when the project is run.
