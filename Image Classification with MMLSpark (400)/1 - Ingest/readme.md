@@ -128,7 +128,7 @@ In this exercise, you will use Azure Machine Learning Workbench to write and exe
 
 	_Creating a new project_
 
-1. Enter a project name such as "MNIST-Lab" and a project description. For **Project directory**, specify the location where you would like for the project directory to be created. Make sure **Blank Project** is selected as the project type, and then click the **Create** button.
+1. Enter a project name such as "MMLSpark-Lab" and a project description. For **Project directory**, specify the location where you would like for the project directory to be created. Make sure **Blank Project** is selected as the project type, and then click the **Create** button.
 
 	![Creating a new project](Images/new-project-2.png)
 
