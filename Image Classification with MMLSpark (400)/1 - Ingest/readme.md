@@ -2,9 +2,7 @@
 
 Image classification is a common task performed by machine-learning models. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque at nulla sit amet nibh finibus volutpat eget id augue. Nunc sit amet rutrum tellus. Proin et aliquet lacus. Donec dignissim, massa quis sagittis imperdiet, enim sem faucibus nibh, in gravida purus dolor non ligula. Maecenas auctor nisl eu felis gravida fermentum. Donec auctor ultrices aliquet. Donec lectus sem, aliquam a consectetur sit amet, ullamcorper eget felis. Fusce condimentum ut odio in pretium. Aliquam dapibus, orci non iaculis pharetra, magna odio mattis massa, sit amet condimentum leo metus ut orci. Etiam maximus nec leo id lobortis. Suspendisse quis est in arcu scelerisque mattis. Fusce a augue consequat lacus suscipit dictum.
 
-Aliquam cursus odio lectus. Vestibulum vitae nisl at felis suscipit fringilla id at mauris. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Fusce in nunc maximus, feugiat nisi eget, aliquet magna. Donec eu venenatis mauris. Pellentesque id lobortis nulla, in gravida mauris. Nam ut libero diam. Vestibulum vitae tellus magna. Nam erat risus, rutrum non imperdiet quis, ullamcorper a turpis. Pellentesque diam nisi, vehicula at urna in, ullamcorper finibus purus. Etiam pretium, nisi id euismod fermentum, libero nibh sagittis tellus, non pellentesque erat metus sed dui. Duis cursus mauris quis tincidunt placerat. Integer sit amet ornare justo, pulvinar egestas nisi. Mauris eget sapien et nisi condimentum scelerisque sit amet quis arcu. 
-
-Vivamus quis leo mi. Cras condimentum arcu ut ligula laoreet egestas. Sed vulputate sem accumsan tincidunt lacinia. Sed eu suscipit sapien, id posuere ligula. Vestibulum id nulla malesuada, fermentum dui in, ullamcorper ligula. Donec sagittis consequat tristique. Ut massa lacus, iaculis non porttitor vitae, volutpat sit amet mi. Pellentesque consequat nulla non tortor lacinia, et sodales nisi iaculis. Donec sollicitudin ut augue sed pellentesque. Nam aliquet ligula vitae mi dapibus cursus. Sed hendrerit in leo ut mollis. Aenean at dui et dolor ultricies egestas
+In this lab, the first of four in a series, you will use the Azure CLI to create an Azure SQL database in the cloud. Then you will use [Azure Machine Learning Workbench](https://docs.microsoft.com/en-us/azure/machine-learning/preview/quickstart-installation) to run a Python script that uses the [Bing Image Search API](https://azure.microsoft.com/services/cognitive-services/bing-image-search-api/) to search the Web for images of paintings by famous artists and write the results to the Azure SQL database. This is the raw data that you will use to train a machine-learning model in [Lab 3](#) after cleaning and preparing it in [Lab 2](#).
 
 ![](Images/road-map-1.png)
 
@@ -15,7 +13,7 @@ In this hands-on lab, you will learn how to:
 
 - Use the Azure CLI to create an Azure SQL database
 - Search the Web for images using Bing Image Search
-- Write to a database using Python
+- Write to an Azure SQL database using Python
 
 <a name="Prerequisites"></a>
 ### Prerequisites ###
@@ -25,6 +23,7 @@ The following are required to complete this hands-on lab:
 - An active Microsoft Azure subscription. If you don't have one, [sign up for a free trial](http://aka.ms/WATK-FreeTrial).
 - The [Azure CLI](https://docs.microsoft.com/cli/azure/install-azure-cli) version 2.0.19 or higher
 - [Azure Machine Learning Workbench](https://docs.microsoft.com/en-us/azure/machine-learning/preview/quickstart-installation)
+- [Docker](https://www.docker.com/)
 
 ---
 
@@ -35,7 +34,8 @@ This hands-on lab includes the following exercises:
 
 - [Exercise 1: Create an Azure SQL database](#Exercise1)
 - [Exercise 2: Get a Bing Search API key](#Exercise2)
-- [Exercise 3: Populate the database](#Exercise3)
+- [Exercise 3: Create a Docker container image](#Exercise3)
+- [Exercise 4: Populate the database](#Exercise4)
 
 Estimated time to complete this lab: **30** minutes.
 
@@ -60,7 +60,7 @@ In this exercise, you will use the Azure CLI to create an Azure SQL database in 
 
 	> If the CLI responds by saying you must log in to execute this command, type ```az login``` and follow the instructions on the screen to log in to the CLI. In addition, if you have multiple Azure subscriptions, follow the instructions at https://docs.microsoft.com/cli/azure/manage-azure-subscriptions-azure-cli to set the active subscription — the one that the resources you create with the CLI will be billed to.
 
-1. Now use the following command to create a database server in the "mmlsparklab-rg" resource group. Replace SERVER_NAME with the name you wish to assign the database server, and replace ADMIN_USERNAME and ADMIN_PASSWORD with the user name and password for an admin user. **Remember the user name and password** that you enter, because you will need them later:
+1. Now use the following command to create a database server in the "mmlsparklab-rg" resource group. Replace SERVER_NAME with the name you wish to assign the database server, and replace ADMIN_USERNAME and ADMIN_PASSWORD with the user name and password for an admin user. **Remember the user name and password** that you enter, because you will need them later.
 
 	```
 	az sql server create --name SERVER_NAME --resource-group mmlsparklab-rg --location southcentralus --admin-user ADMIN_USERNAME --admin-password ADMIN_PASSWORD
@@ -68,9 +68,15 @@ In this exercise, you will use the Azure CLI to create an Azure SQL database in 
 
 	> The server name must be unique within Azure, and the admin password must be at least 8 characters long. The user name cannot be one that is reserved in SQL Server such as "admin" or "sa."
 
-1. TODO: Set firewall rule?
+1. Use the following command to create a firewall rule that allows the database server to be accessed externally from any IP address. Once more, replace SERVER_NAME with the server name you specified in Step 3.
 
-1. Use the following command to create a database assigned the [S0 service tier](https://docs.microsoft.com/azure/sql-database/sql-database-service-tiers). Replace DATABASE_NAME with the name you wish to assign the database, and SERVER_NAME with the database server name you specified in Step 3.
+	```
+	az sql server firewall-rule create --resource-group mmlsparklab-rg --server SERVER_NAME -n AllowAll --start-ip-address 0.0.0.0 --end-ip-address 255.255.255.255
+	```
+
+	> In practice, you would limit access to your own IP address or a narrow range of IP addresses. To avoid issues with dynamic IP addresses, however, here you are allowing access from any IP address.
+
+1. Use the following command to create a database assigned the [S0 service tier](https://docs.microsoft.com/azure/sql-database/sql-database-service-tiers). Replace DATABASE_NAME with the name you wish to assign the database, and SERVER_NAME with the server name you specified in Step 3.
 
 	```
 	az sql db create --resource-group mmlsparklab-rg --server SERVER_NAME --name DATABASE_NAME --service-objective S0
@@ -113,10 +119,47 @@ The [Bing Image Search API](https://azure.microsoft.com/services/cognitive-servi
 
     _Copying the API key_
 
-Finish up by pasting the key that is on the clipboard into your favorite text editor so you can easily retrieve it in the next exercise.
+Finish up by pasting the key that is on the clipboard into your favorite text editor so you can easily retrieve it in [Exercise 4](#Exercise4).
 
 <a name="Exercise3"></a>
-## Exercise 3: Populate the database ##
+## Exercise 3: Create a Docker container image ##
+
+In [Exercise 4](#Exercise4), you will use a Python script to search the Web for images of paintings by famous artists and write the results to the Azure SQL database you created in [Exercise 1](#Exercise1). Connecting to an Azure SQL database from Python requires an environment specially prepared with certain packages and drivers. In this exercise, you will create a custom Docker container image that has those packages and drivers installed. In the next exercise, you will use a container created from this image to host the Python code that connects to the database.
+
+1. Create a directory on your hard disk and name it anything you want. Then add a text file named **Dockerfile** (no file-name extension) to that directory and insert the following statements:
+
+	```
+	FROM microsoft/mmlspark:plus-0.9.9
+	USER root
+	RUN apt-get update && apt-get install -y \
+	    curl apt-utils apt-transport-https debconf-utils gcc build-essential g++-5\
+	    && rm -rf /var/lib/apt/lists/* && \
+		curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - && \
+		curl https://packages.microsoft.com/config/ubuntu/16.04/prod.list > /etc/apt/sources.list.d/mssql-release.list && \
+		apt-get update && ACCEPT_EULA=Y apt-get install -y msodbcsql unixodbc-dev && \
+		apt-get update && ACCEPT_EULA=Y apt-get install -y mssql-tools && \
+		echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bashrc && \
+		/bin/bash -c "source ~/.bashrc" && \
+		apt-get install -y locales && \
+	    echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
+	    locale-gen && \
+		pip install pyodbc
+	```
+
+	This **Dockerfile** contains instructions for building a Docker container image. It uses ```microsoft/mmlspark:plus-0.9.9``` as the base image and adds a Python package named ```pyodbc``` that permits Python scripts to access Azure SQL databases (as well as on-premises SQL Server databases). It also installs several packages that ```pyodbc``` depends on.
+
+1. Open a Command Prompt or terminal window and navigate to the directory you created in the previous step (the directory that contains the **Dockerfile**). Then execute the following command to build a custom contained image named ```spark-sql```:
+
+	```
+	docker build -t spark-sql .
+	```
+
+1. Wait until the command completes (it will probably take a few minutes) and confirm that it completed successfully.
+
+The container image has been created and cached on the local machine. If you would like to be absolutely certain that it was created and cached, execute a ```docker images``` command in the Command Prompt or terminal window and verify that the list of images includes one named ```spark-sql```.
+
+<a name="Exercise4"></a>
+## Exercise 4: Populate the database ##
 
 In this exercise, you will use Azure Machine Learning Workbench to write and execute a Python script that uses the Bing Image Search API to find images of paintings by famous artists such as Picasso, Van Gogh, and Monet and record information about the images, including their URLs, in the Azure SQL database that you created in [Exercise 1](#Exercise1).
 
