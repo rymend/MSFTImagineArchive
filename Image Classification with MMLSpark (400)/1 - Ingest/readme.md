@@ -36,6 +36,7 @@ This hands-on lab includes the following exercises:
 - [Exercise 2: Get a Bing Search API key](#Exercise2)
 - [Exercise 3: Create a Docker container image](#Exercise3)
 - [Exercise 4: Populate the database](#Exercise4)
+- [Exercise 5: View the contents of the database](#Exercise5)
 
 Estimated time to complete this lab: **30** minutes.
 
@@ -208,6 +209,31 @@ In this exercise, you will use Azure Machine Learning Workbench to write and exe
 	_tk_
 
 TODO: Add closing.
+
+<a name="Exercise5"></a>
+## Exercise 5: View the contents of the database ##
+
+In this exercise, you will use the Azure Portal to view the information regarding paintings by famous artists that was written to the Azure SQL database by the Python script in the previous exercise.
+
+1. Return to the [Azure Portal](https://portal.azure.com) in your browser and open the "mmlsparklab-rg" resource group that you created in [Exercise 1](#Exercise1). Then click the database that you created in the same exercise.
+
+	![Opening the database](Images/open-database.png)
+
+	_Opening the database_
+
+1. Click **Data explorer** in the menu on the left. Then click **Login** at the top of the blade, enter the user name and password you specified in Exercise 1, Step 3, and click **OK** to log in to the database.
+
+	![Logging in to the database](Images/login-to-database.png)
+
+	_Logging in to the database_
+
+1. Type "SELECT * FROM dbo.Paintings" (without quotation marks) into the query window and click the **Run** button. Confirm that several database rows appear in the results window underneath.
+
+	![Running a query](Images/run-query.png)
+
+	_Running a query_
+
+Scroll down in the results window and examine the data displayed there. The results should include several hundred rows, each containing the URL, width, and height of a painting by Picasso, Van Gogh, or Monet. This is the raw data that you will use to train a machine-learning model in [Lab 3](#) after cleaning and preparing it in [Lab 2](#).
 
 <a name="Summary"></a>
 ## Summary ##

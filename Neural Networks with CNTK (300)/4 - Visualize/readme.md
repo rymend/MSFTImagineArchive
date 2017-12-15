@@ -55,7 +55,7 @@ In this exercise, you will download the files created for the "One Convolution" 
 
 	_Downloading a blob_
 
-1. When downloaded from the Azure Portal, the blob named **02_OneConv** will probably have a **.txt** extension added to it. Check the downloaded file and if it's named **02_OneConv.txt**, rename the file **02_OneConv**.
+1. When downloaded from the Azure Portal, the blob named **02_OneConv** might have a **.txt** extension added to it. Check the downloaded file and if it's named **02_OneConv.txt**, rename the file **02_OneConv**.
 
 1. Create a directory on your hard disk to hold all the files that will be built into a container image. Name the directory anything you want. Hereafter, this directory will be referred to as the "project directory."
 
