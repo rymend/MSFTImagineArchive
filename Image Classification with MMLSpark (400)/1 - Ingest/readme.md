@@ -164,6 +164,14 @@ The container image has been created and cached on the local machine. If you wou
 
 In this exercise, you will use Azure Machine Learning Workbench to write and execute a Python script that uses the Bing Image Search API to find images of paintings by famous artists such as Picasso, Van Gogh, and Monet and record information about the images, including their URLs, in the Azure SQL database that you created in [Exercise 1](#Exercise1).
 
+1. Azure Machine Learning Workbench runs jobs in Docker containers, and as such, it requires that Docker be installed on your computer. If you haven't installed Docker, go to https://www.docker.com/ and download and install [Docker for Windows](https://www.docker.com/docker-windows) or [Docker for Mac](https://www.docker.com/docker-mac). If you are not sure whether Docker is installed on your computer, open a Command Prompt window (Windows) or a terminal window (macOS) and type the following command:
+
+	```
+	docker -v
+	```
+
+	If a Docker version number is displayed, then Docker is installed.
+
 1. If Azure Machine Learning Workbench isn't installed on your computer, go to https://docs.microsoft.com/azure/machine-learning/preview/quickstart-installation and follow the instructions there to install it, create a Machine Learning Experimentation account, and sign in to Machine Learning Workbench for the first time. The experimentation account is required in order to use Azure Machine Learning Workbench. Stop when you reach the section entitled "Create a new project."
 
 1. Launch Azure Machine Learning Workbench if it isn't already running. Then click the **+** sign in the "Projects" panel and select **New Project**.
@@ -178,37 +186,139 @@ In this exercise, you will use Azure Machine Learning Workbench to write and exe
 
 	_Creating a new project_
 
-1. tk.
+1. Click the folder icon in the ribbon on the left to display all the files in the project. Then expand the treeview to show the files in the "aml_config" directory and click **docker.runconfig**. This file contains configuration information used when the project is executed in a Docker container.
 
-	![tk](Images/tk.png)
+	![Opening docker.runconfig](Images/open-run-config.png)
 
-	_tk_
+	_Opening docker.runconfig_
 
-1. tk.
+1. Click the down-arrow next to **Edit** and select **Edit as text in Workbench** to enter editing mode.
 
-	![tk](Images/tk.png)
+	![Editing docker.runconfig](Images/edit-run-config.png)
 
-	_tk_
+	_Editing docker.runconfig_
 
-1. tk.
+1. On line 30 of **docker.runconfig**, change the value of ```PrepareEnvironment``` from false to true:
 
-	![tk](Images/tk.png)
+	```
+	PrepareEnvironment: true
+	```
 
-	_tk_
+	This configures the project to automatically prepare the environment by loading dependencies when the project is run.
 
-1. tk.
+1. Select **Save** from the **File** menu to save the modified **docker.runconfig** file.
 
-	![tk](Images/tk.png)
+1. Open **docker.compute** for editing in Machine Learning Workbench. Then change the value of ```baseDockerImage``` on line 8 to "spark-sql," as shown here:
 
-	_tk_
+	```
+	baseDockerImage: "spark-sql"
+	```
 
-1. tk.
+	This changes the base Docker image used for the Docker container to the custom image that you built in the previous exercise.
 
-	![tk](Images/tk.png)
+1. Use the **File** > **Save** command to save the modified **docker.compute** file.
 
-	_tk_
+1. Open **conda_dependencies.yml** for editing in Machine Learning Workbench. Then add the following line to the ```- pip``` section of the file:
 
-TODO: Add closing.
+	```yml
+	- pyodbc
+	```
+
+	The modified ```- pip``` section should look like this:
+
+	```yml
+	- pip:
+	    # The API for Azure Machine Learning Model Management Service.
+	    # Details: https://github.com/Azure/Machine-Learning-Operationalization
+	    - azure-ml-api-sdk==0.1.0a10
+	    - pyodbc
+	
+	    # Helper utilities for dealing with Azure ML Workbench Assets.
+	    - https://azuremldownloads.blob.core.windows.net/wheels/latest/azureml.assets-1.0.0-py3-none-any.whl?sv=2016-05-31&si=ro-2017&sr=c&sig=xnUdTm0B%2F%2FfknhTaRInBXyu2QTTt8wA3OsXwGVgU%2BJk%3D
+	```
+
+	This addition exposes the ```pyodbc``` package built into the container image to the Anaconda run-time installed with Workbench so the package can be imported into Python scripts run in the container. It is this package that enables Pythin scripts to connect to Azure SQL databases.
+
+1. Use the **File** > **Save** command to save the modified **conda_dependencies.yml** file.
+
+1. Click the **+** sign in the project panel and use the **New Item** command to add a file named **load.py** to the project.
+
+	![Adding a file to the project](Images/new-file.png)
+
+	_Adding a file to the project_
+
+1. Open **load.py** for editing in Machine Learning Workbench and paste in the following Python code:
+
+	```python
+	import pyodbc 
+	import http.client, urllib.parse, json
+	
+	server = "SERVER_NAME.database.windows.net"
+	database = "DATABASE_NAME"
+	username = "ADMIN_USERNAME"
+	password = "ADMIN_PASSWORD" 
+	
+	api_key = "API_KEY"
+	host = "api.cognitive.microsoft.com"
+	path = "/bing/v7.0/images/search"
+	max_results = 256
+	
+	def bing_image_search(db_connection, artist_name):
+	    headers = { "Ocp-Apim-Subscription-Key" : api_key}
+	    conn = http.client.HTTPSConnection(host)
+	    query = urllib.parse.quote(artist_name)
+	    conn.request("GET", path + "?q=" + query + "&count=" +str(max_results), headers=headers)
+	    response = conn.getresponse()
+	    result = response.read().decode("utf8")
+	    paintings = json.loads(result)["value"]
+	
+	    for painting in paintings:
+	        width = painting["thumbnail"]["width"]
+	        height = painting["thumbnail"]["height"]
+	        url = painting["thumbnailUrl"]
+	        db_connection.execute("INSERT INTO Paintings (Artist, Width, Height, URL) VALUES ('" + \
+	            artist_name + "', " + str(width) + ", " + str(height) + ", '" + url + "')")
+	
+	    db_connection.commit()
+	
+	# Connect to the database
+	conn = pyodbc.connect("DRIVER={ODBC Driver 13 for SQL Server};SERVER=" + server + \
+	    ";DATABASE=" + database + ";UID=" + username + ";PWD=" + password)
+	
+	# Create a database table
+	conn.execute("DROP TABLE IF EXISTS Paintings")
+	conn.execute("CREATE TABLE Paintings (Artist VARCHAR(64), Width INT, Height INT, URL VARCHAR(255));")
+	conn.commit()
+	
+	# Use Bing Search to find images and populate the database
+	bing_image_search(conn, "Picasso")
+	bing_image_search(conn, "Van Gogh")
+	bing_image_search(conn, "Monet")
+	```
+
+	This script imports the ```pyodbc``` package built into the container and uses it to connect to the Azure SQL database and create a table named "Paintings." It also invokes the Bing Image Search API three times to search the Web for images of paintings by famous artists, each time passing your Bing Search API key in an HTTP header. For each painting that it discovers, it writes a record to the "Paintings" table denoting the image's width, height, and URL, as well as the artist name.
+
+1. Replace the following values in **load.py**. Then save the file.
+
+	- Replace SERVER_NAME on line 4 with the server name you specified in Exercise 1, Step 3
+	- Replace DATABASE_NAME on line 5 with the database name you specified in Exercise 1, Step 5
+	- Replace ADMIN_USERNAME on line 6 with the server name you specified in Exercise 1, Step 3
+	- Replace ADMIN_PASSWORD on line 7 with the server name you specified in Exercise 1, Step 3
+	- Replace API_KEY on line 9 with the API key you copied in Exercise 2, Step 5
+
+1. Select **Docker** from the Run Configuration drop-down and **load.py** from the Script drop-down to configure Workbench to run **load.py** in a Docker container. Then click the **Run** button.
+
+	![Running load.py](Images/run-script.png)
+
+	_Running load.py_
+
+1. Wait for the job to complete. The first run may take a few minutes because Machine Learning Workbench has to download the base Docker image from Docker Hub. Subsequent runs will be much faster.
+
+	![Successful run](Images/run-completed.png)
+
+	_Successful run_
+
+When the script completes successfully, the Azure SQL database that you created in [Exercise 1](#Exercise1) holds the data that the script generated. in the next exercise, you will confirm that this is the case by examining the database.
 
 <a name="Exercise5"></a>
 ## Exercise 5: View the contents of the database ##
@@ -238,7 +348,7 @@ Scroll down in the results window and examine the data displayed there. The resu
 <a name="Summary"></a>
 ## Summary ##
 
-TODO: Add summary.
+In this lab, you created a dataset that will later be used to train a machine-learning model to recognize the artists of famous paintings. But before the model can be trained, the data requires cleaning. Among other things, it needs to be deduped so that the model isn't trained with multiple images of the same painting. That isn't as straightforward as it might sound, because you will need code that examines two images and determines whether they represent the same painting. But where there's a will, there's a way, and you may now proceed to the next lab in this series — [Using the Microsoft Machine Learning Library for Apache Spark (MMLSpark) to Perform Image Classification, Part 2](#) — to get the cleaning process started.
 
 ---
 
