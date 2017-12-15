@@ -1,4 +1,4 @@
-!![](Images/header.png)
+![](Images/header.png)
 
 Image classification is a common task performed by machine-learning models. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque at nulla sit amet nibh finibus volutpat eget id augue. Nunc sit amet rutrum tellus. Proin et aliquet lacus. Donec dignissim, massa quis sagittis imperdiet, enim sem faucibus nibh, in gravida purus dolor non ligula. Maecenas auctor nisl eu felis gravida fermentum. Donec auctor ultrices aliquet. Donec lectus sem, aliquam a consectetur sit amet, ullamcorper eget felis. Fusce condimentum ut odio in pretium. Aliquam dapibus, orci non iaculis pharetra, magna odio mattis massa, sit amet condimentum leo metus ut orci. Etiam maximus nec leo id lobortis. Suspendisse quis est in arcu scelerisque mattis. Fusce a augue consequat lacus suscipit dictum.
 
@@ -21,7 +21,7 @@ In this hands-on lab, you will learn how to:
 The following are required to complete this hands-on lab:
 
 - An active Microsoft Azure subscription. If you don't have one, [sign up for a free trial](http://aka.ms/WATK-FreeTrial).
-- The [Azure CLI](https://docs.microsoft.com/cli/azure/install-azure-cli) version 2.0.19 or higher
+- The [Azure CLI](https://docs.microsoft.com/cli/azure/install-azure-cli)
 - [Azure Machine Learning Workbench](https://docs.microsoft.com/en-us/azure/machine-learning/preview/quickstart-installation)
 - [Docker](https://www.docker.com/)
 
@@ -38,7 +38,7 @@ This hands-on lab includes the following exercises:
 - [Exercise 4: Populate the database](#Exercise4)
 - [Exercise 5: View the contents of the database](#Exercise5)
 
-Estimated time to complete this lab: **30** minutes.
+Estimated time to complete this lab: **40** minutes.
 
 <a name="Exercise1"></a>
 ## Exercise 1: Create an Azure SQL database ##
@@ -67,7 +67,7 @@ In this exercise, you will use the Azure CLI to create an Azure SQL database in 
 	az sql server create --name SERVER_NAME --resource-group mmlsparklab-rg --location southcentralus --admin-user ADMIN_USERNAME --admin-password ADMIN_PASSWORD
 	```
 
-	> The server name must be unique within Azure, and the admin password must be at least 8 characters long. The user name cannot be one that is reserved in SQL Server such as "admin" or "sa."
+	> The server name must be unique within Azure, and the admin password must be at least 8 characters long. The user name cannot be one that is reserved in SQL Server such as "admin" or "sa." The user name "adminuser" is valid if you want to use that.
 
 1. Use the following command to create a firewall rule that allows the database server to be accessed externally from any IP address. Once more, replace SERVER_NAME with the server name you specified in Step 3.
 
@@ -92,7 +92,7 @@ _Contents of the "mmlsparklab-rg" resource group_
 <a name="Exercise2"></a>
 ## Exercise 2: Get a Bing Search API key ##
 
-The [Bing Image Search API](https://azure.microsoft.com/services/cognitive-services/bing-image-search-api/) is part of the [Microsoft Cognitive Services](https://azure.microsoft.com/services/cognitive-services/) suite of services and APIs for building intelligent applications. In [Exercise 3](#Exercise3), you will use the Bing Image Search API from a Python script to search the Web for images of paintings by famous artists. But in order to invoke the Bing Image Search API, you need an API key. In this exercise, you will use the Azure Portal to acquire an API key.
+The [Bing Image Search API](https://azure.microsoft.com/services/cognitive-services/bing-image-search-api/) is part of the [Microsoft Cognitive Services](https://azure.microsoft.com/services/cognitive-services/) suite of services and APIs for building intelligent applications. In [Exercise 4](#Exercise4), you will use the Bing Image Search API from a Python script to search the Web for images of paintings by famous artists. But in order to invoke the Bing Image Search API, you need an API key. In this exercise, you will use the Azure Portal to acquire an API key.
 
 1. Open the [Azure Portal](https://portal.azure.com) in your browser. If asked to log in, do so using your Microsoft account.
 
@@ -102,7 +102,7 @@ The [Bing Image Search API](https://azure.microsoft.com/services/cognitive-servi
 
     _Creating a new Bing Search API subscription_
 
-1. Type "bing-search-api" into the **Name** box and select **S1** as the **Pricing tier**. Select the same **Location** that you selected for the database in the previous exercise. Under **Resource group**, select **Use existing** and select the "mmlsparklab-rg" resource group that you created in [Exercise 1](#Exercise1). Check the **I confirm** box, and then click **Create**.
+1. Type "bing-search-api" into the **Name** box and select **S1** as the **Pricing tier**. Select the same **Location** that you selected for the database server in the previous exercise. Under **Resource group**, select **Use existing** and select the "mmlsparklab-rg" resource group that you created in [Exercise 1](#Exercise1). Check the **I confirm** box, and then click **Create**.
 
     ![Subscribing to the Bing Search API](Images/create-search-api.png)
 
@@ -149,7 +149,7 @@ In [Exercise 4](#Exercise4), you will use a Python script to search the Web for 
 
 	This **Dockerfile** contains instructions for building a Docker container image. It uses ```microsoft/mmlspark:plus-0.9.9``` as the base image and adds a Python package named ```pyodbc``` that permits Python scripts to access Azure SQL databases (as well as on-premises SQL Server databases). It also installs several packages that ```pyodbc``` depends on.
 
-1. Open a Command Prompt or terminal window and navigate to the directory you created in the previous step (the directory that contains the **Dockerfile**). Then execute the following command to build a custom contained image named ```spark-sql```:
+1. Open a Command Prompt or terminal window and navigate to the directory you created in the previous step (the directory that contains the **Dockerfile**). Then execute the following command to build a custom container image named ```spark-sql```:
 
 	```
 	docker build -t spark-sql .
@@ -237,7 +237,7 @@ In this exercise, you will use Azure Machine Learning Workbench to write and exe
 	    - https://azuremldownloads.blob.core.windows.net/wheels/latest/azureml.assets-1.0.0-py3-none-any.whl?sv=2016-05-31&si=ro-2017&sr=c&sig=xnUdTm0B%2F%2FfknhTaRInBXyu2QTTt8wA3OsXwGVgU%2BJk%3D
 	```
 
-	This addition exposes the ```pyodbc``` package built into the container image to the Anaconda run-time installed with Workbench so the package can be imported into Python scripts run in the container. It is this package that enables Pythin scripts to connect to Azure SQL databases.
+	This addition exposes the ```pyodbc``` package built into the container image to the Anaconda run-time installed with Workbench so the package can be imported into Python scripts run in the container. It is this package that enables Python scripts to connect to Azure SQL databases.
 
 1. Use the **File** > **Save** command to save the modified **conda_dependencies.yml** file.
 
@@ -312,13 +312,13 @@ In this exercise, you will use Azure Machine Learning Workbench to write and exe
 
 	_Running load.py_
 
-1. Wait for the job to complete. The first run may take a few minutes because Machine Learning Workbench has to download the base Docker image from Docker Hub. Subsequent runs will be much faster.
+1. Wait for the run to complete and confirm that it completed successfully.
 
 	![Successful run](Images/run-completed.png)
 
 	_Successful run_
 
-When the script completes successfully, the Azure SQL database that you created in [Exercise 1](#Exercise1) holds the data that the script generated. in the next exercise, you will confirm that this is the case by examining the database.
+After the run, the Azure SQL database that you created in [Exercise 1](#Exercise1) holds the data that the script generated. in the next exercise, you will confirm that this is the case by examining the database.
 
 <a name="Exercise5"></a>
 ## Exercise 5: View the contents of the database ##
