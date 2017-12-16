@@ -1,4 +1,4 @@
-!![](Images/header.png)
+![](Images/header.png)
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur malesuada ipsum at nunc suscipit, sed commodo nunc auctor. Fusce in enim dolor. Cras at tortor et lacus aliquet dignissim. Praesent pellentesque laoreet lacinia. Quisque maximus tellus ac lorem mollis rutrum. Ut pharetra convallis molestie. Donec ornare faucibus mi eget dictum. Nulla nec viverra quam. Proin lectus nisi, accumsan vitae nibh at, varius fermentum ipsum. Pellentesque vitae massa velit. Phasellus vel tincidunt quam, ac molestie dolor.
  

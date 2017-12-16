@@ -1,4 +1,4 @@
-!![](Images/header.png)
+![](Images/header.png)
 
 TODO: Add introduction.
 
