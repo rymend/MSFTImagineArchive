@@ -1,8 +1,10 @@
 ![](Images/header.png)
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus pellentesque at odio quis varius. Nam vel lobortis mi. Proin accumsan pulvinar nibh rhoncus vehicula. Phasellus sollicitudin, arcu dictum tristique tristique, dolor justo tincidunt dolor, sit amet molestie leo nunc quis nisl. Integer nec euismod sapien, sit amet scelerisque quam. Vivamus sed efficitur elit. Donec bibendum bibendum faucibus. Suspendisse eu urna ut eros auctor tempus. Nunc tincidunt feugiat scelerisque. Vestibulum lobortis at lacus vitae ultricies.
+You are the leader of a group of climate scientists who are concerned about the dwindling polar-bear population in the Arctic. As such, your team has placed hundreds of cameras at strategic locations throughout the region and configured them to take pictures when they sense movement. Rather than manually examine each photograph to determine whether it contains a polar bear, you have been challenged to devise an automated system that processes data from these cameras in real time and displays an alert on a map when a polar bear is photographed. You need a solution that incorporates real-time stream processing to analyze raw data for potential sightings, and one that incorporates artificial intelligence (AI) and machine learning to determine with a high degree of accuracy whether a photo contains a polar bear. And you need it fast.
 
-In congue sapien eget nibh pretium feugiat. Donec et dictum justo, eget volutpat purus. In quis arcu leo. Cras aliquet ipsum elit. Vivamus ut tristique ipsum. Aenean sapien quam, aliquam ut justo id, congue pellentesque dui. Cras molestie, dui ut ullamcorper vulputate, erat odio condimentum ipsum, sed egestas sem turpis in massa. Maecenas cursus posuere felis, vel condimentum risus hendrerit et. Fusce vitae nisl elementum ipsum laoreet ultricies in vel libero. Nulla dolor metus, gravida eget tempor eget, vehicula vitae ante. Aliquam consequat rhoncus lacus, vitae blandit risus placerat non. Cras pharetra nunc quis mauris sagittis, at fringilla nibh placerat. Suspendisse a urna vel ante sollicitudin iaculis. Maecenas fringilla mi at massa aliquam, eget feugiat erat convallis.
+In a series of four hands-on labs, you will build such a system using [Microsoft Azure](https://azure.microsoft.com/) and [Microsoft Cognitive Services](https://azure.microsoft.com/services/cognitive-services/). Specifically, you will use an [Azure Event Hub](https://azure.microsoft.com/services/event-hubs/) to ingest streaming data from simulated cameras, [Azure Storage](https://azure.microsoft.com/services/storage/?v=16.50) to store photographs, [Azure Stream Analytics](https://azure.microsoft.com/services/stream-analytics/) to process real-time data streams, Microsoft's [Custom Vision Service](https://azure.microsoft.com/services/cognitive-services/custom-vision-service/) to analyze photographs for polar pears, and [Microsoft Power BI](https://powerbi.microsoft.com/) to build a real-time dashboard for visualizing results.
+
+In this lab, the first of four in a series, you will create a storage account and an Event Hub and connect them to an app that simulates a camera array. That app will be written in [Node.js](https://nodejs.org/) so it can run on any platform.
 
 ![](Images/road-map-1.png)
 
@@ -11,9 +13,9 @@ In congue sapien eget nibh pretium feugiat. Donec et dictum justo, eget volutpat
 
 In this hands-on lab, you will learn how to:
 
-- tk
-- tk
-- tk
+- Create an Azure Event Hub
+- Make authenticated calls to an Azure Event Hub
+- Upload images to Azure blob storage from an app or device
 
 <a name="Prerequisites"></a>
 ### Prerequisites ###
@@ -21,8 +23,7 @@ In this hands-on lab, you will learn how to:
 The following are required to complete this hands-on lab:
 
 - An active Microsoft Azure subscription. If you don't have one, [sign up for a free trial](http://aka.ms/WATK-FreeTrial).
-- tk
-- tk
+- [Node.js](https://nodejs.org/)
 
 ---
 
@@ -31,14 +32,14 @@ The following are required to complete this hands-on lab:
 
 This hands-on lab includes the following exercises:
 
-- [Exercise 1: tk](#Exercise1)
-- [Exercise 2: tk](#Exercise2)
-- [Exercise 3: tk](#Exercise3)
+- [Exercise 1: Create a storage account](#Exercise1)
+- [Exercise 2: Create an Event Hub](#Exercise2)
+- [Exercise 3: Stream data to the Event Hub](#Exercise3)
 
-Estimated time to complete this lab: **tk** minutes.
+Estimated time to complete this lab: **30** minutes.
 
 <a name="Exercise1"></a>
-## Exercise 1: tk ##
+## Exercise 1: Create a storage account ##
 
 TODO: Add introduction.
 
@@ -77,7 +78,7 @@ TODO: Add introduction.
 TODO: Add closing.
 
 <a name="Exercise2"></a>
-## Exercise 2: tk ##
+## Exercise 2: Create an Event Hub ##
 
 TODO: Add introduction.
 
@@ -114,7 +115,7 @@ TODO: Add introduction.
 TODO: Add closing.
 
 <a name="Exercise3"></a>
-## Exercise 3: tk ##
+## Exercise 3: Stream data to the Event Hub ##
 
 TODO: Add introduction.
 
