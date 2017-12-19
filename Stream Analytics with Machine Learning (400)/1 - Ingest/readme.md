@@ -4,7 +4,7 @@ You are the leader of a group of climate scientists who are concerned about the 
 
 In a series of four hands-on labs, you will build such a system using [Microsoft Azure](https://azure.microsoft.com/) and [Microsoft Cognitive Services](https://azure.microsoft.com/services/cognitive-services/). Specifically, you will use an [Azure Event Hub](https://azure.microsoft.com/services/event-hubs/) to ingest streaming data from simulated cameras, [Azure Storage](https://azure.microsoft.com/services/storage/?v=16.50) to store photographs, [Azure Stream Analytics](https://azure.microsoft.com/services/stream-analytics/) to process real-time data streams, Microsoft's [Custom Vision Service](https://azure.microsoft.com/services/cognitive-services/custom-vision-service/) to analyze photographs for polar pears, and [Microsoft Power BI](https://powerbi.microsoft.com/) to build a real-time dashboard for visualizing results.
 
-In this lab, the first of four in a series, you will create a storage account and an Event Hub and connect them to an app that simulates a camera array. That app will be written in [Node.js](https://nodejs.org/) so it can run on any platform.
+In this lab, you will create a storage account and an Event Hub and connect them to an app that simulates a camera array. That app will be written in [Node.js](https://nodejs.org/) so it can run on any platform.
 
 ![](Images/road-map-1.png)
 
