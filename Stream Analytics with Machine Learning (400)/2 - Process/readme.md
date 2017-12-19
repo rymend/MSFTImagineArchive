@@ -24,6 +24,8 @@ The following are required to complete this hands-on lab:
 - tk
 - tk
 
+If you haven't completed the [previous lab in this series](#), you must do so before starting this lab.
+
 ---
 
 <a name="Exercises"></a>
