@@ -23,6 +23,7 @@ In this hands-on lab, you will learn how to:
 The following are required to complete this hands-on lab:
 
 - An active Microsoft Azure subscription. If you don't have one, [sign up for a free trial](http://aka.ms/WATK-FreeTrial).
+- The [Azure CLI](https://docs.microsoft.com/cli/azure/install-azure-cli)
 - [Node.js](https://nodejs.org/)
 
 ---
@@ -41,41 +42,37 @@ Estimated time to complete this lab: **30** minutes.
 <a name="Exercise1"></a>
 ## Exercise 1: Create a storage account ##
 
-TODO: Add introduction.
+In this exercise, you will use the Azure CLI to create an Azure storage account in the cloud. This storage account will store as blobs photographs taken by the simulated cameras that you will deploy. Note that you can also create storage accounts using the [Azure Portal](https://portal.azure.com). Whether to use the CLI or the portal is often a matter of personal preference.
 
-1. Open the [Azure Portal](https://portal.azure.com) in your browser. If asked to log in, do so using your Microsoft account.
+1. If the Azure CLI 2.0 isn't installed on your computer, go to https://docs.microsoft.com/cli/azure/install-azure-cli and install it now. You can determine whether the CLI is installed — and what version is installed — by opening a Command Prompt or terminal window and typing the following command:
 
-1. tk.
+	```
+	az -v
+	```
 
-	![tk](Images/tk.png)
+	If the CLI is installed, the version number will be displayed. If the version number is less than 2.0.19, download and install the latest version.
 
-	_tk_
+1. The next task is to create a resource group to hold the storage account and other Azure resources that you will create in this lab. Execute the following command in a Command Prompt window or terminal window to create a resource group named "streaminglab-rg" in Azure's South Central US region:
 
-1. tk.
+	```
+	az group create --name streaminglab-rg --location southcentralus
+	```
 
-	![tk](Images/tk.png)
+	> If the CLI responds by saying you must log in to execute this command, type ```az login``` and follow the instructions on the screen to log in to the CLI. In addition, if you have multiple Azure subscriptions, follow the instructions at https://docs.microsoft.com/cli/azure/manage-azure-subscriptions-azure-cli to set the active subscription — the one that the resources you create with the CLI will be billed to.
 
-	_tk_
+1. Now use the following command to create a general-purpose storage account in the "streaminglab-rg" resource group. Replace ACCOUNT_NAME with the name you wish to assign the storage account. The account name must be unique within Azure, so if the command fails because the storage-account name is already in use, change the name and try again. In addition, storage-account names must be from 3 to 24 characters in length and can contain only numbers and lowercase letters.
 
-1. tk.
+	```
+	az storage account create --name ACCOUNT_NAME --resource-group streaminglab-rg --location southcentralus --kind Storage --sku Standard_LRS
+	```
 
-	![tk](Images/tk.png)
+1. Before you can uploads blobs to a storage account, you must create a container to store them in. Use the following command to create a container named "photos" in the storage account, replacing ACCOUNT_NAME with the name you assigned to the storage account in the previous step:
 
-	_tk_
+	```
+	az storage container create --name photos --account-name ACCOUNT_NAME
+	```
 
-1. tk.
-
-	![tk](Images/tk.png)
-
-	_tk_
-
-1. tk.
-
-	![tk](Images/tk.png)
-
-	_tk_
-
-TODO: Add closing.
+You now have a storage account for storing photos taken by your simulated cameras, and a container to store them in. Now let's create an Event Hub to receive events transmitted by the cameras.
 
 <a name="Exercise2"></a>
 ## Exercise 2: Create an Event Hub ##
