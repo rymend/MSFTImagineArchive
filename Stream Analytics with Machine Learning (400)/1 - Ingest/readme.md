@@ -51,7 +51,7 @@ In this exercise, you will use the Azure CLI to create an Azure storage account 
 	az -v
 	```
 
-	If the CLI is installed, the version number will be displayed. If the version number is less than 2.0.19, download and install the latest version.
+	If the CLI is installed, the version number will be displayed. If the version number is less than 2.0.23, **download and install the latest version**.
 
 1. The next task is to create a resource group to hold the storage account and other Azure resources that you will create in this lab. Execute the following command in a Command Prompt window or terminal window to create a resource group named "streaminglab-rg" in Azure's South Central US region:
 
@@ -78,9 +78,9 @@ You now have a storage account for storing photos taken by your simulated camera
 <a name="Exercise2"></a>
 ## Exercise 2: Create an IoT hub ##
 
-Azure Stream Analytics supports several types of input, including input from [Azure IoT hubs](https://azure.microsoft.com/services/iot-hub/). In the IoT world, data is easily transmitted to IoT hubs through field gateways (for devices that are not IP-capable) or cloud gateways (for devices that *are* IP-capable), and a single Azure IoT hub can handle millions of events per second transmitted from devices spread throughout the world. IoT hubs also support two-way communication with the devices connected to them, permitting messages to be transmitted back to the devices.
+Azure Stream Analytics supports several types of input, including input from [Azure IoT hubs](https://azure.microsoft.com/services/iot-hub/). In the IoT world, data is easily transmitted to IoT hubs through field gateways (for devices that are not IP-capable) or cloud gateways (for devices that *are* IP-capable), and a single Azure IoT hub can handle millions of events per second from devices spread throughout the world. IoT hubs also support two-way communication with the devices connected to them, permitting messages to be transmitted back to the devices.
 
-In this exercise, you will create an Azure IoT hub to receive input from a simulated camera array and configure it to so that it can be accessed securely by IoT devices. In [Part 2](#), you will use the IoT hub to provide input to a Stream Analytics job.
+In this exercise, you will create an Azure IoT hub to receive input from a simulated camera array and retrieve a connection string that allows it to be accessed securely by IoT devices. In [Part 2](#), you will use the IoT hub to provide input to a Stream Analytics job.
 
 1. Use the following command to create an IoT Hub in the same region as the storage account you created in the previous exercise and place it in the "streaminglab-rg" resource group. Replace HUB_NAME with a IoT hub name, which must be unique across Azure.
 
@@ -90,31 +90,21 @@ In this exercise, you will create an Azure IoT hub to receive input from a simul
 
 	> The ```--sku F1``` parameter configures the IoT hub to use the free F1 pricing tier, which supports up to 8,000 events per day. However, Azure subscriptions are limited to one free IoT hub each. If the command fails because you have already created a free IoT hub, specify ```--sku S1``` instead. The S1 tier greatly expands the message-per-day limit, but is not free.
 
-1. tk.
+1. Use the following command to retrieve a connection string for the IoT Hub, replacing HUB_NAME with the name you assigned to the IoT hub in the previous step:
 
 	```
-	az iot hub
+	az iot hub show-connection-string --name HUB_NAME
 	```
 
-1. tk.
+1. Copy the connection-string value from the output and paste it into a text file so you can retrieve it later. That value will be of the form:
 
 	```
-	az iot hub
+	HostName=HUB_NAME.azure-devices.net;SharedAccessKeyName=iothubowner;SharedAccessKey=KEY_VALUE
 	```
 
-1. tk.
+	Where HUB_NAME is the name of your IoT hub, and KEY_VALUE is the hub's shared access key.
 
-	```
-	az iot hub
-	```
-
-1. tk.
-
-	![tk](Images/tk.png)
-
-	_tk_
-
-TODO: Add closing.
+The connection string that you just retrieved is important, because it will enable the app that simulates an array of cameras — an app that you will build in the next exercise — to connect to the IoT hub, register simulated devices, and transmit events on behalf of those devices.
 
 <a name="Exercise3"></a>
 ## Exercise 3: Deploy a simulated camera array ##
