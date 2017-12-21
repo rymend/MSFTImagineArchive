@@ -1,10 +1,10 @@
 ![](Images/header.png)
 
-You are the leader of a group of climate scientists who are concerned about the dwindling polar-bear population in the Arctic. As such, your team has placed hundreds of cameras at strategic locations throughout the region and configured them to take pictures when they sense movement. Rather than manually examine each photograph to determine whether it contains a polar bear, you have been challenged to devise an automated system that processes data from these cameras in real time and displays an alert on a map when a polar bear is photographed. You need a solution that incorporates real-time stream processing to analyze raw data for potential sightings, and one that incorporates artificial intelligence (AI) and machine learning to determine with a high degree of accuracy whether a photo contains a polar bear. And you need it fast, because climate change won't wait.
+You are the leader of a group of climate scientists who are concerned about the dwindling polar-bear population in the Arctic. As such, your team has placed hundreds of cameras at strategic locations throughout the region and configured them to take pictures when they detect movement. Rather than manually examine each photograph to determine whether it contains a polar bear, you have been challenged to devise an automated system that processes data from these cameras in real time and displays an alert on a map when a polar bear is photographed. You need a solution that incorporates real-time stream processing to analyze raw data for potential sightings, and one that incorporates artificial intelligence (AI) and machine learning to determine with a high degree of accuracy whether a photo contains a polar bear. And you need it fast, because climate change won't wait.
 
 In a series of four hands-on labs, you will build such a system using [Microsoft Azure](https://azure.microsoft.com/) and [Microsoft Cognitive Services](https://azure.microsoft.com/services/cognitive-services/). Specifically, you will use an [Azure Iot hub](https://azure.microsoft.com/services/iot-hub/) to ingest streaming data from simulated cameras, [Azure Storage](https://azure.microsoft.com/services/storage/?v=16.50) to store photographs, [Azure Stream Analytics](https://azure.microsoft.com/services/stream-analytics/) to process real-time data streams, Microsoft's [Custom Vision Service](https://azure.microsoft.com/services/cognitive-services/custom-vision-service/) to analyze photographs for polar pears, and [Microsoft Power BI](https://powerbi.microsoft.com/) to build a real-time dashboard for visualizing results.
 
-In this lab, you will create a storage account and an IoT hub and connect them to an app that simulates a camera array. That app will be written in [Node.js](https://nodejs.org/) so it can run on any platform.
+In this lab, you will create a storage account and an IoT hub and write a [Node.js](https://nodejs.org/) app that connects them to a simulated camera array. Then you will test one of the virtual cameras by having it upload a photograph to blob storage and transmit an event containing the blob URL and other information to the IoT hub.
 
 ![](Images/road-map-1.png)
 
@@ -44,7 +44,7 @@ Estimated time to complete this lab: **30** minutes.
 <a name="Exercise1"></a>
 ## Exercise 1: Create a storage account ##
 
-In this exercise, you will use the Azure CLI to create an Azure storage account in the cloud. This storage account will store as blobs photographs taken by the simulated cameras that you will deploy. Note that you can also create storage accounts using the [Azure Portal](https://portal.azure.com). Whether to use the CLI or the portal is often a matter of personal preference.
+In this exercise, you will use the Azure CLI to create an Azure storage account in the cloud. This storage account will store as blobs photographs taken by the simulated cameras that you deploy. Note that you can also create storage accounts using the [Azure Portal](https://portal.azure.com). Whether to use the CLI or the portal is often a matter of personal preference.
 
 1. If the Azure CLI 2.0 isn't installed on your computer, go to https://docs.microsoft.com/cli/azure/install-azure-cli and install it now. You can determine whether the CLI is installed — and what version is installed — by opening a Command Prompt or terminal window and typing the following command:
 
@@ -54,7 +54,13 @@ In this exercise, you will use the Azure CLI to create an Azure storage account 
 
 	If the CLI is installed, the version number will be displayed. If the version number is less than 2.0.23, **download and install the latest version**.
 
-1. The next task is to create a resource group to hold the storage account and other Azure resources that you will create in this lab. Execute the following command in a Command Prompt window or terminal window to create a resource group named "streaminglab-rg" in Azure's South Central US region:
+	> As an alternative to installing the Azure CLI, you can use the [Azure Cloud Shell](https://azure.microsoft.com/features/cloud-shell/) available in the [Azure Portal](https://portal.azure.com). Simply open the portal in your browser and click the **Cloud Shell** button in the toolbar at the top of the page. One of the benefits of using the Cloud Shell is that you're *always* running the latest version.
+
+	![Opening the Azure Cloud Shell](Images/cloud-shell.png)
+
+	_Opening the Azure Cloud Shell_
+
+1. The next task is to create a resource group to hold the storage account and other Azure resources that make up the solution you're building. Execute the following command in a Command Prompt window or terminal window (or in the Azure Cloud Shell) to create a resource group named "streaminglab-rg" in Azure's South Central US region:
 
 	```
 	az group create --name streaminglab-rg --location southcentralus
@@ -68,7 +74,7 @@ In this exercise, you will use the Azure CLI to create an Azure storage account 
 	az storage account create --name ACCOUNT_NAME --resource-group streaminglab-rg --location southcentralus --kind Storage --sku Standard_LRS
 	```
 
-1. Before you can uploads blobs to a storage account, you must create a container to store them in. Use the following command to create a container named "photos" in the storage account, replacing ACCOUNT_NAME with the name you assigned to the storage account in the previous step:
+1. Before you can upload blobs to a storage account, you must create a container to store them in. Use the following command to create a container named "photos" in the storage account, replacing ACCOUNT_NAME with the name you assigned to the storage account in the previous step:
 
 	```
 	az storage container create --name photos --account-name ACCOUNT_NAME
@@ -79,11 +85,11 @@ You now have a storage account for storing photos taken by your simulated camera
 <a name="Exercise2"></a>
 ## Exercise 2: Create an IoT hub ##
 
-Azure Stream Analytics supports several types of input, including input from [Azure IoT hubs](https://azure.microsoft.com/services/iot-hub/). In the IoT world, data is easily transmitted to IoT hubs through field gateways (for devices that are not IP-capable) or cloud gateways (for devices that *are* IP-capable), and a single Azure IoT hub can handle millions of events per second from devices spread throughout the world. IoT hubs also support two-way communication with the devices connected to them, permitting messages to be transmitted back to the devices.
+Azure Stream Analytics supports several types of input, including input from [Azure IoT hubs](https://azure.microsoft.com/services/iot-hub/). In the IoT world, data is easily transmitted to IoT hubs through field gateways (for devices that are not IP-capable) or cloud gateways (for devices that *are* IP-capable), and a single Azure IoT hub can handle millions of events per second from devices spread throughout the world. IoT hubs support secure two-way communications with the devices connected to them using a variety of transport protocols.
 
-In this exercise, you will create an Azure IoT hub to receive input from a simulated camera array and retrieve a connection string that allows it to be accessed securely by IoT devices. In [Part 2](#), you will use the IoT hub to provide input to a Stream Analytics job.
+In this exercise, you will create an Azure IoT hub to receive input from a simulated camera array and retrieve a connection string that allows it to be accessed securely. In [Part 2](#), you will use the IoT hub to provide input to a Stream Analytics job.
 
-1. Use the following command to create an IoT Hub in the same region as the storage account you created in the previous exercise and place it in the "streaminglab-rg" resource group. Replace HUB_NAME with a IoT hub name, which must be unique across Azure.
+1. Use the following command to create an IoT Hub in the same region as the storage account you created in the previous exercise and place it in the "streaminglab-rg" resource group. Replace HUB_NAME with an IoT hub name, which must be unique across Azure and conform to DNS naming conventions.
 
 	```
 	az iot hub create --name HUB_NAME --resource-group streaminglab-rg --location southcentralus --sku F1 
@@ -91,7 +97,7 @@ In this exercise, you will create an Azure IoT hub to receive input from a simul
 
 	> The ```--sku F1``` parameter configures the IoT hub to use the free F1 pricing tier, which supports up to 8,000 events per day. However, Azure subscriptions are limited to one free IoT hub each. If the command fails because you have already created a free IoT hub, specify ```--sku S1``` instead. The S1 tier greatly expands the message-per-day limit, but is not free.
 
-1. Use the following command to retrieve a connection string for the IoT Hub, replacing HUB_NAME with the name you assigned to the IoT hub in the previous step:
+1. Use the following command to retrieve a connection string for the IoT hub, replacing HUB_NAME with the name you assigned to the IoT hub in the previous step:
 
 	```
 	az iot hub show-connection-string --name HUB_NAME
@@ -105,7 +111,7 @@ In this exercise, you will create an Azure IoT hub to receive input from a simul
 
 	Where HUB_NAME is the name of your IoT hub, and KEY_VALUE is the hub's shared access key.
 
-The connection string that you just retrieved is important, because it will enable the app that simulates an array of cameras — an app that you will build in the next exercise — to connect to the IoT hub, register simulated devices, and transmit events on behalf of those devices.
+The connection string that you just retrieved is important, because it will enable the app that you build in the next exercise to connect to the IoT hub securely and register an array of virtual devices.
 
 <a name="Exercise3"></a>
 ## Exercise 3: Deploy a simulated camera array ##
@@ -122,7 +128,7 @@ Devices that transmit events to an Azure IoT hub must first be registered with t
 
 1. Create a directory on your hard disk to serve as the project directory. Then ```cd``` to that directory in a Command Prompt or terminal window.
 
-1. Execute the following commands in sequence to initialize the project directory to hold a Node project and install packages that a Node app can use to communicate with Azure IoT hubs and interact with Azure storage:
+1. Execute the following commands in sequence to initialize the project directory to host a Node project and install a trio of packages that Node can use to communicate with Azure IoT hubs:
 
 	```
 	npm init -y
@@ -199,7 +205,7 @@ Devices that transmit events to an Azure IoT hub must first be registered with t
 	]
 	```
 
-	This file defines ten virtual cameras that will transmit events to the IoT hub. Each "camera" contains a device ID, a latitude and a longitude specifying the camera's location, and a key that is used to authenticate calls to the IoT hub. The ```key``` values are empty for now, but that will change once the cameras are registered with the IoT hub.
+	This file defines ten virtual cameras that will transmit events to the IoT hub. Each "camera" contains a device ID, a latitude and a longitude specifying the camera's location, and an access key for per-device authentication. The ```key``` values are empty for now, but that will change once the cameras are registered with the IoT hub.
 
 	> The latitudes and longitudes are for points on the coast of Northern Canada's [Cornwallis Island](https://en.wikipedia.org/wiki/Cornwallis_Island_(Nunavut)), which is one of the best sites in all of Canada to spot polar bears. It is also adjacent to [Bathurst Island](https://en.wikipedia.org/wiki/Bathurst_Island_(Nunavut)), which is home to the [Polar Bear Pass National Wildlife Area](https://www.canada.ca/en/environment-climate-change/services/national-wildlife-areas/locations/polar-bear-pass.html).
 
@@ -330,9 +336,9 @@ In this exercise, you will write more code using Node.js to test the camera arra
 	});
 	```
 
-	This code uploads the file named **image_19.jpg** from the current directory's "photos" subdirectory to the storage account's "photos" container. Then it opens a connection from polar_cam_0003 to the IoT hub using polar_cam_0003's access key (which comes from **cameras.js**) and transmits a message containing a JSON payload over MQTT.
+	This code uploads the file named **image_19.jpg** from the current directory's "photos" subdirectory to the storage account's "photos" container. Then it opens a connection from ```polar_cam_0003``` to the IoT hub using ```polar_cam_0003```'s access key (which comes from **cameras.js**) and transmits a message containing a JSON payload over MQTT.
 
-1. Replace HUB_NAME on line 1 of **test.js** with the name of the IoT hub you created in [Exercise 2](#Exercise2), and ACCOUNT_NAME with the name of the storage account that you created in [Exercise 1](#Exercise1).
+1. Replace HUB_NAME on line 1 of **test.js** with the name of the IoT hub you created in [Exercise 2](#Exercise2), and ACCOUNT_NAME on line 2 with the name of the storage account that you created in [Exercise 1](#Exercise1).
 
 1. Return to the Command Prompt or terminal window and use the following command to list the access keys for the storage account, replacing ACCOUNT_NAME with the name of your storage account:
 
@@ -417,7 +423,7 @@ If you would like to see a list of devices registered with the IoT hub, click **
 <a name="Summary"></a>
 ## Summary ##
 
-In this lab, you created an Azure IoT hub, registered an array of simulated devices, and sent a message to the IoT hub from one of the devices to confirm that everything was set up correctly. You also created an Azure storage account and a blob container inside it and demonstrated that a device simulated in software could upload blobs to it. This is a great start, but there is more work to do to build a complete end-to-end solution that notifies you when a polar bear is photographed. You may now proceed to the next lab in this series — [Processing IoT Data in Real Time Using Stream Analytics and Machine Learning, Part 2](#) — to create an [Azure Stream Analytics](https://azure.microsoft.com/services/stream-analytics/) job and connect it to the IoT hub.
+In this lab, you created an Azure IoT hub, registered an array of simulated devices, and sent a message to the IoT hub from one of the devices to confirm that everything was set up correctly. You also created an Azure storage account and a blob container inside it and demonstrated that a device simulated in software could upload blobs to it. This is a great start, but there is more work to do to build a complete end-to-end solution that notifies you when a polar bear is captured on camera. You may now proceed to the next lab in this series — [Processing IoT Data in Real Time Using Stream Analytics and Machine Learning, Part 2](#) — to create an [Azure Stream Analytics](https://azure.microsoft.com/services/stream-analytics/) job and connect it to the IoT hub.
 
 ---
 
