@@ -37,6 +37,7 @@ This hands-on lab includes the following exercises:
 - [Exercise 1: Create a storage account](#Exercise1)
 - [Exercise 2: Create an IoT hub](#Exercise2)
 - [Exercise 3: Deploy a simulated camera array](#Exercise3)
+- [Exercise 4: Test the simulated camera array](#Exercise4)
 
 Estimated time to complete this lab: **30** minutes.
 
@@ -109,39 +110,185 @@ The connection string that you just retrieved is important, because it will enab
 <a name="Exercise3"></a>
 ## Exercise 3: Deploy a simulated camera array ##
 
+Devices that transmit events to an Azure IoT hub must first be registered with that IoT hub. Once registered, a device can send events to an IoT hub using one of several protocols, including HTTPS, [AMPQ](http://docs.oasis-open.org/amqp/core/v1.0/os/amqp-core-complete-v1.0-os.pdf), and [MQTT](http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/mqtt-v3.1.1.pdf). In addition, calls must be authenticated, and IoT hubs support several authentication protocols as described in [Control access to IoT hub](https://docs.microsoft.com/azure/iot-hub/iot-hub-devguide-security). In this exercise, you will create a Node.js app that registers an array of simulated cameras with the IoT hub you created in the previous exercise.
+
+1. If Node.js isn't installed on your computer, go to https://nodejs.org/ and install it it now. You can determine whether Node is installed — and what version is installed — by opening a Command Prompt or terminal window and typing the following command:
+
+	```
+	node -v
+	```
+
+	If Node is installed, the version number will be displayed. If the version number is less than 8.0, **download and install the latest version**.
+
+1. Create a directory on your hard disk to serve as the project directory. Then ```cd``` to that directory in a Command Prompt or terminal window.
+
+1. Execute the following commands in sequence to initialize the project directory to hold a Node project and install a trio of Node packages that a Node app can use to communicate with Azure IoT hubs:
+
+	```
+	npm init -y
+	npm install azure-iothub --save
+	npm install azure-iot-device azure-iot-device-mqtt --save
+	```
+
+1. Wait for the installs to finish. Then create a file named **devices.json** in the project directory and paste in the following JSON:
+
+	```json
+	[
+	    {
+	        "deviceId" : "polar_cam_0001",
+	        "latitude" : 75.401451,
+	        "longitude" : -95.722518,
+	        "key" : ""
+	    },
+	    {
+	        "deviceId" : "polar_cam_0002",
+	        "latitude" : 75.027715,
+	        "longitude" : -96.041859,
+	        "key" : ""
+	    },
+	    {
+	        "deviceId" : "polar_cam_0003",
+	        "latitude" : 74.996653,
+	        "longitude" : -96.601780,
+	        "key" : ""
+	    },
+	    {
+	        "deviceId" : "polar_cam_0004",
+	        "latitude" : 75.247701,
+	        "longitude" : -96.074436,
+	        "key" : ""
+	    },
+	    {
+	        "deviceId" : "polar_cam_0005",
+	        "latitude" : 75.044926,
+	        "longitude" : -93.651951,
+	        "key" : ""
+	    },
+	    {
+	        "deviceId" : "polar_cam_0006",
+	        "latitude" : 75.601571,
+	        "longitude" : -95.294407,
+	        "key" : ""
+	    },
+	    {
+	        "deviceId" : "polar_cam_0007",
+	        "latitude" : 74.763102,
+	        "longitude" : -95.091160,
+	        "key" : ""
+	    },
+	    {
+	        "deviceId" : "polar_cam_0008",
+	        "latitude" : 75.473988,
+	        "longitude" : -94.069432,
+	        "key" : ""
+	    },
+	    {
+	        "deviceId" : "polar_cam_0009",
+	        "latitude" : 75.232307,
+	        "longitude" : -96.277683,
+	        "key" : ""
+	    },
+	    {
+	        "deviceId" : "polar_cam_0010",
+	        "latitude" : 74.658811,
+	        "longitude" : -93.783787,
+	        "key" : ""
+	    }
+	]
+	```
+
+	This file defines ten virtual cameras that will transmit events to the IoT hub. Each "camera" contains a device ID, a latitude and a longitude specifying the camera's location, and a key that is used to authenticate calls to the IoT hub. The ```key``` values are empty for now, but that will change once the cameras are registered with the IoT hub.
+
+	> The latitudes and longitudes are for points on the coast of Northern Canada's [Cornwallis Island](https://en.wikipedia.org/wiki/Cornwallis_Island_(Nunavut)), which is one of the best sites in all of Canada to spot polar bears. It is also adjacent to [Bathurst Island](https://en.wikipedia.org/wiki/Bathurst_Island_(Nunavut)), which is home to the [Polar Bear Pass National Wildlife Area](https://www.canada.ca/en/environment-climate-change/services/national-wildlife-areas/locations/polar-bear-pass.html).
+
+1. Add a file named **deploy.js** to the project directory and insert the following JavaScript code:
+
+	```javascript
+	var fs = require('fs');
+	var iothub = require('azure-iothub');
+	var registry = iothub.Registry.fromConnectionString('CONNECTION_STRING');
+	
+	console.log('Reading devices.json...');
+	var devices = JSON.parse(fs.readFileSync('devices.json', 'utf8'));
+	
+	console.log('Registering devices...');
+	registry.addDevices(devices, function(err, info, res) {
+	    if (err) {
+	        console.log('Devices already registered');
+	    }
+	    else {
+	        registry.list(function(err, info, res) {
+	            info.forEach(function(device) {
+	                devices.find(o => o.deviceId === device.deviceId).key = device.authentication.symmetricKey.primaryKey;          
+	            });
+	
+	            console.log('Writing cameras.json...');
+	            fs.writeFileSync('cameras.json', JSON.stringify(devices, null, 4), 'utf8');
+	            console.log('Done');
+	        });
+	    }
+	});
+	```
+
+	This code uses the [Microsoft Azure IoT Service SDK for Node.js](https://www.npmjs.com/package/azure-iothub) to register all the simulated devices defined in **devices.json** with the IoT hub that you created earlier. It also retrieves from the IoT hub the access key created for each device and creates a new file named **cameras.json** that contains the same information as **devices.json**, but with a value assigned to each device's ```key``` property.
+
+1. Replace CONNECTION_STRING on line 3 of **deploy.js** with the connection string that you saved in Step 3 of the previous exercise. Then save the file.
+
+1. Return to the Command Prompt or terminal window and execute the following command to run **deploy.js**:
+
+	```
+	node deploy.js
+	```
+
+	Confirm that the output looks like this:
+
+	```
+	Reading devices.json...
+	Registering devices...
+	Writing cameras.json...
+	Done
+	```
+
+1. Use the following command to confirm that 10 devices were registered with your IoT hub, replacing HUB_NAME with the IoT hub's name:
+
+	```
+	az iot device list --hub-name HUB_NAME
+	```
+
+Finish up by verifying that a file named **cameras.json** was created in the project directory, and opening the file to view its contents. Confirm that the ```key``` properties which are empty strings in **devices.json** have values in **cameras.json**.
+
+<a name="Exercise4"></a>
+## Exercise 4: Test the simulated camera array ##
+
 TODO: Add introduction.
 
-1. tk.
+1. Add a file named **test.js** to the project directory and insert the following code:
 
-	![tk](Images/tk.png)
+	```
+	```
 
-	_tk_
+1. Save the file, and then run it with the following command:
 
-1. tk.
-
-	![tk](Images/tk.png)
-
-	_tk_
-
-1. tk.
-
-	![tk](Images/tk.png)
-
-	_tk_
+	```
+	node test.js
+	```
 
 1. tk.
 
-	![tk](Images/tk.png)
-
-	_tk_
+	```
+	```
 
 1. tk.
 
-	![tk](Images/tk.png)
+	```
+	```
 
-	_tk_
+1. tk.
 
-TODO: Add closing.
+	```
+	```
+
+TODO: Add summary.
 
 <a name="Summary"></a>
 ## Summary ##
