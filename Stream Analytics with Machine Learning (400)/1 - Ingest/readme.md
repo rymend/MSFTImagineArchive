@@ -130,6 +130,8 @@ Devices that transmit events to an Azure IoT hub must first be registered with t
 	npm install azure-iot-device azure-iot-device-mqtt --save
 	```
 
+	The [azure-iothub](https://www.npmjs.com/package/azure-iothub) package contains APIs for registering devices with IoT hubs and managing device identities, while [azure-iot-device](https://www.npmjs.com/package/azure-iot-device) and [azure-iot-device-mqtt](https://www.npmjs.com/package/azure-iot-device-mqtt) enable devices to connect to IoT hubs and transmit events using the MQTT protocol.
+
 1. Wait for the installs to finish. Then create a file named **devices.json** in the project directory and paste in the following JSON:
 
 	```json
@@ -230,7 +232,7 @@ Devices that transmit events to an Azure IoT hub must first be registered with t
 	});
 	```
 
-	This code uses the [Microsoft Azure IoT Service SDK for Node.js](https://www.npmjs.com/package/azure-iothub) to register all the simulated devices defined in **devices.json** with the IoT hub that you created earlier. It also retrieves from the IoT hub the access key created for each device and creates a new file named **cameras.json** that contains the same information as **devices.json**, but with a value assigned to each device's ```key``` property.
+	This code uses the [Microsoft Azure IoT Service SDK for Node.js](https://www.npmjs.com/package/azure-iothub) to register all the simulated devices defined in **devices.json** with the IoT hub that you created earlier. It also retrieves from the IoT hub the access key created for each device and creates a new file named **cameras.json** that contains the same information as **devices.json**, but with a value assigned to each device's ```key``` property. It is this key, which is transmitted in each request, that enables the device to authenticate to the IoT hub.
 
 1. Replace CONNECTION_STRING on line 3 of **deploy.js** with the connection string that you saved in Step 3 of the previous exercise. Then save the file.
 
