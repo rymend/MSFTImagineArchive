@@ -110,7 +110,7 @@ The connection string that you just retrieved is important, because it will enab
 <a name="Exercise3"></a>
 ## Exercise 3: Deploy a simulated camera array ##
 
-Devices that transmit events to an Azure IoT hub must first be registered with that IoT hub. Once registered, a device can send events to an IoT hub using one of several protocols, including HTTPS, [AMPQ](http://docs.oasis-open.org/amqp/core/v1.0/os/amqp-core-complete-v1.0-os.pdf), and [MQTT](http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/mqtt-v3.1.1.pdf). In addition, calls must be authenticated, and IoT hubs support several authentication protocols as described in [Control access to IoT hub](https://docs.microsoft.com/azure/iot-hub/iot-hub-devguide-security). In this exercise, you will create a Node.js app that registers an array of simulated cameras with the IoT hub you created in the previous exercise.
+Devices that transmit events to an Azure IoT hub must first be registered with that IoT hub. Once registered, a device can send events to an IoT hub using one of several protocols, including HTTPS, [AMPQ](http://docs.oasis-open.org/amqp/core/v1.0/os/amqp-core-complete-v1.0-os.pdf), and [MQTT](http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/mqtt-v3.1.1.pdf). Calls must be authenticated, and IoT hubs support several forms of authentication as described in [Control access to IoT hub](https://docs.microsoft.com/azure/iot-hub/iot-hub-devguide-security). In this exercise, you will create a Node.js app that registers an array of simulated cameras with the IoT hub you created in the previous exercise.
 
 1. If Node.js isn't installed on your computer, go to https://nodejs.org/ and install it it now. You can determine whether Node is installed — and what version is installed — by opening a Command Prompt or terminal window and typing the following command:
 
@@ -215,20 +215,15 @@ Devices that transmit events to an Azure IoT hub must first be registered with t
 	
 	console.log('Registering devices...');
 	registry.addDevices(devices, function(err, info, res) {
-	    if (err) {
-	        console.log('Devices already registered');
-	    }
-	    else {
-	        registry.list(function(err, info, res) {
-	            info.forEach(function(device) {
-	                devices.find(o => o.deviceId === device.deviceId).key = device.authentication.symmetricKey.primaryKey;          
-	            });
-	
-	            console.log('Writing cameras.json...');
-	            fs.writeFileSync('cameras.json', JSON.stringify(devices, null, 4), 'utf8');
-	            console.log('Done');
+	    registry.list(function(err, info, res) {
+	        info.forEach(function(device) {
+	            devices.find(o => o.deviceId === device.deviceId).key = device.authentication.symmetricKey.primaryKey;          
 	        });
-	    }
+	
+	        console.log('Writing cameras.json...');
+	        fs.writeFileSync('cameras.json', JSON.stringify(devices, null, 4), 'utf8');
+	        console.log('Done');
+	    });
 	});
 	```
 
@@ -262,7 +257,9 @@ Finish up by verifying that a file named **cameras.json** was created in the pro
 <a name="Exercise4"></a>
 ## Exercise 4: Test the simulated camera array ##
 
-TODO: Add introduction.
+In this exercise, you will write more code using Node.js to test the camera array that you deployed in the previous. That code will transmit an event from one of the virtual cameras to the IoT hub, and it will upload an image to the storage account that you created in [Exercise 1](#Exercise1).
+
+1. Create a subdirectory named "photos" in the project directory that you created in the previous exercise. Then copy all 30 JPEG files from the resources that accompany this lab to the "photos" directory. These are the images that the simulated cameras will upload to blob storage.
 
 1. Add a file named **test.js** to the project directory and insert the following code:
 
