@@ -122,7 +122,7 @@ Devices that transmit events to an Azure IoT hub must first be registered with t
 
 1. Create a directory on your hard disk to serve as the project directory. Then ```cd``` to that directory in a Command Prompt or terminal window.
 
-1. Execute the following commands in sequence to initialize the project directory to hold a Node project and install a trio of Node packages that a Node app can use to communicate with Azure IoT hubs:
+1. Execute the following commands in sequence to initialize the project directory to hold a Node project and install packages that a Node app can use to communicate with Azure IoT hubs and interact with Azure storage:
 
 	```
 	npm init -y
@@ -130,7 +130,7 @@ Devices that transmit events to an Azure IoT hub must first be registered with t
 	npm install azure-iot-device azure-iot-device-mqtt --save
 	```
 
-	The [azure-iothub](https://www.npmjs.com/package/azure-iothub) package contains APIs for registering devices with IoT hubs and managing device identities, while [azure-iot-device](https://www.npmjs.com/package/azure-iot-device) and [azure-iot-device-mqtt](https://www.npmjs.com/package/azure-iot-device-mqtt) enable devices to connect to IoT hubs and transmit events using the MQTT protocol.
+	The [azure-iothub](https://www.npmjs.com/package/azure-iothub) package provides APIs for registering devices with IoT hubs and managing device identities, while [azure-iot-device](https://www.npmjs.com/package/azure-iot-device) and [azure-iot-device-mqtt](https://www.npmjs.com/package/azure-iot-device-mqtt) enable devices to connect to IoT hubs and transmit events using the MQTT protocol.
 
 1. Wait for the installs to finish. Then create a file named **devices.json** in the project directory and paste in the following JSON:
 
@@ -263,28 +263,116 @@ In this exercise, you will write more code using Node.js to test the camera arra
 
 	![Sample wildlife images](Images/wildlife-images.png)
 
+1. In a Command Prompt or terminal window with the project directory as the current directory, execute the following command to install the [Microsoft Azure Storage SDK for Node.js](https://www.npmjs.com/package/azure-storage):
+
+	```
+	npm install azure-storage --save
+	```
+
+	This package provides a programmatic interface to Azure storage, including blob storage.
+
 1. Add a file named **test.js** to the project directory and insert the following code:
 
 	```javascript
+	var iotHubName = 'HUB_NAME';
+	var storageAccountName = 'ACCOUNT_NAME';
+	var storageAccountKey = 'ACCOUNT_KEY';
+	
+	// Upload an image to blob storage
+	var azure = require('azure-storage');
+	var blobService = azure.createBlobService(storageAccountName, storageAccountKey);
+	
+	blobService.createBlockBlobFromLocalFile('photos', 'image_19.jpg', 'photos/image_19.jpg', function (err, result, response) {
+	    if (err) {
+	        console.log('Error uploading blob: ' + err);
+	    }
+	    else {
+	        console.log("Blob uploaded");
+	
+	        // Get information about polar_cam_0003 from cameras.js
+	        var fs = require('fs');
+	        var cameras = JSON.parse(fs.readFileSync('cameras.json', 'utf8'));
+	        var camera = cameras.find(o => o.deviceId === 'polar_cam_0003');
+	
+	        // Send an event to the IoT hub and include the blob's URL
+	        var Message = require('azure-iot-device').Message;
+	        var connectionString = 'HostName=' + iotHubName + '.azure-devices.net;DeviceId=' + camera.deviceId + ';SharedAccessKey=' + camera.key;
+	        var clientFromConnectionString = require('azure-iot-device-mqtt').clientFromConnectionString;
+	        var client = clientFromConnectionString(connectionString);
+	
+	        client.open(function (err) {
+	            if (err) {
+	                console.log('Error connecting to IoT hub: ' + err);
+	            }
+	            else {
+	                var data = {
+	                    "deviceId" : camera.deviceId,
+	                    "latitude" : camera.latitude,
+	                    "longitude" : camera.longitude,
+	                    "url" : storageAccountName + '.blob.core.windows.net/photos/image_19.jpg'
+	                };
+	
+	                var message = new Message(JSON.stringify(data));
+	
+	                client.sendEvent(message, function (err, result) {
+	                    if (err) {
+	                        console.log('Error sending event: ' + err);
+	                    }
+	                    else {
+	                        console.log("Event transmitted");                
+	                    }
+	
+	                    process.exit();
+	                });
+	            }
+	        });
+	    }
+	});
 	```
 
-1. Save the file, and then run it with the following command:
+	This code uploads the file named **image_19.jpg** from the current directory's "photos" subdirectory to the storage account's "photos" container. Then it opens a connection from polar_cam_0003 to the IoT hub using polar_cam_0003's access key (which comes from **cameras.js**) and transmits a message containing a JSON payload over MQTT.
+
+1. Replace HUB_NAME on line 1 of **test.js** with the name of the IoT hub you created in [Exercise 2](#Exercise2), and ACCOUNT_NAME with the name of the storage account that you created in [Exercise 1](#Exercise1).
+
+1. Return to the Command Prompt or terminal window and use the following command to list the access keys for the storage account, replacing ACCOUNT_NAME with the name of your storage account:
+
+	```
+	az storage account keys list --account-name ACCOUNT_NAME --resource-group streaminglab-rg
+	```
+
+	By default, blobs stored in an Azure storage account are private and are only accessible to persons who have access to the subscription under which the account was created. Access keys allow other parties, including apps, to access the contents of a storage account. You should treat access keys with great care and **never** give them to someone you don't trust.
+
+
+1. Copy the ```value``` property of either of the two keys that is displayed in the command output to the clipboard. Then replace ACCOUNT_KEY on line 3 of **test.js** with the access key. That line should now look something like this:
+
+	```javascript
+	var storageAccountKey = 'doPZd+uLueiDMY0JWtg...qWtWfmJLVkTe/huqlTliq8ruy8L1lzmDV9l6HkRw==';
+	```
+
+1. Save **test.js**, and then run it with the following command:
 
 	```
 	node test.js
+	```
+
+	Confirm that you see the following output indicating that the command completed successfully:
+
+	```
+	Blob uploaded
+	Event transmitted
 	```
 
 1. Open the [Azure Portal](https://portal.azure.com) in your browser. If asked to log in, do so using your Microsoft account.
 
 1. Click **Resource groups** in the ribbon on the left, and then click the "streaminglab-rg" resource group to view its contents.
 
-	![Opening the resource group](Images/tk.png)
+	![Opening the resource group](Images/open-resource-group.png)
 
 	_Opening the resource group_
 
 1. Click the storage account that you created in [Exercise 1](#Exercise1).
 
-	![Opening the storage account](Images/tk.png)
+	![Opening the storage account](Images/open-storage-account.png)
 
 	_Opening the storage account_
 
@@ -296,46 +384,40 @@ In this exercise, you will write more code using Node.js to test the camera arra
 
 1. Click **photos** to open the "photos" container.
 
-	![Opening the "photos" container](Images/tk.png)
+	![Opening the "photos" container](Images/open-container.png)
 
 	_Opening the "photos" container_
 
-1. Click the blob named **image-01.jpg**.
+1. Click the blob named **image_19.jpg**.
 
-	![Opening the blob containing the photo uploaded to the container](Images/tk.png)
+	![Opening the blob containing the photo uploaded to the container](Images/open-blob.png)
 
 	_Opening the blob containing the photo uploaded to the container_
 
-1. tk.
+1. Click **Download** to download the blob. Confirm that it contains a small (64x64) grayscale polar-bear image.
 
-	![tk](Images/tk.png)
+	![Downloading the blob](Images/download-blob.png)
 
-	_tk_
+	_Downloading the blob_
 
-1. tk.
+1. Return to the "streaminglab-rg" resource group in the portal and click the IoT hub.
 
-	![tk](Images/tk.png)
+	![Opening the IoT hub](Images/open-iot-hub.png)
 
-	_tk_
+	_Opening the IoT hub_
 
-1. tk.
+1. Confirm that at least one message has been received by the IoT hub, and that it has 10 devices registered. These are the simulated cameras that you registered in the previous exercise.
 
-	![tk](Images/tk.png)
+	![IoT hub overview](Images/iot-hub-overview.png)
 
-	_tk_
+	_IoT hub overview_
 
-1. tk.
-
-	![tk](Images/tk.png)
-
-	_tk_
-
-TODO: Add summary.
+If you would like to see a list of devices registered with the IoT hub, click **IoT Devices** in the menu on the left. If you then click one of the devices, you will find that individual devices can be enabled and disabled through the portal. Devices can also be enabled and disabled using the Azure CLI.
 
 <a name="Summary"></a>
 ## Summary ##
 
-TODO: Add summary.
+In this lab, you created an Azure IoT hub, registered an array of simulated devices, and sent a message to the IoT hub from one of the devices to confirm that everything was set up correctly. You also created an Azure storage account and a blob container inside it and demonstrated that a device simulated in software could upload blobs to it. This is a great start, but there is more work to do to build a complete end-to-end solution that notifies you when a polar bear is photographed. You may now proceed to the next lab in this series — [Processing IoT Data in Real Time Using Stream Analytics and Machine Learning, Part 2](#) — to create an [Azure Stream Analytics](https://azure.microsoft.com/services/stream-analytics/) job and connect it to the IoT hub.
 
 ---
 
