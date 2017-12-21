@@ -257,13 +257,15 @@ Finish up by verifying that a file named **cameras.json** was created in the pro
 <a name="Exercise4"></a>
 ## Exercise 4: Test the simulated camera array ##
 
-In this exercise, you will write more code using Node.js to test the camera array that you deployed in the previous. That code will transmit an event from one of the virtual cameras to the IoT hub, and it will upload an image to the storage account that you created in [Exercise 1](#Exercise1).
+In this exercise, you will write more code using Node.js to test the camera array that you deployed in the previous exercise. That code will transmit an event from one of the virtual cameras to the IoT hub, and it will upload an image to the storage account that you created in [Exercise 1](#Exercise1).
 
-1. Create a subdirectory named "photos" in the project directory that you created in the previous exercise. Then copy all 30 JPEG files from the resources that accompany this lab to the "photos" directory. These are the images that the simulated cameras will upload to blob storage.
+1. Create a subdirectory named "photos" in the project directory that you created in the previous exercise. Then copy all 30 JPEG files from the [resources that accompany this lab](#) to the "photos" directory. These are the images that the simulated cameras will upload to blob storage, samples of which are shown below. Wildlife depicted in the images include Arctic foxes, polar bears, and walruses.
+
+	![Sample wildlife images](Images/wildlife-images.png)
 
 1. Add a file named **test.js** to the project directory and insert the following code:
 
-	```
+	```javascript
 	```
 
 1. Save the file, and then run it with the following command:
@@ -272,20 +274,61 @@ In this exercise, you will write more code using Node.js to test the camera arra
 	node test.js
 	```
 
+1. Open the [Azure Portal](https://portal.azure.com) in your browser. If asked to log in, do so using your Microsoft account.
+
+1. Click **Resource groups** in the ribbon on the left, and then click the "streaminglab-rg" resource group to view its contents.
+
+	![Opening the resource group](Images/tk.png)
+
+	_Opening the resource group_
+
+1. Click the storage account that you created in [Exercise 1](#Exercise1).
+
+	![Opening the storage account](Images/tk.png)
+
+	_Opening the storage account_
+
+1. In the blade for the storage account, click **Blobs** to view a list of blob containers.
+
+    ![Viewing blob containers](Images/open-blob-storage.png)
+
+    _Viewing blob containers_
+
+1. Click **photos** to open the "photos" container.
+
+	![Opening the "photos" container](Images/tk.png)
+
+	_Opening the "photos" container_
+
+1. Click the blob named **image-01.jpg**.
+
+	![Opening the blob containing the photo uploaded to the container](Images/tk.png)
+
+	_Opening the blob containing the photo uploaded to the container_
+
 1. tk.
 
-	```
-	```
+	![tk](Images/tk.png)
+
+	_tk_
 
 1. tk.
 
-	```
-	```
+	![tk](Images/tk.png)
+
+	_tk_
 
 1. tk.
 
-	```
-	```
+	![tk](Images/tk.png)
+
+	_tk_
+
+1. tk.
+
+	![tk](Images/tk.png)
+
+	_tk_
 
 TODO: Add summary.
 
