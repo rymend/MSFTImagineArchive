@@ -90,39 +90,82 @@ After a few moments, the new input — "CameraInput" — appears in the list of 
 
 The heart of a Stream Analytics job is the query that extracts information from the data stream. It is always a good idea to test a query using sample data before deploying it against a live data stream, because with sample data, you can verify that a known set of inputs produces the expected outputs.
 
-In this exercise, you will enter a query into the Stream Analytics job you created in the previous exercise and test it with sample data provided for you.
+In this exercise, you will enter a query into the Stream Analytics job you created in the previous exercise and test it with sample data.
 
-1. tk.
+1. Return to the Stream Analytics job in the portal and click **Query**.
 
-	![tk](Images/tk.png)
+    ![Opening the query viewer](Images/add-query.png)
 
-	_tk_
+    _Opening the query viewer_
 
-1. tk.
+1. Click the **ellipsis** (the three dots) to the right of **CameraInput** and select **Upload sample data from file** from the menu.
 
-	![tk](Images/tk.png)
+    ![Uploading sample data](Images/upload-test-data-1.png)
 
-	_tk_
+    _Uploading sample data_
 
-1. tk.
+1. Click the **folder** icon on the right and select the file named **sample-data.json** from the [resources included with this lab](#). Then click **OK** to upload the file.
 
-	![tk](Images/tk.png)
+    ![Uploading sample-data.json](Images/upload-test-data-2.png)
 
-	_tk_
+    _Uploading sample-data.json_
 
-1. tk.
+1. When the upload is complete, type the following query into the query window, and then click the **Test** button to execute it against the sample data:
 
-	![tk](Images/tk.png)
+	```sql
+	SELECT * FROM CameraInput
+	```
 
-	_tk_
+	![Testing a query](Images/test-query.png)
 
-1. tk.
+	_Testing a query_
 
-	![tk](Images/tk.png)
+1. Confirm that you see the output pictured below. The test data contains 50 rows, each representing an event transmitted to the IoT hub by one of the cameras in the camera array. DEVICEID is the camera's device ID, LATITUDE and LATITUDE specify the camera's geographic location, URL is the URL of the blob containing the picture that was taken, and TIMESTAMP is the time at which the picture was taken. The other fields were added by Azure.
 
-	_tk_
+	![Query result](Images/query-results-1.png)
 
-TODO: Add closing.
+	_Query result_
+
+1. One of the key features of the Stream Analytics Query Language is its ability to group results using windows of time whose length you specify. Windowing is enacted by using the keywords [TumblingWindow](https://msdn.microsoft.com/library/azure/dn835055.aspx), [HoppingWindow](https://msdn.microsoft.com/library/azure/dn835041.aspx), and [SlidingWindow](https://msdn.microsoft.com/library/azure/dn835051.aspx) in a GROUP BY clause. To demonstrate, enter the following query to count the number of times the cameras were triggered each minute and click **Test** to execute it:
+
+	```sql
+	SELECT System.Timestamp as [Time Ending],
+	    COUNT(*) AS [Times Triggered]
+	FROM CameraInput TIMESTAMP BY timestamp
+	GROUP BY TumblingWindow(n, 1)
+	```
+	> [TIMESTAMP BY](https://msdn.microsoft.com/library/azure/mt573293.aspx) is an important element of the Stream Analytics Query Language. If it was omitted from the query above, you would be querying for the number of events that arrived *at the event hub* each minute rather than the number of events that occurred in each 1-minute interval. TIMESTAMP BY allows you to specify a field in the input stream as the event time.
+
+1. Confirm that you see the output below:
+
+	![Query result using TumblingWindow](Images/query-results-2.png)
+
+	_Query result using TumblingWindow_
+
+1. Now it's time to check for photos snapped by the same camera within 10 seconds. *This is the query you will use in the next exercise against a live data stream*. The assumption is that since polar bears tend to move rather slowly, we will ignore pictures taken more than 10 seconds apart, but if the same camera snaps two pictures within 10 seconds, it is worth examining the pictures to see if one of them contains a polar bear.
+
+	Enter the following query and click **Test** to execute it:
+
+	```sql
+	SELECT C1.deviceId, C1.latitude, C1.longitude, C2.url
+	FROM CameraInput C1 TIMESTAMP BY timestamp
+	JOIN CameraInput C2 TIMESTAMP BY timestamp
+	ON C1.deviceId = C2.deviceId
+	AND DATEDIFF(ss, C1, C2) BETWEEN 0 AND 10
+	AND C1.Timestamp != C2.Timestamp
+	```
+
+1. This time the output should contain six rows, each representing two photographs taken by the same camera within 10 seconds and containing the URL of one of the pictures.
+
+	> If you wanted to include *both* URLs in the output, how would you modify the query to do it?
+
+	![Cameras that snapped two pictures within 10 seconds](Images/query-results-3.png)
+
+	_Cameras that snapped two pictures within 10 seconds_
+
+1. Click the **Save** button at the top of the blade to save the query. Then click **Yes** when asked to confirm.
+
+With the query now formulated, tested against a set of sample data, and saved, it's time to deploy it against a live data stream.
 
 <a name="Exercise3"></a>
 ## Exercise 3: Stream data from the camera array ##
@@ -146,6 +189,140 @@ TODO: Add introduction.
 	![tk](Images/tk.png)
 
 	_tk_
+
+1. tk.
+
+	```javascript
+	'use strict';
+	
+	class Camera {
+	    constructor(id, latitude, longitude, key, files) {
+	        this._id = id;
+	        this._latitude = latitude;
+	        this._longitude = longitude;
+	        this._key = key;
+	        this._files = files.slice(0);
+	        this._ready = false;
+	    }
+	
+	    get id() {
+	        return this._id;
+	    }
+	
+	    connect(iotHubName, storageAccountName, storageAccountKey, callback) {
+	        // Connect to blob storage
+	        var azure = require('azure-storage');
+	        this._storageAccountName = storageAccountName;
+	        this._blobService = azure.createBlobService(storageAccountName, storageAccountKey);
+	
+	        // Connect to the IoT hub
+	        var connectionString = 'HostName=' + iotHubName + '.azure-devices.net;DeviceId=' + this._id + ';SharedAccessKey=' + this._key;
+	        var clientFromConnectionString = require('azure-iot-device-mqtt').clientFromConnectionString;
+	        this._client = clientFromConnectionString(connectionString);
+	
+	        this._client.open((err) => {
+	            if (!err) {
+	                this._ready = true;
+	            }
+	
+	            callback(this._ready);
+	        });
+	    }
+	
+	    start() {
+	        // Register first callback for 5 to 30 seconds
+	        setTimeout(this.timer, (Math.random() * 25000) + 5000, this);
+	    }
+	
+	    timer(self) {
+	        if (self._ready === true) {
+	            // "Trigger" the camera with a random photo
+	            var index = Math.floor(Math.random() * self._files.length);
+	            self.trigger(self._files[index], (err, result) => {});
+	
+	            // Register another callback for 5 to 30 seconds
+	            setTimeout(self.timer, (Math.random() * 25000) + 5000, self);
+	        }
+	    }
+	
+	    trigger(imageFileName, callback) {
+	        if (this._ready === true) {
+	            // Upload the image to blob storage
+	            this.upload(imageFileName, (err, result) => {
+	                if (err) {
+	                    callback(err, result);
+	                }
+	                else {
+	                    // Send an event to the IoT hub
+	                    this.send(imageFileName, (err, result) => {
+	                        console.log(this._id + ': https://' + this._storageAccountName + '.blob.core.windows.net/photos/' + imageFileName);
+	                        callback(err, result);
+	                    });
+	                }
+	            });
+	        }
+	    }
+	
+	    upload(imageFileName, callback) {
+	        this._blobService.createBlockBlobFromLocalFile('photos', imageFileName, 'photos/' + imageFileName, (err, result) => {
+	            callback(err, result);
+	        });
+	    }
+	        
+	    send(imageFileName, callback) {
+	        var Message = require('azure-iot-device').Message;
+	
+	        var data = {
+	            'deviceId' : this._id,
+	            'latitude' : this._latitude,
+	            'longitude' : this._longitude,
+	            'url' : 'https://' + this._storageAccountName + '.blob.core.windows.net/photos/' + imageFileName,
+	            'timestamp' : new Date().toUTCString()
+	        };
+	
+	        var message = new Message(JSON.stringify(data));
+	
+	        this._client.sendEvent(message, (err, result) => {
+	            callback(err, result);
+	        });        
+	    }
+	}
+	
+	var iotHubName = 'streaminglab-iot-hub';
+	var storageAccountName = 'streaminglabstorage';
+	var storageAccountKey = 'y+uxm+lx6WkQzZm7ki4hWM2BE2z7OIZHPuvZPwNdOQq7eDj6BJ1fDei/zguovanGAKigypxURVTK8yhwilYE1A==';
+	
+	// Load image file names
+	var fs = require('fs');
+	
+	fs.readdir('photos', (err, files) => {
+	    // Create an array of cameras
+	    var cameras = JSON.parse(fs.readFileSync('cameras.json', 'utf8')).map(
+	        camera => new Camera(
+	            camera.deviceId,
+	            camera.latitude,
+	            camera.longitude,
+	            camera.key,
+	            files
+	        )
+	    );
+	
+	    // Start the cameras
+	    cameras.forEach(camera => {
+	        camera.connect(iotHubName, storageAccountName, storageAccountKey, status => {
+	            if (status === true) {
+	                console.log(camera.id + ' connected');
+	                camera.start();
+	            }
+	            else {
+	                console.log(camera.id + ' failed to connect');
+	            }
+	        })
+	    });
+	});
+	```
+
+	TODO: Add explanation.
 
 1. tk.
 

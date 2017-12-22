@@ -312,10 +312,10 @@ In this exercise, you will write more code using Node.js to test the camera arra
 	            }
 	            else {
 	                var data = {
-	                    "deviceId" : camera.deviceId,
-	                    "latitude" : camera.latitude,
-	                    "longitude" : camera.longitude,
-	                    "url" : storageAccountName + '.blob.core.windows.net/photos/image_19.jpg'
+	                    'deviceId' : camera.deviceId,
+	                    'latitude' : camera.latitude,
+	                    'longitude' : camera.longitude,
+	                    'url' : 'https://' + storageAccountName + '.blob.core.windows.net/photos/image_19.jpg'
 	                };
 	
 	                var message = new Message(JSON.stringify(data));
