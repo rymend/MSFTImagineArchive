@@ -134,7 +134,7 @@ In this exercise, you will enter a query into the Stream Analytics job you creat
 	FROM CameraInput TIMESTAMP BY timestamp
 	GROUP BY TumblingWindow(n, 1)
 	```
-	> [TIMESTAMP BY](https://msdn.microsoft.com/library/azure/mt573293.aspx) is an important element of the Stream Analytics Query Language. If it was omitted from the query above, you would be querying for the number of events that arrived *at the event hub* each minute rather than the number of events that occurred in each 1-minute interval. TIMESTAMP BY allows you to specify a field in the input stream as the event time.
+	> [TIMESTAMP BY](https://msdn.microsoft.com/library/azure/mt573293.aspx) is an important element of the Stream Analytics Query Language. If it was omitted from the query above, you would be querying for the number of events that arrived *at the event hub* each minute rather than the number of events that occurred at the camera locations. TIMESTAMP BY allows you to specify a field in the input stream as the event time.
 
 1. Confirm that you see the output below:
 
