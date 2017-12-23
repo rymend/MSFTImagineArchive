@@ -4,7 +4,7 @@
 
 Scenarios for the application of real-time data analytics are legion and include fraud detection, identity-theft protection, optimizing the allocation of resources (think of an Uber-like transportation service that sends drivers to areas of increasing demand *before* that demand peaks), click-stream analysis on Web sites, and countless others. Having the ability to process data *as it comes in* rather than waiting until after it has been aggregated offers a competitive advantage to businesses that are agile enough to make adjustments on the fly.
 
-In this lab, the second of four in a series, you will create an Azure Stream Analytics job and connect it to the IoT hub you created in the [previous lab](#). Then you will use it to analyze data streaming in from the simulated camera array that provides input to the IoT hub. 
+In this lab, the second of four in a series, you will create an Azure Stream Analytics job and connect it to the IoT hub you created in the [previous lab](#). Then you will write an [Azure Function](https://azure.microsoft.com/services/functions/) to receive the output, and use the two of them together to analyze data streaming in from a simulated camera array. 
 
 ![](Images/road-map-2.png)
 
@@ -37,9 +37,8 @@ This hands-on lab includes the following exercises:
 
 - [Exercise 1: Create a Stream Analytics job](#Exercise1)
 - [Exercise 2: Prepare a query and test with sample data](#Exercise2)
-- [Exercise 3: Write an Azure Function and connect it to Stream Analytics](#Exercise3)
-- [Exercise 4: Stream data from the camera array](#Exercise4)
-- [Exercise 5: Analyze the live data stream](#Exercise5)
+- [Exercise 3: Direct output to an Azure Function](#Exercise3)
+- [Exercise 4: Analyze a live data stream](#Exercise4)
 
 Estimated time to complete this lab: **30** minutes.
 
@@ -56,13 +55,13 @@ In this exercise, you will use the Azure Portal to create a Stream Analytics job
 
     _Creating a Stream Analytics job_
 
-1. Name the job "polar-bear-analytics" and place it in the "streaminglab-rg" resource group that you created in the previous lab. Specify **South Central US** as the location. (That's important, because your IoT hub is in the same region, and while you are not charged for data that moves within a data center, you typically *are* charged for data that moves *between* data centers. In addition, locating services that talk to each other in the same region reduces latency.) Make sure **Hosting environment** is set to **Cloud**, and then click the **Create** button.
+1. Name the job "polar-bear-analytics" and place it in the "streaminglab-rg" resource group that you created in the previous lab. Specify **South Central US** as the location. (That's important, because your IoT hub is in the same region, and while you are not charged for data that moves within a data center, you typically *are* charged for data that moves *between* data centers. In addition, locating services that are connected to each other in the same region reduces latency.) Make sure **Hosting environment** is set to **Cloud**, and then click the **Create** button.
 
     ![Specifying parameters for the Stream Analytics job](Images/create-stream-analytics-job.png)
 
     _Specifying parameters for the Stream Analytics job_
 
-1. Open the "streaminglab-rg" resource group and click **polar-bear-analytics** to open the Stream Analytics job in the portal. If the Stream Analytics doesn't appear in the resource group, click the **Refresh** button at the top of the blade until it does.
+1. Open the "streaminglab-rg" resource group and click **polar-bear-analytics** to open the Stream Analytics job in the portal. If the Stream Analytics job doesn't appear in the resource group, click the **Refresh** button at the top of the blade until it does.
 
     ![Opening the Stream Analytics job](Images/open-stream-analytics-job.png)
 
@@ -91,9 +90,7 @@ After a few moments, the new input — "CameraInput" — appears in the list of 
 <a name="Exercise2"></a>
 ## Exercise 2: Prepare a query and test with sample data ##
 
-The heart of a Stream Analytics job is the query that extracts information from the data stream. It is always a good idea to test a query using sample data before deploying it against a live data stream, because with sample data, you can verify that a known set of inputs produces the expected outputs.
-
-In this exercise, you will enter a query into the Stream Analytics job you created in the previous exercise and test it with sample data.
+The heart of a Stream Analytics job is the query that extracts information from the data stream. It is always advisable to test a query using sample data before deploying it against a live data stream, because with sample data, you can verify that a known set of inputs produces the expected outputs. In this exercise, you will enter a query into the Stream Analytics job you created in the previous exercise and test it with sample data.
 
 1. Return to the Stream Analytics job in the portal and click **Query**.
 
@@ -113,7 +110,7 @@ In this exercise, you will enter a query into the Stream Analytics job you creat
 
     _Uploading sample-data.json_
 
-1. When the upload is complete, type the following query into the query window, and then click the **Test** button to execute it against the sample data:
+1. When the upload is complete, type the following query into the query window. Then click the **Test** button to execute it:
 
 	```sql
 	SELECT * FROM CameraInput
@@ -123,13 +120,13 @@ In this exercise, you will enter a query into the Stream Analytics job you creat
 
 	_Testing a query_
 
-1. Confirm that you see the output pictured below. The test data contains 50 rows, each representing an event transmitted to the IoT hub by one of the cameras in the camera array. DEVICEID is the camera's device ID, LATITUDE and LATITUDE specify the camera's geographic location, URL is the URL of the blob containing the picture that was taken, and TIMESTAMP is the time at which the picture was taken. The other fields were added by Azure.
+1. Confirm that you see the output pictured below. The test data contains 50 rows, each representing an event transmitted to the IoT hub by one of the cameras in the camera array. DEVICEID is the camera's device ID, LATITUDE and LATITUDE specify the camera's location, URL is the URL of the blob containing the picture that was taken, and TIMESTAMP is the time at which the picture was taken. The other fields were added by Azure.
 
 	![Query result](Images/query-results-1.png)
 
 	_Query result_
 
-1. One of the key features of the Stream Analytics Query Language is its ability to group results using windows of time whose length you specify. Windowing is enacted by using the keywords [TumblingWindow](https://msdn.microsoft.com/library/azure/dn835055.aspx), [HoppingWindow](https://msdn.microsoft.com/library/azure/dn835041.aspx), and [SlidingWindow](https://msdn.microsoft.com/library/azure/dn835051.aspx) in a GROUP BY clause. To demonstrate, enter the following query to count the number of times the cameras were triggered each minute and click **Test** to execute it:
+1. One of the key features of the Stream Analytics Query Language is its ability to group results using windows of time whose length you specify. Windowing is enacted by using the keywords [TumblingWindow](https://msdn.microsoft.com/library/azure/dn835055.aspx), [HoppingWindow](https://msdn.microsoft.com/library/azure/dn835041.aspx), and [SlidingWindow](https://msdn.microsoft.com/library/azure/dn835051.aspx) in a GROUP BY clause. To demonstrate, execute the following query to count the number of times the cameras were triggered each minute:
 
 	```sql
 	SELECT System.Timestamp as [Time Ending],
@@ -145,12 +142,12 @@ In this exercise, you will enter a query into the Stream Analytics job you creat
 
 	_Query result using TumblingWindow_
 
-1. Now it's time to check for photos snapped by the same camera within 10 seconds. *This is the query that you will use in [Exercise 5](#Exercise5) and in the next lab against a live data stream*. The assumption is that since polar bears tend to move rather slowly, we will ignore pictures taken more than 10 seconds apart, but if the same camera snaps two pictures within 10 seconds, it is worth examining them to see if one of them contains a polar bear.
+1. Now it's time to check for two photos snapped by the same camera within 10 seconds. *This is the query that you will use against a live data stream*. The assumption is that since polar bears tend to move rather slowly, we will ignore pictures taken more than 10 seconds apart, but if the same camera snaps two pictures within 10 seconds, it is worth examining them to see if one of them contains a polar bear.
 
 	Enter the following query and click **Test** to execute it:
 
 	```sql
-	SELECT C1.deviceId, C1.latitude, C1.longitude, C2.url
+	SELECT C1.deviceId, C1.latitude, C1.longitude, C1.url
 	FROM CameraInput C1 TIMESTAMP BY timestamp
 	JOIN CameraInput C2 TIMESTAMP BY timestamp
 	ON C1.deviceId = C2.deviceId
@@ -166,16 +163,14 @@ In this exercise, you will enter a query into the Stream Analytics job you creat
 
 	_Cameras that snapped two pictures within 10 seconds_
 
-1. Click the **Save** button at the top of the blade to save the query. Then click **Yes** when asked to confirm.
-
-With the query now formulated, tested against a set of sample data, and saved, it's time to deploy it against a live data stream.
+Finish up by clicking the **Save** button at the top of the blade to save the query. Then click **Yes** when asked to confirm. This will be the query that's executed when you run the Stream Analytics job.
 
 <a name="Exercise3"></a>
-## Exercise 3: Write an Azure Function and connect it to Stream Analytics ##
+## Exercise 3: Direct output to an Azure Function ##
 
-The Stream Analytics query that you tested in the previous exercise applies a simple criterion to the data: if the same camera snaps two pictures within 10 seconds, there *might* be a polar bear. But the ultimate goal is to determine with a great deal of confidence whether there really *is* a polar bear. That means adding machine learning to the mix.
+The query that you tested in the previous exercise employs simple logic: if the same camera snaps two pictures within 10 seconds, there *might* be a polar bear. But the ultimate goal is to determine with a great deal of confidence whether there really *is* a polar bear. That means supplementing Stream Analytics with machine learning.
 
-One way to connect a Stream Analytics job to a machine-learning model running in the cloud is to write an [Azure Function](https://azure.microsoft.com/services/functions/) and connect it to a Stream Analytics job as an output. The function, which is invoked each time Stream Analytics produces an output, can then call out to the machine-learning model. In this exercise, you will write an Azure Function, connect it to Stream Analytics, and stub it out so that it can be connected to a machine-learning model in the next lab.
+One way to connect a Stream Analytics job to a machine-learning model running in the cloud is to use an [Azure Function](https://azure.microsoft.com/services/functions/) as a Stream Analytics output. The function, which is invoked each time Stream Analytics produces an output, can then call out to the machine-learning model. In this exercise, you will write an Azure Function, connect it to Stream Analytics, and stub it out so you can verify that it's being called.
 
 1. In the Azure Portal, click **+ New**, followed by **Compute** and **Function App**.
 
@@ -183,13 +178,13 @@ One way to connect a Stream Analytics job to a machine-learning model running in
 
     _Creating an Azure Function App_
 
-1. Enter an app name that is unique within Azure. Place the function app in the "streaminglab-rg" resource group and set **Hosting Plan** to **App Service Plan**. Then click **App Service plan/location** and create a new App Service plan in the South Central US region. Under **Storage**, select the storage account that you created in [Part 1](#). Finally, click **OK** to create a new Azure Function app.
+1. Enter an app name that is unique to Azure. Place the function app in the "streaminglab-rg" resource group and set **Hosting Plan** to **App Service Plan**. Then click **App Service plan/location** and create a new App Service plan in the South Central US region. Under **Storage**, select the storage account that you created in [Lab 1](#). Finally, click **OK** to create a new Azure Function app.
 
-	> When you create an Azure Function app, you can choose from either of two hosting plans: Consumption Plan or App Service Plan. Consumption Plan is cheaper because you only pay when the function runs. But with Consumption Plan, the function might not execute for several minutes after it receives an output from Stream Analytics. With App Service Plan, you pay more, but the function runs immediately.
+	> When you create an Azure Function App, you can choose from two hosting plans: Consumption plan or App Service plan. The former is cheaper because you only pay when the function executes. But with Consumption plan, the function might not execute for several minutes after it's called. With App Service plan, you pay more, but the function runs immediately.
  
-    ![Creating a function app](Images/create-function-app.png)
+    ![Creating an Azure Function App](Images/create-function-app.png)
 
-    _Creating a function app_
+    _Creating an Azure Function App_
 
 1. Open the "streaminglab-rg" resource group in the portal and click **Refresh** until the function app appears. Then click the function app.
 
@@ -197,40 +192,24 @@ One way to connect a Stream Analytics job to a machine-learning model running in
 
 	_Opening the function app_
 
-1. Click the **+** sign to the right of **Functions**. Set the language to **JavaScript**, and then click **Custom function**.
+1. Click the **+** sign to the right of **Functions**. Then select **Webhook + API**, set the language to **JavaScript**, and click **Create this function**.
 
-    ![Adding a function](Images/js-add-function.png)
+    ![Adding a function](Images/add-function.png)
 
     _Adding a function_
 
-1. Set **Language** to **JavaScript**. Then click **BlobTrigger-JavaScript**.
-  
-    ![Selecting a function template](Images/js-select-template.png)
-
-    _Selecting a function template_
-
-1. Enter "BlobImageAnalysis" (without quotation marks) for the function name and "uploaded/{name}" into the **Path** box. (The latter applies the blob storage trigger to the "uploaded" container that you created in Exercise 1.) Then click the **Create** button to create the Azure Function.
-
-    ![Creating an Azure Function](Images/create-azure-function.png)
-
-    _Creating an Azure Function_
-
-1. Replace the code shown in the code editor with the following statements:
+1. Replace the code shown in the code editor with the statements below. Then click **Save**, followed by **Run**.
 
 	```javascript
+	module.exports = function (context, req) {
+	    context.log(req.rawBody);
+	    context.done();
+	};
 	```
 
-1. tk.
+	![Saving and running the function](Images/save-and-run.png)
 
-	![tk](Images/tk.png)
-
-	_tk_
-
-1. tk.
-
-	![tk](Images/tk.png)
-
-	_tk_
+	_Saving and running the function_
 
 1. Return to the Stream Analytics job in the portal and click **Outputs**.
 
@@ -244,32 +223,46 @@ One way to connect a Stream Analytics job to a machine-learning model running in
 
 	_Adding an output_
 
-1. tk.
+1. Name the output "FunctionOutput." Set **Sink** to **Azure function** and select the function app and function created earlier in this exercise. Then click **Create**.
 
-	![tk](Images/tk.png)
+	![Creating an output](Images/add-output-3.png)
 
-	_tk_
+	_Creating an output_
 
-1. tk.
+	> Just as a Stream Analytics job will accept multiple inputs, it supports multiple outputs, too. In addition to passing the output to an Azure Function, you could easily add outputs to log the output from the job in an Azure SQL database, a Cosmos DB database, blob storage, and other locations.
 
-	![tk](Images/tk.png)
+1. Wait for the output to appear in the list of outputs, indicating that it has been successfully added to the Stream Analytics job. Then close the "Outputs" blade, click **Query**, and modify the query you wrote in the previous exercise to include an ```INTO``` clause (line 2 below) that directs query results to the output you just added:
 
-	_tk_
+	```sql
+	SELECT C1.deviceId, C1.latitude, C1.longitude, C2.url
+	INTO FunctionOutput
+	FROM CameraInput C1 TIMESTAMP BY timestamp
+	JOIN CameraInput C2 TIMESTAMP BY timestamp
+	ON C1.deviceId = C2.deviceId
+	AND DATEDIFF(ss, C1, C2) BETWEEN 0 AND 10
+	AND C1.Timestamp != C2.Timestamp
+	```
 
-1. tk.
+1. Click **Save** to save the query. Then return to the Stream Analytics job and click **Start** button to start it.
 
-	![tk](Images/tk.png)
+    ![Starting the Stream Analytics job](Images/start-stream-analytics-job-1.png)
 
-	_tk_
+    _Starting the Stream Analytics job_
 
-TODO: Add closing.
+1. Make sure **Job output start time** is set to **Now**, and then click **Start** to start the run.
+
+    ![Specifying the job start time](Images/start-stream-analytics-job-2.png)
+
+    _Specifying the job start time_
+
+The job will take a couple of minutes to start, but you don't have to wait. Proceed to the next exercise and start generating a stream of events for Stream Analytics to ingest.
 
 <a name="Exercise4"></a>
-## Exercise 4: Stream data from the camera array ##
+## Exercise 4: Analyze a live data stream ##
 
-Now that the Stream Analytics job is prepared and an Azure Function has been created to receive output, the next step is to generate a live data stream and verify that the solution you've built thus far works as intended. In this exercise, you will use Node.js to stream events from the simulated camera array.
+In this exercise, you will use Node.js to stream events from the simulated camera array that you registed in the previous lab. Then you will check the log output from the Azure Function to verify that the events are being received by IoT hub, input to Stream Analytics, and output to the function. 
 
-1. Return to the project directory that you created in the previous lab and create a file in it named **run.js**. Then paste the following code into the file:
+1. Return to the project directory that you created in the previous lab and create a file in it named **run.js**. Then paste the following code into the file and save it:
 
 	```javascript
 	'use strict';
@@ -401,7 +394,7 @@ Now that the Stream Analytics job is prepared and an Azure Function has been cre
 	});
 	```
 
-	TODO: Add explanation.
+	This code uses the new [class support](http://es6-features.org/#ClassDefinition) in ECMAScript 6 (ES6) to define a class named ```Camera```. Then it creates 10 ```Camera``` instances and starts them running. Each camera object connects to the IoT hub securely using an access key obtained from **cameras.json**, and then uses a random timer to transmit events every 5 to 30 seconds. Each event that is transmitted includes the camera's ID, latitude, and longitude, as well as an image URL. The URL refers to an image that the camera uploaded to blob storage before firing the event. Images are randomly selected from the files in the project directory's "photos" subdirectory.
 
 1. Open a Command Prompt or terminal window and ```cd``` to the project directory. Then use the following command to run **run.js**:
 
@@ -424,7 +417,7 @@ Now that the Stream Analytics job is prepared and an Azure Function has been cre
 	polar_cam_0010 connected
 	```
 
-	Note that the order in which the cameras connect to the IoT hub will probably differ from what's shown here, and will probably even vary from run to run.
+	Note that the order in which the cameras connect to the IoT hub will probably differ from what's shown here, and will also vary from one run to the next.
 
 1. After a few seconds, additional output should appear. Each line corresponds to an event transmitted from a camera to the IoT hub. The output will look something like this:
 
@@ -441,53 +434,24 @@ Now that the Stream Analytics job is prepared and an Azure Function has been cre
 	polar_cam_0009: https://streaminglabstorage.blob.core.windows.net/photos/image_26.jpg
 	```
 
-Confirm that the cameras are running and generating events as shown above. **Leave them running**, and then proceed to the next exercise.
+1. Confirm that the cameras are running and generating events as shown above. Then return to the Azure Function in the portal and check the output log. Verify that over the course of a few minutes, the log shows several outputs from Stream Analytics. (The frequency will vary because the cameras use random timers to fire events.) Note that each output contains a JSON payload containing a device ID, latitude, longitude, and blob URL.
 
-<a name="Exercise5"></a>
-## Exercise 5: Analyze the live data stream ##
+	> Remember that the Stream Analytics job doesn't forward every event it receives to the function. It generates an output *only* when one camera snaps two photos within 10 seconds.
 
-In this exercise, you will start the Stream Analytics job so it can examine the live data stream emanating from the cameras. Then you will check the output from the Azure Function to ensure that data is being received by Stream Analytics, queried, and output to the function.
+	![Monitoring calls to the Azure Function](Images/function-output.png)
 
-1. Return to the Stream Analytics job in the [Azure Portal](https://portal.azure.com) and click the **Start** button.
-
-    ![Starting the Stream Analytics job](Images/start-stream-analytics-job-1.png)
-
-    _Starting the Stream Analytics job_
-
-1. Make sure **Job output start time** is set to **Now**, and then click the **Start** button to start running the job.
-
-    ![Specifying the job start time](Images/start-stream-analytics-job-2.png)
-
-    _Specifying the job start time_
-
-1. Go to the Azure Function that you created in [Exercise 3](#Exercise3) in the portal and tk.
-
-	![tk](Images/tk.png)
-
-	_tk_
-
-1. tk.
-
-	![tk](Images/tk.png)
-
-	_tk_
-
-1. tk.
-
-	![tk](Images/tk.png)
-
-	_tk_
+	_Monitoring calls to the Azure Function_
 
 1. Return to the Stream Analytics job in the portal and click **Stop** to stop it. Then click **Yes** when asked to confirm that you want to stop the job.
 
-1. Return to the Command Prompt or terminal window in which **run.js** is running and press **Ctrl+C** to stop it (and therefore stop the flow of events from the simulated cameras).
+1. Return to the Command Prompt or terminal window in which **run.js** is running and press **Ctrl+C** (**Command-C** on a Mac) to stop it (and therefore stop the flow of events from the simulated cameras).
 
-You have confirmed that Stream Analytics is receiving input from the IoT hub and that the Azure Function is receiving output from Stream Analytics.
+You have confirmed that Stream Analytics is receiving input from the IoT hub and that the Azure Function is receiving input from Stream Analytics. The next step is build a machine-learning model that recognizes polar bears and invoke it from the Azure Function — which is exactly what you will do in the next lab.
 
 <a name="Summary"></a>
 ## Summary ##
 
-TODO: Add summary.
+In this lab, you created a Stream Analytics job, connected it to an IoT hub for input, and connected it to an Azure Function for output. You also learned how Stream Analytics queries are used to extract information from temporal data streams. You may now proceed to the next lab in this series — [Processing IoT Data in Real Time Using Stream Analytics and Machine Learning, Part 3](#) — to create a machine-learning model and connect it to Stream Analytics.
 
 ---
 
