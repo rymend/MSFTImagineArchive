@@ -147,7 +147,7 @@ The heart of a Stream Analytics job is the query that extracts information from 
 	Enter the following query and click **Test** to execute it:
 
 	```sql
-	SELECT C1.deviceId, C1.latitude, C1.longitude, C1.url
+	SELECT C1.deviceId, C1.latitude, C1.longitude, C1.url, C1.timestamp
 	FROM CameraInput C1 TIMESTAMP BY timestamp
 	JOIN CameraInput C2 TIMESTAMP BY timestamp
 	ON C1.deviceId = C2.deviceId
@@ -231,10 +231,10 @@ One way to connect a Stream Analytics job to a machine-learning model running in
 
 	> Just as a Stream Analytics job will accept multiple inputs, it supports multiple outputs, too. In addition to passing the output to an Azure Function, you could easily add outputs to log the output from the job in an Azure SQL database, a Cosmos DB database, blob storage, and other locations.
 
-1. Wait for the output to appear in the list of outputs, indicating that it has been successfully added to the Stream Analytics job. Then close the "Outputs" blade, click **Query**, and modify the query you wrote in the previous exercise to include an ```INTO``` clause (line 2 below) that directs query results to the output you just added:
+1. Wait for the output to appear in the list of outputs, indicating that it has been successfully added to the Stream Analytics job. Then close the "Outputs" blade and modify the query you wrote in the previous exercise to include an ```INTO``` clause (line 2 below) that directs query results to the output you just added:
 
 	```sql
-	SELECT C1.deviceId, C1.latitude, C1.longitude, C2.url
+	SELECT C1.deviceId, C1.latitude, C1.longitude, C1.url, C1.timestamp
 	INTO FunctionOutput
 	FROM CameraInput C1 TIMESTAMP BY timestamp
 	JOIN CameraInput C2 TIMESTAMP BY timestamp
@@ -394,7 +394,7 @@ In this exercise, you will use Node.js to stream events from the simulated camer
 	});
 	```
 
-	This code uses the new [class support](http://es6-features.org/#ClassDefinition) in ECMAScript 6 (ES6) to define a class named ```Camera```. Then it creates 10 ```Camera``` instances and starts them running. Each camera object connects to the IoT hub securely using an access key obtained from **cameras.json**, and then uses a random timer to transmit events every 5 to 30 seconds. Each event that is transmitted includes the camera's ID, latitude, and longitude, as well as an image URL. The URL refers to an image that the camera uploaded to blob storage before firing the event. Images are randomly selected from the files in the project directory's "photos" subdirectory.
+	This code uses the new [class support](http://es6-features.org/#ClassDefinition) in ECMAScript 6 (ES6) to define a class named ```Camera```. Then it creates 10 ```Camera``` instances and starts them running. Each camera object connects to the IoT hub securely using an access key obtained from **cameras.json**, and then uses a random timer to transmit events every 5 to 30 seconds. Each event that is transmitted includes the camera's ID, latitude, and longitude, as well as an image URL and a timestamp. The URL refers to an image that the camera uploaded to blob storage before firing the event. Images are randomly selected from the files in the project directory's "photos" subdirectory.
 
 1. Open a Command Prompt or terminal window and ```cd``` to the project directory. Then use the following command to run **run.js**:
 
@@ -434,7 +434,7 @@ In this exercise, you will use Node.js to stream events from the simulated camer
 	polar_cam_0009: https://streaminglabstorage.blob.core.windows.net/photos/image_26.jpg
 	```
 
-1. Confirm that the cameras are running and generating events as shown above. Then return to the Azure Function in the portal and check the output log. Verify that over the course of a few minutes, the log shows several outputs from Stream Analytics. (The frequency will vary because the cameras use random timers to fire events.) Note that each output contains a JSON payload containing a device ID, latitude, longitude, and blob URL.
+1. Confirm that the cameras are running and generating events as shown above. Then return to the Azure Function in the portal and check the output log. Verify that over the course of a few minutes, the log shows several outputs from Stream Analytics. (The frequency will vary because the cameras use random timers to fire events.) Note that each output contains a JSON payload containing a device ID, latitude, longitude, blob URL, and timestamp.
 
 	> Remember that the Stream Analytics job doesn't forward every event it receives to the function. It generates an output *only* when one camera snaps two photos within 10 seconds.
 
