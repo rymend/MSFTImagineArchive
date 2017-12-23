@@ -15,6 +15,8 @@ In this hands-on lab, you will learn how to:
 
 - Create a Stream Analytics job and test queries on sample data streams
 - Run a Stream Analytics job and perform queries on live data streams
+- Use an Azure IoT hub as a Stream Analytics input
+- Use an Azure Function as a Stream Analytics output
 
 <a name="Prerequisites"></a>
 ### Prerequisites ###
@@ -143,7 +145,7 @@ In this exercise, you will enter a query into the Stream Analytics job you creat
 
 	_Query result using TumblingWindow_
 
-1. Now it's time to check for photos snapped by the same camera within 10 seconds. *This is the query you will use in the next exercise against a live data stream*. The assumption is that since polar bears tend to move rather slowly, we will ignore pictures taken more than 10 seconds apart, but if the same camera snaps two pictures within 10 seconds, it is worth examining the pictures to see if one of them contains a polar bear.
+1. Now it's time to check for photos snapped by the same camera within 10 seconds. *This is the query that you will use in [Exercise 5](#Exercise5) and in the next lab against a live data stream*. The assumption is that since polar bears tend to move rather slowly, we will ignore pictures taken more than 10 seconds apart, but if the same camera snaps two pictures within 10 seconds, it is worth examining them to see if one of them contains a polar bear.
 
 	Enter the following query and click **Test** to execute it:
 
@@ -171,10 +173,53 @@ With the query now formulated, tested against a set of sample data, and saved, i
 <a name="Exercise3"></a>
 ## Exercise 3: Write an Azure Function and connect it to Stream Analytics ##
 
-The Stream Analytics query that you tested in the previous exercise uses a simple criterion: if the same camera snaps two pictures within 10 seconds, there *might* be a polar bear. But the ultimate goal is to determine with a great deal of confidence whether there really *is* a polar bear. That means employing machine learning.
+The Stream Analytics query that you tested in the previous exercise applies a simple criterion to the data: if the same camera snaps two pictures within 10 seconds, there *might* be a polar bear. But the ultimate goal is to determine with a great deal of confidence whether there really *is* a polar bear. That means adding machine learning to the mix.
 
 One way to connect a Stream Analytics job to a machine-learning model running in the cloud is to write an [Azure Function](https://azure.microsoft.com/services/functions/) and connect it to a Stream Analytics job as an output. The function, which is invoked each time Stream Analytics produces an output, can then call out to the machine-learning model. In this exercise, you will write an Azure Function, connect it to Stream Analytics, and stub it out so that it can be connected to a machine-learning model in the next lab.
 
+1. In the Azure Portal, click **+ New**, followed by **Compute** and **Function App**.
+
+    ![Creating an Azure Function App](Images/new-function-app.png)
+
+    _Creating an Azure Function App_
+
+1. Enter an app name that is unique within Azure. Place the function app in the "streaminglab-rg" resource group and set **Hosting Plan** to **App Service Plan**. Then click **App Service plan/location** and create a new App Service plan in the South Central US region. Under **Storage**, select the storage account that you created in [Part 1](#). Finally, click **OK** to create a new Azure Function app.
+
+	> When you create an Azure Function app, you can choose from either of two hosting plans: Consumption Plan or App Service Plan. Consumption Plan is cheaper because you only pay when the function runs. But with Consumption Plan, the function might not execute for several minutes after it receives an output from Stream Analytics. With App Service Plan, you pay more, but the function runs immediately.
+ 
+    ![Creating a function app](Images/create-function-app.png)
+
+    _Creating a function app_
+
+1. Open the "streaminglab-rg" resource group in the portal and click **Refresh** until the function app appears. Then click the function app.
+
+	![Opening the function app](Images/open-function-app.png)
+
+	_Opening the function app_
+
+1. Click the **+** sign to the right of **Functions**. Set the language to **JavaScript**, and then click **Custom function**.
+
+    ![Adding a function](Images/js-add-function.png)
+
+    _Adding a function_
+
+1. Set **Language** to **JavaScript**. Then click **BlobTrigger-JavaScript**.
+  
+    ![Selecting a function template](Images/js-select-template.png)
+
+    _Selecting a function template_
+
+1. Enter "BlobImageAnalysis" (without quotation marks) for the function name and "uploaded/{name}" into the **Path** box. (The latter applies the blob storage trigger to the "uploaded" container that you created in Exercise 1.) Then click the **Create** button to create the Azure Function.
+
+    ![Creating an Azure Function](Images/create-azure-function.png)
+
+    _Creating an Azure Function_
+
+1. Replace the code shown in the code editor with the following statements:
+
+	```javascript
+	```
+
 1. tk.
 
 	![tk](Images/tk.png)
@@ -186,6 +231,18 @@ One way to connect a Stream Analytics job to a machine-learning model running in
 	![tk](Images/tk.png)
 
 	_tk_
+
+1. Return to the Stream Analytics job in the portal and click **Outputs**.
+
+	![Adding an output](Images/add-output-1.png)
+
+	_Adding an output_
+
+1. Click **+ Add**.
+
+	![Adding an output](Images/add-output-2.png)
+
+	_Adding an output_
 
 1. tk.
 
