@@ -158,6 +158,8 @@ In this exercise, you will use the Azure CLI to create an Azure SQL database tha
 
 	_Opening the database server to Azure services_
 
+TODO: Add a table to the database.
+
 With the database created and configured to allow access to Azure Functions, the next step is to modify the function that you wrote in the previous lab to call the Custom Vision Service and write the results to the database.
 
 <a name="Exercise4"></a>
@@ -165,17 +167,53 @@ With the database created and configured to allow access to Azure Functions, the
 
 In this exercise, you will modify the Azure Function that you created in the previous lab to call the Custom Vision Service and determine the likelihood that an image that *might* contain a polar bear *does* contain a polar bear, and to write the output to the Azure SQL database that you created in [Exercise 3](#Exercise3).
 
+TODO: Make blob container public in Lab 1.
+
+TODO: Run ```npm install request --save``` in the function app
+
 1. Open the Azure Function that you created in the previous lab in the Azure Portal. Replace the function code with the following code:
 
 	```javascript
+	module.exports = function (context, req) {
+	    var _url = 'PREDICTION_URL';
+	    var _key = 'PREDICTION_KEY';
+	
+	    // Call the Custom Vision Service
+	    const options = {
+	        url: _url,
+	        method: 'POST',
+	        headers: {
+	            'Prediction-Key': _key
+	        },
+	        body: {
+	            'Url': JSON.parse(req.rawBody).url
+	        },
+	        json: true
+	    };
+	
+	    var request = require('request');
+	
+	    request(options, (err, res, body) => {
+	        if (!err) {
+	            var probability =  body.Predictions.find(p => p.Tag.toLowerCase() === 'polar bear').Probability;          
 
+	            TODO: Write the result to Azure SQL
+	
+	            context.done();
+	        }
+	    });
+	};
 	```
 
-1. Replace the following placeholders in the code with real values:
+	The modified function tk.
 
+1. Replace the following placeholders with the values below. Then save the file.
 
-
-
+	- Replace PREDICTION_URL on line 2 with the prediction URL you saved in Exercise 2, Step 8
+	- Replace PREDICTION_UKEY on line 3 with the prediction key you saved in Exercise 2, Step 8
+	- tk
+	- tk
+	- tk
 
 1. tk.
 
