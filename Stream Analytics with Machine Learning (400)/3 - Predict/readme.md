@@ -4,7 +4,7 @@
 
 The Custom Vision Service exposes two APIs: the [Custom Vision Training API](https://southcentralus.dev.cognitive.microsoft.com/docs/services/d9a10a4a5f8549599f1ecafc435119fa/operations/58d5835bc8cb231380095be3) and the [Custom Vision Prediction API](https://southcentralus.dev.cognitive.microsoft.com/docs/services/eb68250e4e954d9bae0c2650db79c653/operations/58acd3c1ef062f0344a42814). You can build, train, and test image-classification models using the [Custom Vision Service portal](https://www.customvision.ai/), or you can build, train, and test them using the Custom Vision Training API. Once a model is trained, you can use the Custom Vision Prediction API to build apps that utilize it. Both are REST APIs that can be called from a variety of programming languages.
 
-In this lab, the third of four in a series, you will create a Custom Vision Service model and train it to differentiate between various types of Arctic wildlife. Then you will connect it to the Stream Analytics job you created in [Part 2](#).
+In this lab, the third of four in a series, you will create a Custom Vision Service model and train it to differentiate between various types of Arctic wildlife. Then you will connect it to the Stream Analytics job you created in the previous lab.
 
 ![](Images/road-map-3.png)
 
@@ -117,51 +117,9 @@ In this exercise, you will train the model using the images that you tagged and 
 
 	_Testing the model with an Arctic-fox image_
 
-The "Testing" directory in the lab resources contains subdirectories with a total of 30 different images for testing. Perform additional quick tests using these images until you are satisfied that the model is reasonably adept at predicting whether an image contains a polar bear.
+1. The "Testing" directory in the lab resources contains subdirectories with a total of 30 different images for testing. Perform additional quick tests using these images until you are satisfied that the model is reasonably adept at predicting whether an image contains a polar bear.
 
-<a name="Exercise3"></a>
-## Exercise 3: Create an Azure SQL database ##
-
-In this exercise, you will use the Azure CLI to create an Azure SQL database that resides in the cloud. In the next exercise, you will modify the Azure Function that you wrote in the previous lab to write to the database. Ultimately, the database will be connected to Power BI to paint a picture showing where polar bears are being spotted.
-
-1. tk.
-
-	![tk](Images/tk.png)
-
-	_tk_
-
-1. tk.
-
-	![tk](Images/tk.png)
-
-	_tk_
-
-1. tk.
-
-	![tk](Images/tk.png)
-
-	_tk_
-
-1. tk.
-
-	![tk](Images/tk.png)
-
-	_tk_
-
-1. tk.
-
-	![tk](Images/tk.png)
-
-	_tk_
-
-TODO: Add closing.
-
-<a name="Exercise4"></a>
-## Exercise 4: Modify the Azure Function ##
-
-In this exercise, you will modify the Azure Function that you created in the previous lab to call the Custom Vision Service and determine the likelihood that an image that *might* contain a polar bear *does* contain a polar bear. Then it will write the output to the Azure SQL database that you created in the [Exercise 3](#Exercise3).
-
-1. In the Custom Vision Portal, go to the "Performance" tab if it isn't already the active tab. Click **Make default** to make sure the latest iteration of the model is the default iteration. Then click **Prediction URL**.
+1. Return to the "Performance" tab in your project and click **Make default** to make sure the latest iteration of the model is the default iteration (the one that will be invoked by REST calls). Then click **Prediction URL**.
 
 	![Specifying the default iteration](Images/prediction-url.png)
 
@@ -172,6 +130,76 @@ In this exercise, you will modify the Azure Function that you created in the pre
 	![Copying the Prediction API URL](Images/copy-prediction-url.png)
 
     _Copying the Prediction API URL_ 
+
+You now have a machine-learning model that can discern whether an image contains a polar bear, as well as a URL for invoking the model using REST calls and an API key for authenticating calls. The next step is create a database for storing the results of those calls.
+
+<a name="Exercise3"></a>
+## Exercise 3: Create an Azure SQL database ##
+
+In this exercise, you will use the Azure CLI to create an Azure SQL database that resides in the cloud. Ultimately, this database will collect output from the Azure Function you connected to Stream Analytics in the previous lab, and it will be connected to Power BI to show where polar bears are being spotted.
+
+1. Open a Command Prompt or terminal window and use the following command to create a database server in the "streaminglab-rg" resource group. Replace SERVER_NAME with the name you wish to assign the database server, and replace ADMIN_USERNAME and ADMIN_PASSWORD with the user name and password for an admin user. **Remember the user name and password** that you enter, because you will need them later.
+
+	```
+	az sql server create --name SERVER_NAME --resource-group streaminglab-rg --location southcentralus --admin-user ADMIN_USERNAME --admin-password ADMIN_PASSWORD
+	```
+
+	> The server name must be unique within Azure, and the admin password must be at least 8 characters long. The user name cannot be one that is reserved in SQL Server such as "admin" or "sa." The user name "adminuser" is valid if you want to use that.
+
+1. Use the following command to create a database assigned the [S0 service tier](https://docs.microsoft.com/azure/sql-database/sql-database-service-tiers). Replace DATABASE_NAME with the name you wish to assign the database, and SERVER_NAME with the server name you specified in Step 1.
+
+	```
+	az sql db create --resource-group streaminglab-rg --server SERVER_NAME --name DATABASE_NAME --service-objective S0
+	```
+
+1. Go to the database server in the [Azure Portal](https://portal.azure.com) and click **Firewall / Virtual Networks** in the menu on the left. Then turn on **Allow access to Azure services** and click **Save** at the top of the blade so other Azure services, including Azure Functions, can access the server.
+
+	![Opening the database server to Azure services](Images/configure-database-server.png)
+
+	_Opening the database server to Azure services_
+
+With the database created and configured to allow access to Azure Functions, the next step is to modify the function that you wrote in the previous lab to call the Custom Vision Service and write the results to the database.
+
+<a name="Exercise4"></a>
+## Exercise 4: Modify the Azure Function ##
+
+In this exercise, you will modify the Azure Function that you created in the previous lab to call the Custom Vision Service and determine the likelihood that an image that *might* contain a polar bear *does* contain a polar bear, and to write the output to the Azure SQL database that you created in [Exercise 3](#Exercise3).
+
+1. Open the Azure Function that you created in the previous lab in the Azure Portal. Replace the function code with the following code:
+
+	```javascript
+
+	```
+
+1. Replace the following placeholders in the code with real values:
+
+
+
+
+
+1. tk.
+
+	![tk](Images/tk.png)
+
+	_tk_
+
+1. tk.
+
+	![tk](Images/tk.png)
+
+	_tk_
+
+1. tk.
+
+	![tk](Images/tk.png)
+
+	_tk_
+
+1. tk.
+
+	![tk](Images/tk.png)
+
+	_tk_
 
 1. tk.
 
