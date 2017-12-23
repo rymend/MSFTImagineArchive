@@ -23,6 +23,7 @@ In this hands-on lab, you will learn how to:
 The following are required to complete this hands-on lab:
 
 - An active Microsoft Azure subscription. If you don't have one, [sign up for a free trial](http://aka.ms/WATK-FreeTrial).
+- The [Azure CLI](https://docs.microsoft.com/cli/azure/install-azure-cli)
 
 If you haven't completed the [previous lab in this series](#), you must do so before starting this lab.
 
@@ -35,7 +36,8 @@ This hands-on lab includes the following exercises:
 
 - [Exercise 1: Build a Custom Vision Service model](#Exercise1)
 - [Exercise 2: Train and test the model](#Exercise2)
-- [Exercise 3: Connect the Stream Analytics job](#Exercise3)
+- [Exercise 3: Create an Azure SQL database](#Exercise3)
+- [Exercise 4: Modify the Azure Function](#Exercise4)
 
 Estimated time to complete this lab: **30** minutes.
 
@@ -118,9 +120,46 @@ In this exercise, you will train the model using the images that you tagged and 
 The "Testing" directory in the lab resources contains subdirectories with a total of 30 different images for testing. Perform additional quick tests using these images until you are satisfied that the model is reasonably adept at predicting whether an image contains a polar bear.
 
 <a name="Exercise3"></a>
-## Exercise 3: Connect the Stream Analytics job ##
+## Exercise 3: Create an Azure SQL database ##
 
-In this exercise, you will modify the Stream Analytics job that you created in the previous lab to call the Custom Vision Service model and determine the likelihood that an image that *might* contain a polar bear *does* contain a polar bear.
+In this exercise, you will use the Azure CLI to create an Azure SQL database that resides in the cloud. In the next exercise, you will modify the Azure Function that you wrote in the previous lab to write to the database. Ultimately, the database will be connected to Power BI to paint a picture showing where polar bears are being spotted.
+
+1. tk.
+
+	![tk](Images/tk.png)
+
+	_tk_
+
+1. tk.
+
+	![tk](Images/tk.png)
+
+	_tk_
+
+1. tk.
+
+	![tk](Images/tk.png)
+
+	_tk_
+
+1. tk.
+
+	![tk](Images/tk.png)
+
+	_tk_
+
+1. tk.
+
+	![tk](Images/tk.png)
+
+	_tk_
+
+TODO: Add closing.
+
+<a name="Exercise4"></a>
+## Exercise 4: Modify the Azure Function ##
+
+In this exercise, you will modify the Azure Function that you created in the previous lab to call the Custom Vision Service and determine the likelihood that an image that *might* contain a polar bear *does* contain a polar bear. Then it will write the output to the Azure SQL database that you created in the [Exercise 3](#Exercise3).
 
 1. In the Custom Vision Portal, go to the "Performance" tab if it isn't already the active tab. Click **Make default** to make sure the latest iteration of the model is the default iteration. Then click **Prediction URL**.
 

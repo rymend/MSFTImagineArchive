@@ -35,8 +35,9 @@ This hands-on lab includes the following exercises:
 
 - [Exercise 1: Create a Stream Analytics job](#Exercise1)
 - [Exercise 2: Prepare a query and test with sample data](#Exercise2)
-- [Exercise 3: Stream data from the camera array](#Exercise4)
-- [Exercise 4: Analyze the live data stream](#Exercise4)
+- [Exercise 3: Write an Azure Function and connect it to Stream Analytics](#Exercise3)
+- [Exercise 4: Stream data from the camera array](#Exercise4)
+- [Exercise 5: Analyze the live data stream](#Exercise5)
 
 Estimated time to complete this lab: **30** minutes.
 
@@ -168,9 +169,23 @@ In this exercise, you will enter a query into the Stream Analytics job you creat
 With the query now formulated, tested against a set of sample data, and saved, it's time to deploy it against a live data stream.
 
 <a name="Exercise3"></a>
-## Exercise 3: Stream data from the camera array ##
+## Exercise 3: Write an Azure Function and connect it to Stream Analytics ##
 
-TODO: Add introduction.
+The Stream Analytics query that you tested in the previous exercise uses a simple criterion: if the same camera snaps two pictures within 10 seconds, there *might* be a polar bear. But the ultimate goal is to determine with a great deal of confidence whether there really *is* a polar bear. That means employing machine learning.
+
+One way to connect a Stream Analytics job to a machine-learning model running in the cloud is to write an [Azure Function](https://azure.microsoft.com/services/functions/) and connect it to a Stream Analytics job as an output. The function, which is invoked each time Stream Analytics produces an output, can then call out to the machine-learning model. In this exercise, you will write an Azure Function, connect it to Stream Analytics, and stub it out so that it can be connected to a machine-learning model in the next lab.
+
+1. tk.
+
+	![tk](Images/tk.png)
+
+	_tk_
+
+1. tk.
+
+	![tk](Images/tk.png)
+
+	_tk_
 
 1. tk.
 
@@ -190,7 +205,14 @@ TODO: Add introduction.
 
 	_tk_
 
-1. tk.
+TODO: Add closing.
+
+<a name="Exercise4"></a>
+## Exercise 4: Stream data from the camera array ##
+
+Now that the Stream Analytics job is prepared and an Azure Function has been created to receive output, the next step is to generate a live data stream and verify that the solution you've built thus far works as intended. In this exercise, you will use Node.js to stream events from the simulated camera array.
+
+1. Return to the project directory that you created in the previous lab and create a file in it named **run.js**. Then paste the following code into the file:
 
 	```javascript
 	'use strict';
@@ -324,7 +346,64 @@ TODO: Add introduction.
 
 	TODO: Add explanation.
 
-1. tk.
+1. Open a Command Prompt or terminal window and ```cd``` to the project directory. Then use the following command to run **run.js**:
+
+	```
+	node run.js
+	```
+
+1. Confirm that you see output similar to the following, indicating that all 10 "cameras" are connected to the IoT hub:
+
+	```
+	polar_cam_0003 connected
+	polar_cam_0005 connected
+	polar_cam_0001 connected
+	polar_cam_0009 connected
+	polar_cam_0004 connected
+	polar_cam_0006 connected
+	polar_cam_0008 connected
+	polar_cam_0007 connected
+	polar_cam_0002 connected
+	polar_cam_0010 connected
+	```
+
+	Note that the order in which the cameras connect to the IoT hub will probably differ from what's shown here, and will probably even vary from run to run.
+
+1. After a few seconds, additional output should appear. Each line corresponds to an event transmitted from a camera to the IoT hub. The output will look something like this:
+
+	```
+	polar_cam_0008: https://streaminglabstorage.blob.core.windows.net/photos/image_24.jpg
+	polar_cam_0004: https://streaminglabstorage.blob.core.windows.net/photos/image_10.jpg
+	polar_cam_0005: https://streaminglabstorage.blob.core.windows.net/photos/image_26.jpg
+	polar_cam_0007: https://streaminglabstorage.blob.core.windows.net/photos/image_27.jpg
+	polar_cam_0001: https://streaminglabstorage.blob.core.windows.net/photos/image_15.jpg
+	polar_cam_0007: https://streaminglabstorage.blob.core.windows.net/photos/image_20.jpg
+	polar_cam_0003: https://streaminglabstorage.blob.core.windows.net/photos/image_18.jpg
+	polar_cam_0005: https://streaminglabstorage.blob.core.windows.net/photos/image_21.jpg
+	polar_cam_0001: https://streaminglabstorage.blob.core.windows.net/photos/image_20.jpg
+	polar_cam_0009: https://streaminglabstorage.blob.core.windows.net/photos/image_26.jpg
+	```
+
+Confirm that the cameras are running and generating events as shown above. **Leave them running**, and then proceed to the next exercise.
+
+<a name="Exercise5"></a>
+## Exercise 5: Analyze the live data stream ##
+
+In this exercise, you will start the Stream Analytics job so it can examine the live data stream emanating from the cameras. Then you will check the output from the Azure Function to ensure that data is being received by Stream Analytics, queried, and output to the function.
+
+1. Return to the Stream Analytics job in the [Azure Portal](https://portal.azure.com) and click the **Start** button.
+
+    ![Starting the Stream Analytics job](Images/start-stream-analytics-job-1.png)
+
+    _Starting the Stream Analytics job_
+
+1. Make sure **Job output start time** is set to **Now**, and then click the **Start** button to start running the job.
+
+    ![Specifying the job start time](Images/start-stream-analytics-job-2.png)
+
+    _Specifying the job start time_
+
+1. Go to the Azure Function that you created in [Exercise 3](#Exercise3) in the portal and tk.
 
 	![tk](Images/tk.png)
 
@@ -336,44 +415,17 @@ TODO: Add introduction.
 
 	_tk_
 
-TODO: Add closing.
-
-<a name="Exercise4"></a>
-## Exercise 4: Analyze the live data stream ##
-
-TODO: Add introduction.
-
 1. tk.
 
 	![tk](Images/tk.png)
 
 	_tk_
 
-1. tk.
+1. Return to the Stream Analytics job in the portal and click **Stop** to stop it. Then click **Yes** when asked to confirm that you want to stop the job.
 
-	![tk](Images/tk.png)
+1. Return to the Command Prompt or terminal window in which **run.js** is running and press **Ctrl+C** to stop it (and therefore stop the flow of events from the simulated cameras).
 
-	_tk_
-
-1. tk.
-
-	![tk](Images/tk.png)
-
-	_tk_
-
-1. tk.
-
-	![tk](Images/tk.png)
-
-	_tk_
-
-1. tk.
-
-	![tk](Images/tk.png)
-
-	_tk_
-
-TODO: Add closing.
+You have confirmed that Stream Analytics is receiving input from the IoT hub and that the Azure Function is receiving output from Stream Analytics.
 
 <a name="Summary"></a>
 ## Summary ##
