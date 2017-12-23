@@ -160,11 +160,21 @@ In this exercise, you will use the Azure CLI to create an Azure SQL database tha
 
 1. Open the database in the Azure Portal. Then click **Data explorer** in the menu on the left, click **Login** at the top of the blade, enter the user name and password you specified in Step 1, and click **OK** to log in to the database.
 
-	![Logging in to the data server](Images/configure-database-server.png)
+	![Logging in to the database server](Images/database-login.png)
 
-	_Logging in to the data server_
+	_Logging in to the database server_
 
-1. TODO: Create table.
+1. Type the following query into the query window and click **Run** to run the query and create a database table:
+
+	```sql
+	CREATE TABLE PolarBears (CameraID VARCHAR(16), Latitude REAL, Longitude REAL, URL VARCHAR(256), Timestamp DATETIME)
+	```
+
+1. Expand the list of tables in the treeview on the left and confirm that the "PolarBears" table was created.
+
+	![Viewing the tables in the database](Images/polar-bears-table.png)
+
+	_Viewing the tables in the database_
 
 With the database created and configured to allow access to Azure Functions, the next step is to modify the function that you wrote in the previous lab to call the Custom Vision Service and write the results to the database.
 
