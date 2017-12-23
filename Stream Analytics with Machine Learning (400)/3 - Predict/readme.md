@@ -158,7 +158,13 @@ In this exercise, you will use the Azure CLI to create an Azure SQL database tha
 
 	_Opening the database server to Azure services_
 
-TODO: Add a table to the database.
+1. Open the database in the Azure Portal. Then click **Data explorer** in the menu on the left, click **Login** at the top of the blade, enter the user name and password you specified in Step 1, and click **OK** to log in to the database.
+
+	![Logging in to the data server](Images/configure-database-server.png)
+
+	_Logging in to the data server_
+
+1. TODO: Create table.
 
 With the database created and configured to allow access to Azure Functions, the next step is to modify the function that you wrote in the previous lab to call the Custom Vision Service and write the results to the database.
 
@@ -205,9 +211,9 @@ TODO: Run ```npm install request --save``` in the function app
 	};
 	```
 
-	The modified function tk.
+	The modified function uses the NPM ```request``` module to call the Custom Vision Service, passing the URL of the image to be analyzed. It parses the results and retrieves the value indicating the probability that the image contains a polar bear. Then it uses the NPM ```tk``` module to write a record to the database. That record contains the camera ID, the latitude and longitude of the camera, a timestamp indicating when the picture was taken, and an ```IsPolarBar``` value indicating whether the image contains a polar bear. The threshhold for determining whether the image contains a polar bear is 80%.
 
-1. Replace the following placeholders with the values below. Then save the file.
+1. Replace the following placeholders in the function code with the values below. Then save your changes.
 
 	- Replace PREDICTION_URL on line 2 with the prediction URL you saved in Exercise 2, Step 8
 	- Replace PREDICTION_UKEY on line 3 with the prediction key you saved in Exercise 2, Step 8
@@ -215,31 +221,13 @@ TODO: Run ```npm install request --save``` in the function app
 	- tk
 	- tk
 
-1. tk.
+1. Use the Azure Portal to start the Stream Analytics job.
 
-	![tk](Images/tk.png)
+1. Once the Stream Analytics job is running, open a Command Prompt or terminal window, ```cd``` to the project directory, and use a ```node run.js``` to start the camera array.
 
-	_tk_
+1. **Let the camera array and the Stream Analytics job run for 5 to 10 minutes**. Then stop the Stream Analytics job and stop **run.js**.
 
-1. tk.
-
-	![tk](Images/tk.png)
-
-	_tk_
-
-1. tk.
-
-	![tk](Images/tk.png)
-
-	_tk_
-
-1. tk.
-
-	![tk](Images/tk.png)
-
-	_tk_
-
-1. tk.
+1. Open the database in the Azure Portal and tk.
 
 	![tk](Images/tk.png)
 
