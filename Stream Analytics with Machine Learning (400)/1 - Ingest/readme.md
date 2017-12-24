@@ -316,7 +316,7 @@ In this exercise, you will write more code using Node.js to test the camera arra
 	                    'latitude' : camera.latitude,
 	                    'longitude' : camera.longitude,
 	                    'url' : 'https://' + storageAccountName + '.blob.core.windows.net/photos/image_19.jpg',
-	                    'timestamp' : new Date().toUTCString()
+	                    'timestamp' : new Date().toISOString()
 	                };
 	
 	                var message = new Message(JSON.stringify(data));

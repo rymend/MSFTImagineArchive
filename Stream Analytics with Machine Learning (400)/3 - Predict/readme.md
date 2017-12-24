@@ -183,9 +183,21 @@ Note the column named "IsPolarBear," which will be set to 1 or 0 to indicate tha
 
 In this exercise, you will modify the Azure Function that you created in the previous lab to call the Custom Vision Service and determine the likelihood that an image that *might* contain a polar bear *does* contain a polar bear, and to write the output to the Azure SQL database that you created in [Exercise 3](#Exercise3).
 
-TODO: Run ```npm install request``` in the function app
+1. Open the Azure Function App that you created in the previous lab in the Azure Portal. Click **Platform features** to open the "Platform features" tab, and then click **Console**.
 
-TODO: Run ```npm install azure-storage``` in the function app
+	![Opening a function console](Images/open-function-console.png)
+
+	_Opening a function console_
+
+1. Execute the following commands in the function console to install the NPM [request](https://www.npmjs.com/package/request) package, the NPM [tedious](https://www.npmjs.com/package/tedious) package, and the [Azure Storage SDK for Node.js](https://www.npmjs.com/package/azure-storage) so your function can use them.
+
+	```
+	npm install request
+	npm install tedious
+	npm azure-storage
+	```
+
+	> Azure Functions written in JavaScript execute in a Node.js environment. The function console gives you access to that environment and lets you install NPM packages the same as you would in a local environment.
 
 1. Open the Azure Function that you created in the previous lab in the Azure Portal. Replace the function code with the following code:
 
@@ -195,12 +207,21 @@ TODO: Run ```npm install azure-storage``` in the function app
 	    var predictionKey = 'PREDICTION_KEY';
 	    var storageAccountName = 'ACCOUNT_NAME';
 	    var storageAccountKey = 'ACCOUNT_KEY';
-
-	    // Get the image URL from the request
-	    var url = JSON.parse(req.rawBody).url;
+	    var databaseServer = 'SERVER_NAME.database.windows.net';
+	    var databaseName = 'DATABASE_NAME';
+	    var databaseUsername = 'ADMIN_USERNAME';
+	    var databasePassword = 'ADMIN_PASSWORD';
+	
+	    // Parse input
+	    var input = JSON.parse(req.rawBody)[0];
+	    var id = input.deviceId;
+	    var latitude = input.latitude;
+	    var longitude = input.longitude;
+	    var url = input.url;
 	    var blobName = url.substr(url.lastIndexOf('/') + 1);
-
-	    // Generate a shared-access signature (SAS) for the blob
+	    var timestamp = input.timestamp;
+	
+	    // Generate a SAS
 	    var azure = require('azure-storage');
 	    var blobService = azure.createBlobService(storageAccountName, storageAccountKey);
 	
@@ -216,7 +237,7 @@ TODO: Run ```npm install azure-storage``` in the function app
 	    };
 	
 	    var sas = blobService.generateSharedAccessSignature('photos', blobName, policy);
-
+	
 	    // Call the Custom Vision Service
 	    const options = {
 	        url: predictionUrl,
@@ -233,56 +254,102 @@ TODO: Run ```npm install azure-storage``` in the function app
 	    var request = require('request');
 	
 	    request(options, (err, res, body) => {
-	        if (!err) {
-	            var probability =  body.Predictions.find(p => p.Tag.toLowerCase() === 'polar bear').Probability;          
-
-	            TODO: Write the result to Azure SQL
-	
+	        if (err) {
+	            context.log(err);
 	            context.done();
+	        }
+	        else {
+	            var probability =  body.Predictions.find(p => p.Tag.toLowerCase() === 'polar bear').Probability;          
+	            var isPolarBear = probability > 0.8; // 80% threshhold
+	
+	            // Update the database
+	            var Connection = require('tedious').Connection;
+	            var Request = require('tedious').Request;
+	        
+	            var config = 
+	            {
+	                userName: databaseUsername,
+	                password: databasePassword,
+	                server: databaseServer,
+	                options: 
+	                {
+	                    database: databaseName,
+	                    encrypt: true
+	                }
+	            }
+	            
+	            var connection = new Connection(config);
+	
+	            connection.on('connect', (err) => {
+	                if (err) {
+	                    context.log(err)
+	                    context.done();
+	                }
+	                else {
+	                    var query = "INSERT INTO dbo.PolarBears (CameraID, Latitude, Longitude, URL, Timestamp, IsPolarBear) " +
+	                        "VALUES ('" + id + "', " + latitude + ", " + longitude + ", '" + url + "', '" + timestamp + "', " + (isPolarBear ? "1" : "0") + ")";
+	
+	                    dbRequest = new Request(query, err => {
+	                        if (err) {
+	                            context.log(err);
+	                            context.done();
+	                        }
+	                    });
+	
+	                    dbRequest.on('error', err => {
+	                        context.log(err);
+	                    });
+	
+	                    dbRequest.on('requestCompleted', () => {
+	                        context.done();
+	                    });
+	
+	                    connection.execSql(dbRequest);
+	                }
+	            });
 	        }
 	    });
 	};
 	```
 
-	The modified function uses the NPM ```request``` module to call the Custom Vision Service, passing the URL of the image to be analyzed. It parses the results and retrieves the value indicating the probability that the image contains a polar bear. Then it uses the NPM ```tk``` module to write a record to the database. That record contains the camera ID, the latitude and longitude of the camera, a timestamp indicating when the picture was taken, and an ```IsPolarBar``` value indicating whether the image contains a polar bear. The threshhold for determining whether the image contains a polar bear is 80%.
+	The modified function uses NPM [request](https://www.npmjs.com/package/request) to call the Custom Vision Service, passing the URL of the image to be analyzed. It parses the results and retrieves the value indicating the probability that the image contains a polar bear. Then it uses NPM [tedious](https://www.npmjs.com/package/tedious) to write a record to the database. That record contains the camera ID, the latitude and longitude of the camera, the image URL, a timestamp indicating when the picture was taken, and an ```IsPolarBar``` value indicating whether the image contains a polar bear. The threshhold for determining whether the image contains a polar bear is 80%.
 
-	Another notable aspect of this code is its use of a [shared-access signature](https://docs.microsoft.com/en-us/azure/storage/common/storage-dotnet-shared-access-signature-part-1), or SAS. The "photos" container that you created in Lab 1 is private. To access the blobs stored there, you must have access to the storage account or have the storage account's access key. SASes allow anonymous users to access individual blobs, but only for a specified length of time and optionally with read access only.
+	Another notable aspect of this code is its use of a [shared-access signature](https://docs.microsoft.com/en-us/azure/storage/common/storage-dotnet-shared-access-signature-part-1), or SAS. The "photos" container that you created in Lab 1 is private. To access the blobs stored there, you must have access to the storage account or have the storage account's access key. SASes allow anonymous users to access individual blobs, but only for a specified length of time and optionally with read-only access.
 
-	The code that you just pasted in uses the Azure Storage SDK for Node.js to generate a read-only SAS for the blob that is passed to the Custom Vision Service, and appends it to the blob URL as a query string. The SAS is valid for 3 minutes and allows read access only. This allows your code to submit private blobs to the Custom Vision Service for analysis without putting the blobs in a public container where anyone could fetch them.
+	The code that you just pasted in uses the Azure Storage SDK for Node.js ([azure-storage](https://www.npmjs.com/package/azure-storage)) to generate a read-only SAS for the blob that is passed to the Custom Vision Service, and appends it to the blob URL as a query string. The SAS is valid for 3 minutes and allows read access only. This allows your code to submit private blobs to the Custom Vision Service for analysis without putting the blobs in a public container where anyone could download them.
 
 1. Replace the following placeholders in the function code with the values below. Then save your changes.
 
-	- Replace PREDICTION_URL on line 2 with the prediction URL you saved in Exercise 2, Step 8
-	- Replace PREDICTION_UKEY on line 3 with the prediction key you saved in Exercise 2, Step 8
+	- Replace PREDICTION_URL on line 2 with the prediction URL you saved in Exercise 2
+	- Replace PREDICTION_UKEY on line 3 with the prediction key you saved in Exercise 2
 	- Replace ACCOUNT_NAME on line 4 with the name of the storage account you created in Lab 1
 	- Replace ACCOUNT_KEY on line 5 with the storage account's access key
-	- Replace
-	- Replace
-	- Replace
+	- Replace SERVER_NAME on line 6 with the named you assigned to the database server in Exercise 3
+	- Replace DATABASE_NAME on line 7 with the name you assigned to the database
+	- Replace ADMIN_USERNAME on line 8 with the database user name you specified
+	- Replace ADMIN_PASSWORD on line 9 with the database password you specified
 
 1. Use the Azure Portal to start the Stream Analytics job.
 
-1. Once the Stream Analytics job is running, open a Command Prompt or terminal window, ```cd``` to the project directory, and use a ```node run.js``` to start the camera array.
+1. Once the Stream Analytics job is running, open a Command Prompt or terminal window, ```cd``` to the project directory, and start the camera array running with the following command:
 
-1. **Let the camera array and the Stream Analytics job run for 5 to 10 minutes**. Then stop the Stream Analytics job and stop **run.js**.
+	```
+	node run.js
+	```
 
-1. Open the database in the Azure Portal and tk.
+1. **Let the camera array and the Stream Analytics job run for 3 to 5 minutes**. Then stop the Stream Analytics job and stop **run.js**.
 
-	![tk](Images/tk.png)
+1. Return to the database in the Azure Portal and use Data Explorer to execute the following query:
 
-	_tk_
+	```sql
+	SELECT * FROM dbo.PolarBears
+	```
 
-1. tk.
+1. Confirm that the table contains a few rows representing images that were submitted to the Custom Vision Service for analysis. Look at the "IsPolarBear" column in each row. How many of the images that were analyzed contain a polar bear?
 
-	![tk](Images/tk.png)
+	![Rows written to the database by the Azure Function](Images/data-explorer-query-results.png)
 
-	_tk_
-
-1. tk.
-
-	![tk](Images/tk.png)
-
-	_tk_
+	_Rows written to the database by the Azure Function_
 
 TODO: Add closing.
 

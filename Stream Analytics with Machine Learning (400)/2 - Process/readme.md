@@ -349,7 +349,7 @@ In this exercise, you will use Node.js to stream events from the simulated camer
 	            'latitude' : this._latitude,
 	            'longitude' : this._longitude,
 	            'url' : 'https://' + this._storageAccountName + '.blob.core.windows.net/photos/' + imageFileName,
-	            'timestamp' : new Date().toUTCString()
+	            'timestamp' : new Date().toISOString()
 	        };
 	
 	        var message = new Message(JSON.stringify(data));
