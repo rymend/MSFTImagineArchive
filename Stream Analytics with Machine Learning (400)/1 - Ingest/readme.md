@@ -77,10 +77,8 @@ In this exercise, you will use the Azure CLI to create an Azure storage account 
 1. Before you can upload blobs to a storage account, you must create a container to store them in. Use the following command to create a container named "photos" in the storage account, replacing ACCOUNT_NAME with the name you assigned to the storage account in the previous step:
 
 	```
-	az storage container create --name photos --account-name ACCOUNT_NAME --public-access blob
+	az storage container create --name photos --account-name ACCOUNT_NAME
 	```
-
-	```---public-access blob``` makes the blobs in the container public, which is essential for passing blob to the Custom Vision Service via URL.
 
 You now have a storage account for storing photos taken by your simulated cameras, and a container to store them in. Now let's create an IoT hub to receive events transmitted by the cameras.
 
@@ -317,7 +315,8 @@ In this exercise, you will write more code using Node.js to test the camera arra
 	                    'deviceId' : camera.deviceId,
 	                    'latitude' : camera.latitude,
 	                    'longitude' : camera.longitude,
-	                    'url' : 'https://' + storageAccountName + '.blob.core.windows.net/photos/image_19.jpg'
+	                    'url' : 'https://' + storageAccountName + '.blob.core.windows.net/photos/image_19.jpg',
+	                    'timestamp' : new Date().toUTCString()
 	                };
 	
 	                var message = new Message(JSON.stringify(data));

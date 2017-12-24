@@ -170,37 +170,62 @@ In this exercise, you will use the Azure CLI to create an Azure SQL database tha
 	CREATE TABLE PolarBears (CameraID VARCHAR(16), Latitude REAL, Longitude REAL, URL VARCHAR(256), Timestamp DATETIME, IsPolarBear BIT)
 	```
 
-1. Expand the list of tables in the treeview on the left and confirm that the "PolarBears" table was created.
+1. Expand the list of tables in the treeview on the left and confirm that the "PolarBears" table was created, and that it has the following schema:
 
-	![Viewing the tables in the database](Images/polar-bears-table.png)
+	![The database's "PolarBears" table](Images/polar-bears-table.png)
 
-	_Viewing the tables in the database_
+	_The database's "PolarBears" table_
 
-With the database created and configured to allow access to Azure Functions, the next step is to modify the function that you wrote in the previous lab to call the Custom Vision Service and write the results to the database.
+Note the column named "IsPolarBear," which will be set to 1 or 0 to indicate that the corresponding images does or does not contain a polar bear.  
 
 <a name="Exercise4"></a>
 ## Exercise 4: Modify the Azure Function ##
 
 In this exercise, you will modify the Azure Function that you created in the previous lab to call the Custom Vision Service and determine the likelihood that an image that *might* contain a polar bear *does* contain a polar bear, and to write the output to the Azure SQL database that you created in [Exercise 3](#Exercise3).
 
-TODO: Run ```npm install request --save``` in the function app
+TODO: Run ```npm install request``` in the function app
+
+TODO: Run ```npm install azure-storage``` in the function app
 
 1. Open the Azure Function that you created in the previous lab in the Azure Portal. Replace the function code with the following code:
 
 	```javascript
 	module.exports = function (context, req) {
-	    var _url = 'PREDICTION_URL';
-	    var _key = 'PREDICTION_KEY';
+	    var predictionUrl = 'PREDICTION_URL';
+	    var predictionKey = 'PREDICTION_KEY';
+	    var storageAccountName = 'ACCOUNT_NAME';
+	    var storageAccountKey = 'ACCOUNT_KEY';
+
+	    // Get the image URL from the request
+	    var url = JSON.parse(req.rawBody).url;
+	    var blobName = url.substr(url.lastIndexOf('/') + 1);
+
+	    // Generate a shared-access signature (SAS) for the blob
+	    var azure = require('azure-storage');
+	    var blobService = azure.createBlobService(storageAccountName, storageAccountKey);
 	
+	    var now = new Date();
+	    var expiry = new Date(now).setMinutes(now.getMinutes() + 3);
+	
+	    var policy = {
+	        AccessPolicy: {
+	            Permissions: azure.BlobUtilities.SharedAccessPermissions.READ,
+	            Start: now,
+	            Expiry: expiry
+	        },
+	    };
+	
+	    var sas = blobService.generateSharedAccessSignature('photos', blobName, policy);
+
 	    // Call the Custom Vision Service
 	    const options = {
-	        url: _url,
+	        url: predictionUrl,
 	        method: 'POST',
 	        headers: {
-	            'Prediction-Key': _key
+	            'Prediction-Key': predictionKey
 	        },
 	        body: {
-	            'Url': JSON.parse(req.rawBody).url
+	            'Url': url + '?' + sas
 	        },
 	        json: true
 	    };
@@ -221,13 +246,19 @@ TODO: Run ```npm install request --save``` in the function app
 
 	The modified function uses the NPM ```request``` module to call the Custom Vision Service, passing the URL of the image to be analyzed. It parses the results and retrieves the value indicating the probability that the image contains a polar bear. Then it uses the NPM ```tk``` module to write a record to the database. That record contains the camera ID, the latitude and longitude of the camera, a timestamp indicating when the picture was taken, and an ```IsPolarBar``` value indicating whether the image contains a polar bear. The threshhold for determining whether the image contains a polar bear is 80%.
 
+	Another notable aspect of this code is its use of a [shared-access signature](https://docs.microsoft.com/en-us/azure/storage/common/storage-dotnet-shared-access-signature-part-1), or SAS. The "photos" container that you created in Lab 1 is private. To access the blobs stored there, you must have access to the storage account or have the storage account's access key. SASes allow anonymous users to access individual blobs, but only for a specified length of time and optionally with read access only.
+
+	The code that you just pasted in uses the Azure Storage SDK for Node.js to generate a read-only SAS for the blob that is passed to the Custom Vision Service, and appends it to the blob URL as a query string. The SAS is valid for 3 minutes and allows read access only. This allows your code to submit private blobs to the Custom Vision Service for analysis without putting the blobs in a public container where anyone could fetch them.
+
 1. Replace the following placeholders in the function code with the values below. Then save your changes.
 
 	- Replace PREDICTION_URL on line 2 with the prediction URL you saved in Exercise 2, Step 8
 	- Replace PREDICTION_UKEY on line 3 with the prediction key you saved in Exercise 2, Step 8
-	- tk
-	- tk
-	- tk
+	- Replace ACCOUNT_NAME on line 4 with the name of the storage account you created in Lab 1
+	- Replace ACCOUNT_KEY on line 5 with the storage account's access key
+	- Replace
+	- Replace
+	- Replace
 
 1. Use the Azure Portal to start the Stream Analytics job.
 
