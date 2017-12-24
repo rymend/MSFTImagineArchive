@@ -183,8 +183,6 @@ With the database created and configured to allow access to Azure Functions, the
 
 In this exercise, you will modify the Azure Function that you created in the previous lab to call the Custom Vision Service and determine the likelihood that an image that *might* contain a polar bear *does* contain a polar bear, and to write the output to the Azure SQL database that you created in [Exercise 3](#Exercise3).
 
-TODO: Make blob container public in Lab 1.
-
 TODO: Run ```npm install request --save``` in the function app
 
 1. Open the Azure Function that you created in the previous lab in the Azure Portal. Replace the function code with the following code:
