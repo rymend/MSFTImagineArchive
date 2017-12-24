@@ -136,7 +136,7 @@ You now have a machine-learning model that can discern whether an image contains
 <a name="Exercise3"></a>
 ## Exercise 3: Create an Azure SQL database ##
 
-In this exercise, you will use the Azure CLI to create an Azure SQL database that resides in the cloud. Ultimately, this database will collect output from the Azure Function you connected to Stream Analytics in the previous lab, and it will be connected to Power BI to show where polar bears are being spotted.
+In this exercise, you will use the Azure CLI to create an Azure SQL database that resides in the cloud. Tthis database will collect output from the Azure Function you connected to Stream Analytics in the previous lab, and in the next lab, you will connect the database to Power BI to show where polar bears are being spotted.
 
 1. Open a Command Prompt or terminal window and use the following command to create a database server in the "streaminglab-rg" resource group. Replace SERVER_NAME with the name you wish to assign the database server, and replace ADMIN_USERNAME and ADMIN_PASSWORD with the user name and password for an admin user. **Remember the user name and password** that you enter, because you will need them later.
 
@@ -314,7 +314,7 @@ In this exercise, you will modify the Azure Function that you created in the pre
 
 	The modified function uses NPM [request](https://www.npmjs.com/package/request) to call the Custom Vision Service, passing the URL of the image to be analyzed. It parses the results and retrieves the value indicating the probability that the image contains a polar bear. Then it uses NPM [tedious](https://www.npmjs.com/package/tedious) to write a record to the database. That record contains the camera ID, the latitude and longitude of the camera, the image URL, a timestamp indicating when the picture was taken, and an ```IsPolarBar``` value indicating whether the image contains a polar bear. The threshhold for determining whether the image contains a polar bear is 80%.
 
-	Another notable aspect of this code is its use of a [shared-access signature](https://docs.microsoft.com/en-us/azure/storage/common/storage-dotnet-shared-access-signature-part-1), or SAS. The "photos" container that you created in Lab 1 is private. To access the blobs stored there, you must have access to the storage account or have the storage account's access key. SASes allow anonymous users to access individual blobs, but only for a specified length of time and optionally with read-only access.
+	Another notable aspect of this code is its use of a [shared-access signature](https://docs.microsoft.com/en-us/azure/storage/common/storage-dotnet-shared-access-signature-part-1), or SAS. The "photos" container that you created in Lab 1 is private. To access the blobs stored there, you must have access to the storage account or have the storage account's access key. Shared-access signatures allow anonymous users to access individual blobs, but only for a specified length of time and optionally with read-only access.
 
 	The code that you just pasted in uses the Azure Storage SDK for Node.js ([azure-storage](https://www.npmjs.com/package/azure-storage)) to generate a read-only SAS for the blob that is passed to the Custom Vision Service, and appends it to the blob URL as a query string. The SAS is valid for 3 minutes and allows read access only. This allows your code to submit private blobs to the Custom Vision Service for analysis without putting the blobs in a public container where anyone could download them.
 
@@ -324,7 +324,7 @@ In this exercise, you will modify the Azure Function that you created in the pre
 	- Replace PREDICTION_UKEY on line 3 with the prediction key you saved in Exercise 2
 	- Replace ACCOUNT_NAME on line 4 with the name of the storage account you created in Lab 1
 	- Replace ACCOUNT_KEY on line 5 with the storage account's access key
-	- Replace SERVER_NAME on line 6 with the named you assigned to the database server in Exercise 3
+	- Replace SERVER_NAME on line 6 with the name you assigned to the database server in Exercise 3
 	- Replace DATABASE_NAME on line 7 with the name you assigned to the database
 	- Replace ADMIN_USERNAME on line 8 with the database user name you specified
 	- Replace ADMIN_PASSWORD on line 9 with the database password you specified
@@ -351,12 +351,12 @@ In this exercise, you will modify the Azure Function that you created in the pre
 
 	_Rows written to the database by the Azure Function_
 
-TODO: Add closing.
+In the next lab, you will use Power BI to produce a more compelling visualization of the data.
 
 <a name="Summary"></a>
 ## Summary ##
 
-TODO: Add summary.
+In this lab, you used the Custom Vision Service to train an image-classification model that can differentiate between different types of Arctic wildlife. Then you modified the Azure Function you wrote in the previous lab to call the model and write the results to an Azure SQL database.You may now proceed to the next lab in this series — [Processing IoT Data in Real Time Using Stream Analytics and Machine Learning, Part 4](#) — to apply the finishing touches by building a live dashboard that shows where polar bears are being spotted in the wild.
 
 ---
 
