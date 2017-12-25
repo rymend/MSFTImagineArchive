@@ -2,7 +2,7 @@
 
 You are the leader of a group of climate scientists who are concerned about the dwindling polar-bear population in the Arctic. As such, your team has placed hundreds of motion-activated cameras at strategic locations throughout the region. Rather than manually examine each photograph to determine whether it contains a polar bear, you have been challenged to devise an automated system that processes data from these cameras in real time and displays an alert on a map when a polar bear is photographed. You need a solution that incorporates real-time stream processing to analyze raw data for potential sightings, and one that incorporates artificial intelligence (AI) and machine learning to determine with a high degree of accuracy whether a photo contains a polar bear. And you need it fast, because climate change won't wait.
 
-In a series of four hands-on labs, you will build such a system using [Microsoft Azure](https://azure.microsoft.com/) and [Microsoft Cognitive Services](https://azure.microsoft.com/services/cognitive-services/). Specifically, you will use an [Azure Iot hub](https://azure.microsoft.com/services/iot-hub/) to ingest streaming data from simulated cameras, [Azure Storage](https://azure.microsoft.com/services/storage/?v=16.50) to store photographs, [Azure Stream Analytics](https://azure.microsoft.com/services/stream-analytics/) to process real-time data streams, [Azure Functions](https://azure.microsoft.com/services/functions/) to process output from Stream Analytics, Microsoft's [Custom Vision Service](https://azure.microsoft.com/services/cognitive-services/custom-vision-service/) to analyze photographs for polar pears, [Microsoft Power BI](https://powerbi.microsoft.com/) to build a real-time dashboard for visualizing results, and [Azure SQL Database](https://azure.microsoft.com/services/sql-database/) as a data source for Power BI.
+In a series of four hands-on labs, you will build such a system using [Microsoft Azure](https://azure.microsoft.com/) and [Microsoft Cognitive Services](https://azure.microsoft.com/services/cognitive-services/). Specifically, you will use an [Azure Iot hub](https://azure.microsoft.com/services/iot-hub/) to ingest streaming data from simulated cameras, [Azure Storage](https://azure.microsoft.com/services/storage/?v=16.50) to store photographs, [Azure Stream Analytics](https://azure.microsoft.com/services/stream-analytics/) to process real-time data streams, [Azure Functions](https://azure.microsoft.com/services/functions/) to process output from Stream Analytics, Microsoft's [Custom Vision Service](https://azure.microsoft.com/services/cognitive-services/custom-vision-service/) to analyze photographs for polar pears, [Microsoft Power BI](https://powerbi.microsoft.com/) to build a dashboard for visualizing results, and [Azure SQL Database](https://azure.microsoft.com/services/sql-database/) as a data source for Power BI.
 
 In this lab, you will create a storage account and an IoT hub and write a [Node.js](https://nodejs.org/) app that connects them to a simulated camera array. Then you will test one of the virtual cameras by having it upload a photograph to blob storage and transmit an event containing the blob URL and other information to the IoT hub.
 
@@ -87,7 +87,7 @@ You now have a storage account for storing photos taken by your simulated camera
 
 Azure Stream Analytics supports several types of input, including input from [Azure IoT hubs](https://azure.microsoft.com/services/iot-hub/). In the IoT world, data is easily transmitted to IoT hubs through field gateways (for devices that are not IP-capable) or cloud gateways (for devices that *are* IP-capable), and a single Azure IoT hub can handle millions of events per second from devices spread throughout the world. IoT hubs support secure two-way communications with the devices connected to them using a variety of transport protocols.
 
-In this exercise, you will create an Azure IoT hub to receive input from a simulated camera array and retrieve a connection string that allows it to be accessed securely. In [Part 2](#), you will use the IoT hub to provide input to a Stream Analytics job.
+In this exercise, you will create an Azure IoT hub to receive input from a simulated camera array.
 
 1. Use the following command to create an IoT Hub in the same region as the storage account you created in the previous exercise and place it in the "streaminglab-rg" resource group. Replace HUB_NAME with an IoT hub name, which must be unique across Azure and conform to DNS naming conventions.
 
@@ -116,7 +116,7 @@ The connection string that you just retrieved is important, because it will enab
 <a name="Exercise3"></a>
 ## Exercise 3: Deploy a simulated camera array ##
 
-Devices that transmit events to an Azure IoT hub must first be registered with that IoT hub. Once registered, a device can send events to an IoT hub using one of several protocols, including HTTPS, [AMPQ](http://docs.oasis-open.org/amqp/core/v1.0/os/amqp-core-complete-v1.0-os.pdf), and [MQTT](http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/mqtt-v3.1.1.pdf). Calls must be authenticated, and IoT hubs support several forms of authentication as described in [Control access to IoT hub](https://docs.microsoft.com/azure/iot-hub/iot-hub-devguide-security). In this exercise, you will create a Node.js app that registers an array of simulated cameras with the IoT hub you created in the previous exercise.
+Devices that transmit events to an Azure IoT hub must first be registered with that IoT hub. Once registered, a device can send events to the IoT hub using one of several protocols, including HTTPS, [AMPQ](http://docs.oasis-open.org/amqp/core/v1.0/os/amqp-core-complete-v1.0-os.pdf), and [MQTT](http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/mqtt-v3.1.1.pdf). Calls must be authenticated, and IoT hubs support several forms of authentication as described in [Control access to IoT hub](https://docs.microsoft.com/azure/iot-hub/iot-hub-devguide-security). In this exercise, you will create a Node.js app that registers an array of simulated cameras with the IoT hub you created in the previous exercise.
 
 1. If Node.js isn't installed on your computer, go to https://nodejs.org/ and install it it now. You can determine whether Node is installed — and what version is installed — by opening a Command Prompt or terminal window and typing the following command:
 
@@ -220,9 +220,9 @@ Devices that transmit events to an Azure IoT hub must first be registered with t
 	var devices = JSON.parse(fs.readFileSync('devices.json', 'utf8'));
 	
 	console.log('Registering devices...');
-	registry.addDevices(devices, function(err, info, res) {
-	    registry.list(function(err, info, res) {
-	        info.forEach(function(device) {
+	registry.addDevices(devices, (err, info, res) => {
+	    registry.list((err, info, res) => {
+	        info.forEach(device => {
 	            devices.find(o => o.deviceId === device.deviceId).key = device.authentication.symmetricKey.primaryKey;          
 	        });
 	
@@ -233,7 +233,7 @@ Devices that transmit events to an Azure IoT hub must first be registered with t
 	});
 	```
 
-	This code uses the [Microsoft Azure IoT Service SDK for Node.js](https://www.npmjs.com/package/azure-iothub) to register all the simulated devices defined in **devices.json** with the IoT hub that you created earlier. It also retrieves from the IoT hub the access key created for each device and creates a new file named **cameras.json** that contains the same information as **devices.json**, but with a value assigned to each device's ```key``` property. It is this key, which is transmitted in each request, that enables the device to authenticate to the IoT hub.
+	This code registers all the simulated devices defined in **devices.json** with the IoT hub that you created earlier. It also retrieves from the IoT hub the access key created for each device and creates a new file named **cameras.json** that contains the same information as **devices.json**, but with a value assigned to each device's ```key``` property. It is this key, which is transmitted in each request, that enables a device to authenticate to the IoT hub.
 
 1. Replace CONNECTION_STRING on line 3 of **deploy.js** with the connection string that you saved in Step 3 of the previous exercise. Then save the file.
 
@@ -258,12 +258,12 @@ Devices that transmit events to an Azure IoT hub must first be registered with t
 	az iot device list --hub-name HUB_NAME
 	```
 
-Finish up by verifying that a file named **cameras.json** was created in the project directory, and opening the file to view its contents. Confirm that the ```key``` properties which are empty strings in **devices.json** have values in **cameras.json**.
+Finish up by verifying that a file named **cameras.json** was created in the project directory Open the file and view its contents. Confirm that the ```key``` properties which are empty strings in **devices.json** have values in **cameras.json**.
 
 <a name="Exercise4"></a>
 ## Exercise 4: Test the simulated camera array ##
 
-In this exercise, you will write more code using Node.js to test the camera array that you deployed in the previous exercise. That code will transmit an event from one of the virtual cameras to the IoT hub, and it will upload an image to the storage account that you created in [Exercise 1](#Exercise1).
+In this exercise, you will write code to test the camera array that you deployed in the previous exercise. That code will transmit an event from one of the virtual cameras to the IoT hub, and it will upload an image to the storage account that you created in [Exercise 1](#Exercise1).
 
 1. Create a subdirectory named "photos" in the project directory that you created in the previous exercise. Then copy all 30 JPEG files from the [resources that accompany this lab](#) to the "photos" directory. These are the images that the simulated cameras will upload to blob storage, samples of which are shown below. Wildlife depicted in the images include Arctic foxes, polar bears, and walruses.
 
@@ -288,7 +288,7 @@ In this exercise, you will write more code using Node.js to test the camera arra
 	var azure = require('azure-storage');
 	var blobService = azure.createBlobService(storageAccountName, storageAccountKey);
 	
-	blobService.createBlockBlobFromLocalFile('photos', 'image_19.jpg', 'photos/image_19.jpg', function (err, result, response) {
+	blobService.createBlockBlobFromLocalFile('photos', 'image_19.jpg', 'photos/image_19.jpg', (err, result, response) => {
 	    if (err) {
 	        console.log('Error uploading blob: ' + err);
 	    }
@@ -306,7 +306,7 @@ In this exercise, you will write more code using Node.js to test the camera arra
 	        var clientFromConnectionString = require('azure-iot-device-mqtt').clientFromConnectionString;
 	        var client = clientFromConnectionString(connectionString);
 	
-	        client.open(function (err) {
+	        client.open(err => {
 	            if (err) {
 	                console.log('Error connecting to IoT hub: ' + err);
 	            }
@@ -321,15 +321,13 @@ In this exercise, you will write more code using Node.js to test the camera arra
 	
 	                var message = new Message(JSON.stringify(data));
 	
-	                client.sendEvent(message, function (err, result) {
+	                client.sendEvent(message, (err, result) => {
 	                    if (err) {
 	                        console.log('Error sending event: ' + err);
 	                    }
 	                    else {
 	                        console.log("Event transmitted");                
 	                    }
-	
-	                    process.exit();
 	                });
 	            }
 	        });
@@ -337,7 +335,7 @@ In this exercise, you will write more code using Node.js to test the camera arra
 	});
 	```
 
-	This code uploads the file named **image_19.jpg** from the current directory's "photos" subdirectory to the storage account's "photos" container. Then it opens a connection from ```polar_cam_0003``` to the IoT hub using ```polar_cam_0003```'s access key (which comes from **cameras.js**) and transmits a message containing a JSON payload over MQTT.
+	This code uploads the file named **image_19.jpg** from the current directory's "photos" subdirectory to the storage account's "photos" container. Then it opens a connection from ```polar_cam_0003``` to the IoT hub using ```polar_cam_0003```'s access key (which comes from **cameras.js**) and transmits a message containing a JSON payload over MQTT. That message includes a camera ID, a latitude and longitude, the URL of the blob that was uploaded, and the event time.
 
 1. Replace HUB_NAME on line 1 of **test.js** with the name of the IoT hub you created in [Exercise 2](#Exercise2), and ACCOUNT_NAME on line 2 with the name of the storage account that you created in [Exercise 1](#Exercise1).
 
@@ -424,7 +422,7 @@ If you would like to see a list of devices registered with the IoT hub, click **
 <a name="Summary"></a>
 ## Summary ##
 
-In this lab, you created an Azure IoT hub, registered an array of simulated devices, and sent a message to the IoT hub from one of the devices to confirm that everything was set up correctly. You also created an Azure storage account and a blob container inside it and demonstrated that a device simulated in software could upload blobs to it. This is a great start, but there is more work to do to build a complete end-to-end solution that notifies you when a polar bear is captured on camera. You may now proceed to the next lab in this series — [Processing IoT Data in Real Time Using Stream Analytics and Machine Learning, Part 2](#) — to create an [Azure Stream Analytics](https://azure.microsoft.com/services/stream-analytics/) job and connect it to the IoT hub.
+In this lab, you created an Azure IoT hub, registered an array of simulated devices, and sent a message to the IoT hub from one of the devices to confirm that everything was set up correctly. You also created an Azure storage account and a blob container inside it and demonstrated that a device simulated in software could upload blobs to it. You may now proceed to the next lab in this series — [Processing IoT Data in Real Time Using Stream Analytics and Machine Learning, Part 2](#) — to create an [Azure Stream Analytics](https://azure.microsoft.com/services/stream-analytics/) job and connect it to the IoT hub.
 
 ---
 

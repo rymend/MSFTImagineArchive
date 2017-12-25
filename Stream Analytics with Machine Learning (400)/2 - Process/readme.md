@@ -255,17 +255,21 @@ One way to connect a Stream Analytics job to a machine-learning model running in
 
     _Specifying the job start time_
 
-The job will take a couple of minutes to start, but you don't have to wait. Proceed to the next exercise and start generating a stream of events for Stream Analytics to ingest.
+The job will take a couple of minutes to start, but you don't have to wait. Proceed to the next exercise and start generating events for Stream Analytics to ingest.
 
 <a name="Exercise4"></a>
 ## Exercise 4: Analyze a live data stream ##
 
 In this exercise, you will use Node.js to stream events from the simulated camera array that you registed in the previous lab. Then you will check the log output from the Azure Function to verify that the events are being received by IoT hub, input to Stream Analytics, and output to the function. 
 
-1. Return to the project directory that you created in the previous lab and create a file in it named **run.js**. Then paste the following code into the file and save it:
+1. Return to the project directory that you created in the previous lab and create a file in it named **run.js**. Paste the following code into the file:
 
 	```javascript
 	'use strict';
+
+	var iotHubName = 'HUB_NAME';
+	var storageAccountName = 'ACCOUNT_NAME';
+	var storageAccountKey = 'ACCOUNT_KEY';
 	
 	class Camera {
 	    constructor(id, latitude, longitude, key, files) {
@@ -360,10 +364,6 @@ In this exercise, you will use Node.js to stream events from the simulated camer
 	    }
 	}
 	
-	var iotHubName = 'streaminglab-iot-hub';
-	var storageAccountName = 'streaminglabstorage';
-	var storageAccountKey = 'y+uxm+lx6WkQzZm7ki4hWM2BE2z7OIZHPuvZPwNdOQq7eDj6BJ1fDei/zguovanGAKigypxURVTK8yhwilYE1A==';
-	
 	// Load image file names
 	var fs = require('fs');
 	
@@ -396,6 +396,8 @@ In this exercise, you will use Node.js to stream events from the simulated camer
 
 	This code uses the new [class support](http://es6-features.org/#ClassDefinition) in ECMAScript 6 (ES6) to define a class named ```Camera```. Then it creates 10 ```Camera``` instances and starts them running. Each camera object connects to the IoT hub securely using an access key obtained from **cameras.json**, and then uses a random timer to transmit events every 5 to 30 seconds. Each event that is transmitted includes the camera's ID, latitude, and longitude, as well as an image URL and a timestamp. The URL refers to an image that the camera uploaded to blob storage before firing the event. Images are randomly selected from the files in the project directory's "photos" subdirectory.
 
+1. Replace HUB_NAME on line 3 with the name of the IoT hub that you created in the previous lab, ACCOUNT_NAME on line 4 with the name of the storage account that you created in the same lab, and ACCOUNT_KEY on line 5 with the storage account's access key. Then save the file.
+
 1. Open a Command Prompt or terminal window and ```cd``` to the project directory. Then use the following command to run **run.js**:
 
 	```
@@ -417,7 +419,7 @@ In this exercise, you will use Node.js to stream events from the simulated camer
 	polar_cam_0010 connected
 	```
 
-	Note that the order in which the cameras connect to the IoT hub will probably differ from what's shown here, and will also vary from one run to the next.
+	The order in which the cameras connect to the IoT hub will probably differ from what's shown here, and will also vary from one run to the next.
 
 1. After a few seconds, additional output should appear. Each line corresponds to an event transmitted from a camera to the IoT hub. The output will look something like this:
 
@@ -444,9 +446,9 @@ In this exercise, you will use Node.js to stream events from the simulated camer
 
 1. Return to the Stream Analytics job in the portal and click **Stop** to stop it. Then click **Yes** when asked to confirm that you want to stop the job.
 
-1. Return to the Command Prompt or terminal window in which **run.js** is running and press **Ctrl+C** (**Command-C** on a Mac) to stop it (and therefore stop the flow of events from the simulated cameras).
+1. Return to the Command Prompt or terminal window in which **run.js** is running and press **Ctrl+C** (**Command-C** on a Mac) to stop it, and therefore stop the flow of events from the simulated cameras.
 
-You have confirmed that Stream Analytics is receiving input from the IoT hub and that the Azure Function is receiving input from Stream Analytics. The next step is build a machine-learning model that recognizes polar bears and invoke it from the Azure Function — which is exactly what you will do in the next lab.
+You have confirmed that Stream Analytics is receiving input from the IoT hub and that the Azure Function is receiving input from Stream Analytics. The next step is build a machine-learning model and invoke it from the Azure Function — which is exactly what you will do in the next lab.
 
 <a name="Summary"></a>
 ## Summary ##
