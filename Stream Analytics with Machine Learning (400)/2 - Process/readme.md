@@ -306,8 +306,8 @@ In this exercise, you will use Node.js to stream events from the simulated camer
 	    }
 	
 	    start() {
-	        // Register first callback for 5 to 30 seconds
-	        setTimeout(this.timer, (Math.random() * 25000) + 5000, this);
+	        // Register first callback for 5 to 60 seconds
+	        setTimeout(this.timer, (Math.random() * 55000) + 5000, this);
 	    }
 	
 	    timer(self) {
@@ -316,8 +316,8 @@ In this exercise, you will use Node.js to stream events from the simulated camer
 	            var index = Math.floor(Math.random() * self._files.length);
 	            self.trigger(self._files[index], (err, result) => {});
 	
-	            // Register another callback for 5 to 30 seconds
-	            setTimeout(self.timer, (Math.random() * 25000) + 5000, self);
+	            // Register another callback for 5 to 60 seconds
+	            setTimeout(self.timer, (Math.random() * 55000) + 5000, self);
 	        }
 	    }
 	
@@ -394,7 +394,7 @@ In this exercise, you will use Node.js to stream events from the simulated camer
 	});
 	```
 
-	This code uses the new [class support](http://es6-features.org/#ClassDefinition) in ECMAScript 6 (ES6) to define a class named ```Camera```. Then it creates 10 ```Camera``` instances and starts them running. Each camera object connects to the IoT hub securely using an access key obtained from **cameras.json**, and then uses a random timer to transmit events every 5 to 30 seconds. Each event that is transmitted includes the camera's ID, latitude, and longitude, as well as an image URL and a timestamp. The URL refers to an image that the camera uploaded to blob storage before firing the event. Images are randomly selected from the files in the project directory's "photos" subdirectory.
+	This code uses the new [class support](http://es6-features.org/#ClassDefinition) in ECMAScript 6 (ES6) to define a class named ```Camera```. Then it creates 10 ```Camera``` instances and starts them running. Each camera object connects to the IoT hub securely using an access key obtained from **cameras.json**, and then uses a random timer to transmit events every 5 to 60 seconds. Each event that is transmitted includes the camera's ID, latitude, and longitude, as well as an image URL and a timestamp. The URL refers to an image that the camera uploaded to blob storage before firing the event. Images are randomly selected from the files in the project directory's "photos" subdirectory.
 
 1. Replace HUB_NAME on line 3 with the name of the IoT hub that you created in the previous lab, ACCOUNT_NAME on line 4 with the name of the storage account that you created in the same lab, and ACCOUNT_KEY on line 5 with the storage account's access key. Then save the file.
 

@@ -164,10 +164,32 @@ In this exercise, you will use the Azure CLI to create an Azure SQL database tha
 
 	_Logging in to the database server_
 
-1. Type the following query into the query window and click **Run** to run the query and create a database table:
+1. Paste the following query into the query window and click **Run** to run the query and create a database table:
 
 	```sql
-	CREATE TABLE PolarBears (CameraID VARCHAR(16), Latitude REAL, Longitude REAL, URL VARCHAR(256), Timestamp DATETIME, IsPolarBear BIT)
+	CREATE TABLE [dbo].[PolarBears]
+	(
+	    [Id] [uniqueidentifier] NOT NULL,
+	    [CameraId] [nvarchar](16) NULL,
+	    [Latitude] [real] NULL,
+	    [Longitude] [real] NULL,
+	    [Url] [varchar](max) NULL,
+	    [Timestamp] [datetime] NULL,
+	    [IsPolarBear] [bit] NULL,
+	    PRIMARY KEY CLUSTERED ([Id] ASC)
+	    WITH (STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF) ON [PRIMARY]
+	)
+	ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+	GO
+	
+	ALTER TABLE [dbo].[PolarBears] ADD DEFAULT (newid()) FOR [Id]
+	GO
+	
+	ALTER TABLE [dbo].[PolarBears] ADD DEFAULT (getdate()) FOR [Timestamp]
+	GO
+	
+	ALTER TABLE [dbo].[PolarBears] ADD DEFAULT ((0)) FOR [IsPolarBear]
+	GO
 	```
 
 1. Expand the list of tables in the treeview on the left and confirm that the "PolarBears" table was created, and that it has the following schema:
