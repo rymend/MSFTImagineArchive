@@ -96,34 +96,45 @@ Visualizations (or simply "visuals") are the primary element that make up Power 
 
 	_Opening the dataset_
 
-1. tk.
-
-	![The Visualizations and Fields panels](Images/portal-view-panels.png)
-
-	_The Visualizations and Fields panels_
-
-1. Click the **Map** visual from the "Visualizations" panel to add a geographical map visual to the report design workspace.
+1. Click the **Map** icon in the "Visualizations" panel to add a map visual to the report.
 	
-	![Selecting the Map visual](Images/portal-select-map-visual.png)
-	_Selecting the Map visual_
+	![Adding a Map visual](Images/portal-select-map-visual.png)
 
-1. Add both the **Latitude** and **Longitude** fields to the Map visual by selecting them individually in the "Fields" panel, after which the Map visual will display an informational message instructing you to remove any summary calculations from the associated fields. 
+	_Adding a Map visual_
+
+1. Check the **Latitude** and **Longitude** boxes in the "Fields" panel to include these fields in the map.
 	
-	![The Visualizations and Fields panels](Images/portal-select-lat-long.png)
-	_The Visualizations and Fields panels_
+	![Adding latitude and longitude](Images/portal-select-lat-long.png)
 
-1. To remove summary calculations, select the **Latitude** > **Average of Latitude** drop-down in the "Visualizations" panel, then select **Don't summarize**. Repeat this step for the **Longitude** > **Average of Longitude** field.
+	_Adding latitude and longitude_
 
-	![Removing the summary calculation from the Latitude field](Images/portal-select-dont-summarize.png)
-	_Removing the summary calculation from the Latitude field_
+1. In the "Visualizations" panel, click the down arrow next to **Average of Latitude** and select **Don't summarize** from the menu. Then do the same for **Average of Longitude**.
 
-1. Still in the "Fields" panel, add the **IsPolarBear** field to the Map visual, and observe the display of the Map visual with associated pushpin "bubble" elements corresponding to recent camera events from the prediction data.
+	![Removing summary calculations](Images/portal-select-dont-summarize.png)
 
-1. Deselect the Map visual, by selecting any empty area of the report design workspace, then select the **CameraId**, **IsPolarBear**, and **TimestampLabel** fields from the Fields panel, to add a default "Table" visual to the report workspace. The Table visual is appropriate for viewing row and column data in a Power BI report.
+	_Removing summary calculations_
 
-1. Deselect the Table visual, then select the **IsPolarBear** and **Latitude** fields from the "Fields" panel to add an additional Table visual to the workspace, then select the **PieChart visual** from the "Visualizations" panel to change the visual style from Table to PieChart. 
+1. Return to the "Fields" panel and add the "IsPolarBear" field to the map.
 
-1. Select the **Latitude** > **Average of Latitude** drop-down in the "Visualizations" panel, and change it to **Count** to display a breakdown of positive Polar Bear sightings in a pie chart format. The PieChart visual is appropriate for viewing percentage comparisons in a Power BI report.
+1. Resize the map so that it fills more of the workspace. Then click in the empty area outside it to deselect it. Now check the **CameraId**, **IsPolarBear**, and **TimestampLabel** fields in the "Fields" panel to add a table visual containing those columns.
+
+	![Adding a table visual](Images/add-table-visual.png)
+
+	_Adding a table visual_
+
+1. Deselect the table visual. Then check **IsPolarBear** and **Latitude** in the "Fields" panel to add another table visual, and click the **Pie Chart** icon in the "Visualizations" panel to convert the table into a pie chart. 
+
+	![Adding a pie-chart visual](Images/add-pie-chart-visual.png)
+
+	_Adding a pie-chart visual_
+
+1. Click the down arrow next to **Average of Latitude** and select **Count** from the menu to configure the pie chart to show a count of polar-bear sightings versus sightings that turned out *not* to be polar bears. 
+
+
+
+
+
+
 
 1. Finally, deselect the PieChart visual, then click the **Slicer visual** from the "Visualizations" panel to add a Slicer to the workspace. With the Slicer active, select the **IsPolarBear** field in the "Fields" panel. The Slicer visual is a great way of filtering information in a Power BI report, as it narrows the portion of the dataset shown in the other visualizations on the page.
 
