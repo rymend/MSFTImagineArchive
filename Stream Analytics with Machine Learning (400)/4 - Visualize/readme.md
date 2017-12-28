@@ -36,7 +36,7 @@ This hands-on lab includes the following exercises:
 
 - [Exercise 1: Connect Power BI to Azure SQL](#Exercise1)
 - [Exercise 2: Build a report in Power BI](#Exercise2)
-- [Exercise 3: Enhance and format visualizations](#Exercise3)
+- [Exercise 3: Run the end-to-end solution](#Exercise3)
  
 Estimated time to complete this lab: **30** minutes.
 
@@ -67,10 +67,10 @@ In the previous lab, you used the [Custom Vision Service](https://azure.microsof
 
     _Connecting to an Azure SQL Data Warehouse_
 
-1. Enter the server's host name (the server name plus ".database.windows.net" since it's an Azure SQL database server) and database name that you specified when you created the database and database server in the previous lab. Enable **Enable Advanced Options**, and then type the query below into the **Custom Filters** box to select all rows in the "PolarBears" table that have been added in the last 15 minutes. When you're done, click **Next**.
+1. Enter the server's host name (the server name plus ".database.windows.net" since it's an Azure SQL database server) and database name that you specified when you created the database and database server in the previous lab. Enable **Enable Advanced Options**, and then type the query below into the **Custom Filters** box to select the 20 most recently added rows in the "PolarBears" table. When you're done, click **Next**.
 
 	```sql
-	SELECT Id, CameraId, Latitude, Longitude, Url, Timestamp, FORMAT(Timestamp,'MM/dd/yyyy h:mm:ss tt') AS TimestampLabel, IsPolarBear FROM dbo.PolarBears WHERE (Timestamp > DATEADD(MINUTE, -15, GETDATE()))
+	SELECT TOP 20 Id, CameraId, Latitude, Longitude, Url, Timestamp, FORMAT(Timestamp,'MM/dd/yyyy h:mm:ss tt') AS TimestampLabel, IsPolarBear FROM dbo.PolarBears ORDER BY Timestamp DESC
 	```
 
     ![Specifying a database and filter](Images/connect-to-database-3.png)
@@ -83,7 +83,7 @@ In the previous lab, you used the [Custom Vision Service](https://azure.microsof
 
     _Entering admin credentials_
 
-After a short delay, Power BI will connect to the database and import a dataset using the query you provided. The next step is create a report using that dataset.
+After a short delay, Power BI will connect to the database and import a dataset using the query you provided. The next step is to create a report using that dataset.
 
 <a name="Exercise2"></a>
 ## Exercise 2: Build a report in Power BI ##
@@ -98,11 +98,11 @@ Visualizations (or simply "visuals") are the primary element that make up Power 
 
 1. Click the **Map** icon in the "Visualizations" panel to add a map visual to the report.
 	
-	![Adding a Map visual](Images/portal-select-map-visual.png)
+	![Adding a map visual](Images/portal-select-map-visual.png)
 
-	_Adding a Map visual_
+	_Adding a map visual_
 
-1. Check the **Latitude** and **Longitude** boxes in the "Fields" panel to include these fields in the map.
+1. Check the **Latitude** and **Longitude** boxes in the "Fields" panel to include these fields in the visual.
 	
 	![Adding latitude and longitude](Images/portal-select-lat-long.png)
 
@@ -114,11 +114,17 @@ Visualizations (or simply "visuals") are the primary element that make up Power 
 
 	_Removing summary calculations_
 
-1. Return to the "Fields" panel and add the "IsPolarBear" field to the map.
+1. Return to the "Fields" panel and check the **IsPolarBear** box to add that field to the map. Then resize the map so that it looks something like this:
 
-1. Resize the map so that it fills more of the workspace. Then click in the empty area outside it to deselect it. Now check the **CameraId**, **IsPolarBear**, and **TimestampLabel** fields in the "Fields" panel to add a table visual containing those columns.
+	![Resizing the map visual](Images/map-visual.png)
 
-	![Adding a table visual](Images/add-table-visual.png)
+	_Resizing the map visual_
+
+	Note that the number and location of the "bubbles" in your map will probably be different than what's shown here.
+
+1. Click in the empty area outside the map to deselect it. Then check the **CameraId**, **IsPolarBear**, and **TimestampLabel** boxes in the "Fields" panel to add a table visual containing those columns to the report.
+
+	![Adding a table visual](Images/table-visual-1.png)
 
 	_Adding a table visual_
 
@@ -128,76 +134,133 @@ Visualizations (or simply "visuals") are the primary element that make up Power 
 
 	_Adding a pie-chart visual_
 
-1. Click the down arrow next to **Average of Latitude** and select **Count** from the menu to configure the pie chart to show a count of polar-bear sightings versus sightings that turned out *not* to be polar bears. 
+1. Click the down arrow next to **Average of Latitude** and select **Count** from the menu to configure the pie chart to show a count of sightings and the proportion of sightings that were polar bears. 
 
+	![Formatting the pie-chart visual](Images/pie-chart-visual.png)
 
+	_Formatting the pie-chart visual_
 
+1. Deselect the pie-chart visual and click the **Slicer** icon to add a slicer to the report. Slicers provide a convenient means for filtering information in a Power BI report, because they narrow the portion of the dataset shown in other visualizations on the page.
 
+	![Adding a slicer](Images/add-slicer.png)
 
+	_Adding a slicer_
 
+1. Select the **IsPolarBear** field in the "Fields" panel so the slicer shows checkboxes labeled "True" and "False." 
 
-1. Finally, deselect the PieChart visual, then click the **Slicer visual** from the "Visualizations" panel to add a Slicer to the workspace. With the Slicer active, select the **IsPolarBear** field in the "Fields" panel. The Slicer visual is a great way of filtering information in a Power BI report, as it narrows the portion of the dataset shown in the other visualizations on the page.
+	![Formatting the slicer](Images/slicer-visual.png)
 
-1. Test the ability of the Slicer to filter information in the report by selecting and deselecting True and False values from the visual and observe the real-time changes to other report visuals, including geographical map locations.
+	_Formatting the slicer_
 
-1. Save your report by clicking **Save** from the top-right report designer menu, enter "Polar Bear activity" as the report name, then click **Save**.
+1. Now resize and reposition the visuals to achieve a layout similar to this:
 
-With a number of rich, interactive visuals added to your Power BI report, it's pretty simple to get up-to-date insight into Polar Bear sightings and camera activity. For example, the Map visual is fully interactive, making it easy to zoom in and out of a region, or select a pushpin to view information associated with specific activity, such as camera identification and activity timestamps.
+	![Adjusting the layout](Images/layout.png)
 
-In the final exercise, you will be "souping up" your report by adjusting the layout, and formatting report visuals, to create beautiful, compelling report experience.
+	_Adjusting the layout_
+
+1. With the report structure in place, the next task is to use some of Power BI's rich formatting options to embellish the visuals. Start by selecting the map visual in the report designer, and then clicking the **Format** tab in the "Visualizations" panel.
+
+	![Formatting the map visual](Images/format-map.png)
+
+	_Formatting the map visual_
+
+1. Use the formatting controls in the "Visualizations" panel to make the following changes to the map visual:
+
+	- Under "Legend," set "Legend Name" to "Polar bear sighted?"
+	- Under "Data Colors," set the color for False to 00FF00 (pure green) and the color for True to FF0000 (pure red)
+	- Under "Bubbles," set  the bubble size to 30%
+	- Under "Map styles," set the theme to "Aerial"
+	- Turn "Title" from on to off
+
+	Confirm that the resulting map visual looks something like this:
+
+	![Formatted map visual](Images/formatted-map-visual.png)
+
+	_Formatted map visual_
+
+1. Select the pie-chart visual and use the formatting controls in the "Visualizations" panel to make the following changes:
+
+	- Under "Data Colors," set set the color for False to 00FF00 and the color for True to FF0000
+	- Under "Detail  labels," change the label style to "Data value, percent of total"
+	- Under "Title," change the title text to "Proportion of polar bear sightings"
+
+	Confirm that the resulting pie-chart visual resembles this:
+
+	![Formatted pie-chart visual](Images/formatted-pie-chart-visual.png)
+
+	_Formatted pie-chart visual_
+
+1. Select the table visual and use the formatting controls in the "Visualizations" panel to make the following changes:
+
+	- Under "Table style," change to style to "Alternating rows"
+	- Turn "Title" on, and change the title text to "Camera activity" 
+
+	Confirm that the resulting table visual looks like this:
+
+	![Formatted table visual](Images/formatted-table-visual.png)
+
+	_Formatted table visual_
+
+1. Select the slicer visual and use the formatting controls in the "Visualizations" panel to make the following changes:
+
+	- Under "Selection Controls," set "Single Select" to off
+	- Turn "Header" off
+	- Turn "Title" on and set the title text to "Show sightings that are:"
+
+1. Double-click **Page 1** in the bottom-left corner of the designer and change the report title to "Polar Bear Activity."
+
+1. Save the report by clicking **Save** in the upper-right corner of the page. Enter a report name such as "Polar Bear Activity."
+
+The formatted report should resemble the one below. Feel free to embellish it further. You could, for example, add a title in a large font at the top of the report. Once you're satisfied with the layout and content, let's put it to work using a live data source.
+
+![The formatted report](Images/formatted-report.png)
+
+_The formatted report_
 
 <a name="Exercise3"></a>
-## Exercise 3: Enhance and format visualizations ##
+## Exercise 3: Run the end-to-end solution ##
 
-In this exercise, you will be adjusting the layout and formatting of the report created in the previous exercise, to deliver a stunning, interactive report using Power BI theming, formatting, and layout tools.
+Now that the report is prepared in Power BI, your final task is to run the end-to-end solution that you built in this series of hands-on labs. Let's go sight some polar bears!
 
-1. Open the [Power BI services portal](https://powerbi.microsoft.com "Power BI services portal"), if not already open from the previous exercise, and select **Reports** > **Polar Bear activity** from the left-navigation menu to view your report.
+1. Open the database that you created in [Lab 3](#) in the [Azure Portal](https://portal.azure.com) and use the Data Explorer to execute the following query to delete all rows from the "PolarBears" table:
 
-1. Select the **Map visual** by placing your mouse cursor anywhere within the visual, then select the **Format tab** from the "Visualizations" panel.
+	```sql
+	DELETE * FROM dbo.PolarBears
+	```
 
-	![The Visualizations panel Format tab](Images/portal-select-format-tab.png)
-	_The Visualizations panel Format tab_
+1. Open the Stream Analytics job that you created in [Lab 2](#) in the Azure Portal and start the job running.
 
-1. Expand the **Legend** group and change "Legend Name" to "Polar Bear sighted?".
+1. Wait until the job is running. Then open a Command Prompt or terminal window and ```cd``` to the project directory you created in [Lab 1](#). Use the following command to start the virtual cameras running:
 
-1. Expand the **Data colors** group, select the color drop-down for the "False" value, select **Custom Color**, then enter "00FF00" (pure green) for the value. Repeat this process for the "True" value and enter "FF0000" (pure red) for the value, then observer the changes to the Map visual. Red values now indicate Polar Bear activity while green values indicate non-Polar Bear activity.
+	```
+	node run.js
+	```
 
-1. Still on the Format tab, expand the **Bubbles** group and change the size of map bubbles from 1% to **30%** for improved map visibility.
+1. Return to the Power BI report in the Power BI service portal and refresh the page in the browser every 15 seconds or so.
 
-1. Expand the **Map styles** group and change the theme from Road to **Aerial** for a more realistic view of map terrain.
+1. Confirm that red and green bubbles appear at various locations around the island. Red bubbles indicate the presence of polar bears, while green bubbles represent locations where a photo was taken, but the photo didn't contain a polar bear.
 
-1. Finally, change the value of "Title" to **Off**.
+	![tk](Images/tk.png)
 
-1. Select the **PieChart visual** by placing your mouse cursor anywhere within the visual, then select the **Format tab** from the "Visualizations" panel.
+	_tk_
 
-1. Expand the **Data colors** group, and repeat the process of changing the "False" value to "00FF00" (pure green) and the "True" color to "FF0000" (pure red) for the value, then observer the changes to the PieChart visual.
+1. tk.
 
-1. Expand the **Data labels** group and change "Label style" to **Data value, percent of total**.
+	![tk](Images/tk.png)
 
-1. Finally, expand the **Title** group and change the value to "Polar Bear sightings by proportion", and observe the changes to the visual.
+	_tk_
 
-1. Select the **Table visual** by placing your mouse cursor anywhere within the visual, then select the **Format tab** from the "Visualizations" panel.
+1. tk.
 
-1. Expand the **Table style** group and change "Style" to **Alternative rows**.
+	![tk](Images/tk.png)
 
-1. Finally, expand the **Title** group, change "Title" to **On**, then change **Text Title** to "Camera activity", and observe the changes to the visual.
+	_tk_
 
-1. Select the **Slicer visual** by placing your mouse cursor anywhere within the visual, then select the **Format tab** from the "Visualizations" panel.
+TODO: Add closing.
 
-1. Expand the **Selection Controls** group and change "Single Select" to **Off**.
+<a name="Summary"></a>
+## Summary ##
 
-1. Still on the Format tab, change the value of "Header" to **Off**.
- 
-1. Finally, expand the **Title** group, change "Title" to **On**, then change **Text Title** to "Show where Polar Bear activity is:", and observe the changes to the visual.
-
-1. Edit the report title by double-clicking the "Page 1" label in the bottom left of the report workspace, then rename the report to "Hourly Polar Bear Activity".
-
-With your report visuals formatted, the process of adjusting layouts can be accomplished by dragging element corners and visuals around the workspace until a desired layout is achieved.
-
-1. Drag and resize each report visual individually to create a clean, logical layout for easy user interaction and viewing, providing the most space to the Map visual, and the least amount of space to the Slicer visual.
-
-1. Save your report by clicking **Save** from the top-right report designer menu, enter "Polar Bear activity" as the report name, then click **Save**.
- 
 With your Power BI report formatted and the layout adjusted for a great experience, sharing your report is a breeze. Sharing can be achieved in a number of ways, the most popular being to create a Power BI Dashboard and sharing the Dashboard with other users in your organization.
 
 To create and share a Power BI Dashboard:
@@ -205,12 +268,7 @@ To create and share a Power BI Dashboard:
 1. In the Power BI report workspace, click **Pin Live Page**, select **New Dashboard**, then name the Dashboard "Hourly Polar Bear Activity", and click **Pin Live**.
 
 1. Select **Hourly Polar Bear Activity** from the "Dashboards" panel in the left-menu, then click **Share** in the top-right workspace menu. More information about sharing dashboards can be found at: [Share Power BI Dashboards and Reports](https://docs.microsoft.com/en-us/power-bi/service-how-to-collaborate-distribute-dashboards-reports "Share Power BI Dashboards and Reports").
-
-<a name="Summary"></a>
-## Summary ##
-
-TODO: Add summary.
-
+2. 
 ---
 
 Copyright 2017 Microsoft Corporation. All rights reserved. Except where otherwise noted, these materials are licensed under the terms of the MIT License. You may use them according to the license as is most appropriate for your project. The terms of this license can be found at https://opensource.org/licenses/MIT.
