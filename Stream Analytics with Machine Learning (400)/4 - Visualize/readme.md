@@ -67,35 +67,39 @@ In the previous lab, you used the [Custom Vision Service](https://azure.microsof
 
     _Connecting to an Azure SQL Data Warehouse_
 
-1. Enter the server name and database name that you specified when you created the database and database server in the previous lab. Enable **Enable Advanced Options**, and then type the following query in the **Custom Filters** box to select all rows in the "PolarBears" table that represent activity within the last 15 minutes. When you're done, click **Next**.
+1. Enter the server's host name (the server name plus ".database.windows.net" since it's an Azure SQL database server) and database name that you specified when you created the database and database server in the previous lab. Enable **Enable Advanced Options**, and then type the query below into the **Custom Filters** box to select all rows in the "PolarBears" table that have been added in the last 15 minutes. When you're done, click **Next**.
+
+	```sql
+	SELECT Id, CameraId, Latitude, Longitude, Url, Timestamp, FORMAT(Timestamp,'MM/dd/yyyy h:mm:ss tt') AS TimestampLabel, IsPolarBear FROM dbo.PolarBears WHERE (Timestamp > DATEADD(MINUTE, -15, GETDATE()))
+	```
 
     ![Specifying a database and filter](Images/connect-to-database-3.png)
 
     _Specifying a database and filter_
 
-1. In the subsequent dialog, enter the user name and password you specified when you created the database. Then click **Sign in**. After a short delay, Power BI will validate your credentials and connect to the database. 
+1. In the subsequent dialog, enter the user name and password you specified when you created the database server. Then click **Sign in**.
 
     ![Entering admin credentials](Images/connect-to-database-4.png)
 
     _Entering admin credentials_
 
-	The Power BI services portal will redirect you to the default workspace while connecting to your database. When your data connection has been validated and processed, a new item labeled **streaminglab-database** will become available in the side drawer menu under **My Workspace** > **Datasets**.
-
-	![The newly createddataset](Images/portal-new-dataset.png)
-	_The newly created dataset_
-
-Power BI services is now connected to your Arctic wildlife image prediction data, and you're ready to begin designing a Power BI report in [Exercise 2: Visualizing and Filtering Data in a Report](#Exercise2").
+After a short delay, Power BI will connect to the database and import a dataset using the query you provided. The next step is create a report using that dataset.
 
 <a name="Exercise2"></a>
 ## Exercise 2: Build a report in Power BI ##
 
-In Power BI, visualizations are the primary element of Power BI reports and dashboards. Visualizations (aka visuals) allow you to interact with your data to discover insights into your data.
+Visualizations (or simply "visuals") are the primary element that make up Power BI reports and dashboards. In this exercise, you will use the Power BI report designer to create visuals from the database you connected to in the previous exercise, and adjust filters and aggregates to refine the way the data is displayed.
 
-In this exercise, you will be using Power BI report designer to connect your prediction data to visualizations, such as a geographical map, as well as adjust filters and aggregates to refine the display of data, to view camera location predication data to determine the presence of polar bears.
+1. Click **streaminglab-database** under **My Workspace** > **Datasets** in the panel on the left. This is the dataset that was imported when you connected to the database in the previous exercise.
 
-1. Open the [Power BI services portal](https://powerbi.microsoft.com "Power BI services portal"), if not already open from the previous exercise, then select the **streaminglab-database** in the **My Workspace** > **Datasets** panel to display both the "Visualizations" and "Fields" panel.
+	![Opening the dataset](Images/open-dataset.png)
+
+	_Opening the dataset_
+
+1. tk.
 
 	![The Visualizations and Fields panels](Images/portal-view-panels.png)
+
 	_The Visualizations and Fields panels_
 
 1. Click the **Map** visual from the "Visualizations" panel to add a geographical map visual to the report design workspace.

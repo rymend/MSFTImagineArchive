@@ -136,7 +136,7 @@ You now have a machine-learning model that can discern whether an image contains
 <a name="Exercise3"></a>
 ## Exercise 3: Create an Azure SQL database ##
 
-In this exercise, you will use the Azure CLI to create an Azure SQL database that resides in the cloud. Tthis database will collect output from the Azure Function you connected to Stream Analytics in the previous lab, and in the next lab, you will connect the database to Power BI to show where polar bears are being spotted.
+In this exercise, you will use the Azure CLI to create an Azure SQL database that resides in the cloud. This database will collect output from the Azure Function you connected to Stream Analytics in the previous lab, and in the next lab, you will connect the database to Power BI to show where polar bears are being spotted.
 
 1. Open a Command Prompt or terminal window and use the following command to create a database server in the "streaminglab-rg" resource group. Replace SERVER_NAME with the name you wish to assign the database server, and replace ADMIN_USERNAME and ADMIN_PASSWORD with the user name and password for an admin user. **Remember the user name and password** that you enter, because you will need them later.
 
@@ -152,11 +152,11 @@ In this exercise, you will use the Azure CLI to create an Azure SQL database tha
 	az sql db create --resource-group streaminglab-rg --server SERVER_NAME --name DATABASE_NAME --service-objective S0
 	```
 
-1. Go to the database server in the [Azure Portal](https://portal.azure.com) and click **Firewall / Virtual Networks** in the menu on the left. Then turn on **Allow access to Azure services** and click **Save** at the top of the blade so other Azure services, including Azure Functions, can access the server.
+1. Go to the database server in the [Azure Portal](https://portal.azure.com) and click **Firewall / Virtual Networks** in the menu on the left. Turn on **Allow access to Azure services** and click **Save** at the top of the blade to allow other Azure services to connect to the server.
 
-	![Opening the database server to Azure services](Images/configure-database-server.png)
+	![Allowing Azure to access the database server](Images/configure-database-server.png)
 
-	_Opening the database server to Azure services_
+	_Allowing Azure to access the database server_
 
 1. Open the database in the Azure Portal. Then click **Data explorer** in the menu on the left, click **Login** at the top of the blade, enter the user name and password you specified in Step 1, and click **OK** to log in to the database.
 
@@ -164,7 +164,7 @@ In this exercise, you will use the Azure CLI to create an Azure SQL database tha
 
 	_Logging in to the database server_
 
-1. Paste the following query into the query window and click **Run** to run the query and create a database table:
+1. Paste the following statements into the query window and click **Run** to create a database table:
 
 	```sql
 	CREATE TABLE [dbo].[PolarBears]
