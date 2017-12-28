@@ -377,7 +377,7 @@ In this exercise, you will modify the Azure Function that you created in the pre
 
 	_Rows written to the database by the Azure Function_
 
-In the next lab, you will use Power BI to produce a more compelling visualization of the data.
+In the next lab, you will use Power BI to produce a more compelling — and graphical — visualization of the data.
 
 <a name="Summary"></a>
 ## Summary ##
