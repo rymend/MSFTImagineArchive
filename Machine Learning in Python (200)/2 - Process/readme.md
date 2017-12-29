@@ -23,7 +23,7 @@ In this hands-on lab, you will learn how to:
 <a name="Prerequisites"></a>
 ### Prerequisites ###
 
-If you haven't completed the [previous lab in this series](#), you must do so before starting this lab.
+If you haven't completed the [previous lab in this series](../1%20-%20Ingest), you must do so before starting this lab.
 
 ---
 
@@ -252,7 +252,7 @@ The dataset looks very different than it did at the start, but it is now optimiz
 <a name="Summary"></a>
 ## Summary ##
 
-In this lab, you used Pandas to clean and prepare the flight dataset for use in machine learning. In addition to filtering the columns and replacing missing values, you binned departure times and created indicator columns that allow airport codes to be used as categorical values. Now proceed to the next lab  — [Using Microsoft's Data Science Virtual Machine to Build Predictive Machine-Learning Models, Part 3](#) — and put the dataset to work using [Scikit-learn](http://scikit-learn.org/stable/). 
+In this lab, you used Pandas to clean and prepare the flight dataset for use in machine learning. In addition to filtering the columns and replacing missing values, you binned departure times and created indicator columns that allow airport codes to be used as categorical values. Now proceed to the next lab  — [Using Microsoft's Data Science Virtual Machine to Build Predictive Machine-Learning Models, Part 3](../3%20-%20Predict) — and put the dataset to work using [Scikit-learn](http://scikit-learn.org/stable/). 
 
 ---
 

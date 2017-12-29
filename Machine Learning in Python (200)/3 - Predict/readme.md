@@ -23,7 +23,7 @@ In this hands-on lab, you will learn how to:
 <a name="Prerequisites"></a>
 ### Prerequisites ###
 
-If you haven't completed the [previous lab in this series](#), you must do so before starting this lab.
+If you haven't completed the [previous lab in this series](../2%20-%20Process), you must do so before starting this lab.
 
 ---
 
@@ -207,7 +207,7 @@ In the real world, a trained data scientist would look for ways to make the mode
 <a name="Summary"></a>
 ## Summary ##
 
-In this lab, you learned how to split data into training and test sets, build a machine-learning model using Sckit-learn, and gauge the accuracy of the model. In the next lab  — [Using Microsoft's Data Science Virtual Machine to Build Predictive Machine-Learning Models, Part 4](#) — you will use the model to make some predictions and use the popular Python library [Matplotlib](https://matplotlib.org/) to visualize the results.
+In this lab, you learned how to split data into training and test sets, build a machine-learning model using Sckit-learn, and gauge the accuracy of the model. In the next lab  — [Using Microsoft's Data Science Virtual Machine to Build Predictive Machine-Learning Models, Part 4](../4%20-%20Visualize) — you will use the model to make some predictions and use the popular Python library [Matplotlib](https://matplotlib.org/) to visualize the results.
 
 ---
 
