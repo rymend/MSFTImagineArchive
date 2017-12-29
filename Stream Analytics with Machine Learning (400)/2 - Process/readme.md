@@ -4,7 +4,7 @@
 
 Scenarios for the application of real-time data analytics are legion and include fraud detection, identity-theft protection, optimizing the allocation of resources (think of an Uber-like transportation service that sends drivers to areas of increasing demand *before* that demand peaks), click-stream analysis on Web sites, and countless others. Having the ability to process data *as it comes in* rather than waiting until after it has been aggregated offers a competitive advantage to businesses that are agile enough to make adjustments on the fly.
 
-In this lab, the second of four in a series, you will create an Azure Stream Analytics job and connect it to the IoT hub you created in the [previous lab](#). Then you will write an [Azure Function](https://azure.microsoft.com/services/functions/) to receive the output, and use the two of them together to analyze data streaming in from a simulated camera array. 
+In this lab, the second of four in a series, you will create an Azure Stream Analytics job and connect it to the IoT hub you created in the [previous lab](../1%20-%20Ingest). Then you will write an [Azure Function](https://azure.microsoft.com/services/functions/) to receive the output, and use the two of them together to analyze data streaming in from a simulated camera array. 
 
 ![](Images/road-map-2.png)
 
@@ -26,7 +26,7 @@ The following are required to complete this hands-on lab:
 - An active Microsoft Azure subscription. If you don't have one, [sign up for a free trial](http://aka.ms/WATK-FreeTrial).
 - [Node.js](https://nodejs.org/)
 
-If you haven't completed the [previous lab in this series](#), you must do so before starting this lab.
+If you haven't completed the [previous lab in this series](../1%20-%20Ingest), you must do so before starting this lab.
 
 ---
 
@@ -178,7 +178,7 @@ One way to connect a Stream Analytics job to a machine-learning model running in
 
     _Creating an Azure Function App_
 
-1. Enter an app name that is unique to Azure. Place the function app in the "streaminglab-rg" resource group and set **Hosting Plan** to **App Service Plan**. Then click **App Service plan/location** and create a new App Service plan in the South Central US region. Under **Storage**, select the storage account that you created in [Lab 1](#). Finally, click **OK** to create a new Azure Function app.
+1. Enter an app name that is unique to Azure. Place the function app in the "streaminglab-rg" resource group and set **Hosting Plan** to **App Service Plan**. Then click **App Service plan/location** and create a new App Service plan in the South Central US region. Under **Storage**, select the storage account that you created in [Part 1](../1%20-%20Ingest). Finally, click **OK** to create a new Azure Function app.
 
 	> When you create an Azure Function App, you can choose from two hosting plans: Consumption plan or App Service plan. The former is cheaper because you only pay when the function executes. But with Consumption plan, the function might not execute for several minutes after it's called. With App Service plan, you pay more, but the function runs immediately.
  
@@ -453,7 +453,7 @@ You have confirmed that Stream Analytics is receiving input from the IoT hub and
 <a name="Summary"></a>
 ## Summary ##
 
-In this lab, you created a Stream Analytics job, connected it to an IoT hub for input, and connected it to an Azure Function for output. You also learned how Stream Analytics queries are used to extract information from temporal data streams. You may now proceed to the next lab in this series — [Processing IoT Data in Real Time Using Stream Analytics and Machine Learning, Part 3](#) — to create a machine-learning model and connect it to Stream Analytics.
+In this lab, you created a Stream Analytics job, connected it to an IoT hub for input, and connected it to an Azure Function for output. You also learned how Stream Analytics queries are used to extract information from temporal data streams. You may now proceed to the next lab in this series — [Processing IoT Data in Real Time Using Stream Analytics and Machine Learning, Part 3](../3%20-%20Predict) — to create a machine-learning model and connect it to Stream Analytics.
 
 ---
 
