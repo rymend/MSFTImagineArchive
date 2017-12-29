@@ -137,19 +137,28 @@ In [Exercise 4](#Exercise4), you will use a Python script to search the Web for 
 	RUN apt-get update && apt-get install -y \
 	    curl apt-utils apt-transport-https debconf-utils gcc build-essential g++-5\
 	    && rm -rf /var/lib/apt/lists/* && \
-		curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - && \
-		curl https://packages.microsoft.com/config/ubuntu/16.04/prod.list > /etc/apt/sources.list.d/mssql-release.list && \
-		apt-get update && ACCEPT_EULA=Y apt-get install -y msodbcsql unixodbc-dev && \
-		apt-get update && ACCEPT_EULA=Y apt-get install -y mssql-tools && \
-		echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bashrc && \
-		/bin/bash -c "source ~/.bashrc" && \
-		apt-get install -y locales && \
-	    echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
-	    locale-gen && \
-		pip install pyodbc
+        curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - && \
+        curl https://packages.microsoft.com/config/ubuntu/16.04/prod.list > /etc/apt/sources.list.d/mssql-release.list && \
+        apt-get update && ACCEPT_EULA=Y apt-get install -y msodbcsql unixodbc-dev && \
+        apt-get update && ACCEPT_EULA=Y apt-get install -y mssql-tools && \
+        echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bashrc && \
+        /bin/bash -c "source ~/.bashrc" && \
+        apt-get install -y locales && \
+        echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
+        locale-gen && \
+        pip install --upgrade pip && \
+        pip install https://cntk.ai/PythonWheel/CPU-Only/cntk-2.3.1-cp35-cp35m-linux_x86_64.whl && \
+        pip install pyodbc && \
+        pip install dhash && \
+        pip install pillow && \
+        pip install sqlalchemy && \
+        pip install azure-storage-blob && \
+        pip install azure-storage-file && \
+        pip install azure-storage-queue && \
+        pip install scikit-image
 	```
 
-	This **Dockerfile** contains instructions for building a Docker container image. It uses ```microsoft/mmlspark:plus-0.9.9``` as the base image and adds a Python package named ```pyodbc``` that permits Python scripts to access Azure SQL databases (as well as on-premises SQL Server databases). It also installs several packages that ```pyodbc``` depends on.
+	This **Dockerfile** contains instructions for building a Docker container image. It uses ```microsoft/mmlspark:plus-0.9.9``` as the base image and adds a Python package named ```pyodbc``` that permits Python scripts to access Azure SQL databases (as well as on-premises SQL Server databases). It also installs several packages that ```pyodbc``` depends on, and other packages needed for this lab.
 
 1. Open a Command Prompt or terminal window and navigate to the directory you created in the previous step (the directory that contains the **Dockerfile**). Then execute the following command to build a custom container image named ```spark-sql```:
 
@@ -223,7 +232,15 @@ In this exercise, you will use Azure Machine Learning Workbench to write and exe
 1. Open **conda_dependencies.yml** for editing in Machine Learning Workbench. Then add the following line to the ```- pip``` section of the file:
 
 	```yml
-	- pyodbc
+    # Added pip
+    - pyodbc
+    - dhash
+    - pillow
+    - sqlalchemy
+    - azure-storage-blob
+    - azure-storage-file
+    - azure-storage-queue
+    - scikit-image
 	```
 
 	The modified ```- pip``` section should look like this:
@@ -232,14 +249,23 @@ In this exercise, you will use Azure Machine Learning Workbench to write and exe
 	- pip:
 	    # The API for Azure Machine Learning Model Management Service.
 	    # Details: https://github.com/Azure/Machine-Learning-Operationalization
-	    - azure-ml-api-sdk==0.1.0a10
-	    - pyodbc
+      - azure-ml-api-sdk==0.1.0a10
+ 
+        # Added pip
+        - pyodbc
+        - dhash
+        - pillow
+        - sqlalchemy
+        - azure-storage-blob
+        - azure-storage-file
+        - azure-storage-queue
+        - scikit-image   
 	
 	    # Helper utilities for dealing with Azure ML Workbench Assets.
 	    - https://azuremldownloads.blob.core.windows.net/wheels/latest/azureml.assets-1.0.0-py3-none-any.whl?sv=2016-05-31&si=ro-2017&sr=c&sig=xnUdTm0B%2F%2FfknhTaRInBXyu2QTTt8wA3OsXwGVgU%2BJk%3D
 	```
 
-	This addition exposes the ```pyodbc``` package built into the container image to the Anaconda run-time installed with Workbench so the package can be imported into Python scripts run in the container. It is this package that enables Python scripts to connect to Azure SQL databases.
+	This addition exposes the ```pyodbc``` package and other added packages built into the container image to the Anaconda run-time installed with Workbench so the package can be imported into Python scripts run in the container. It is this package that enables Python scripts to connect to Azure SQL databases.
 
 1. Use the **File** > **Save** command to save the modified **conda_dependencies.yml** file.
 
@@ -252,50 +278,73 @@ In this exercise, you will use Azure Machine Learning Workbench to write and exe
 1. Open **load.py** for editing in Machine Learning Workbench and paste in the following Python code:
 
 	```python
-	import pyodbc 
-	import http.client, urllib.parse, json
-	
-	server = "SERVER_NAME.database.windows.net"
-	database = "DATABASE_NAME"
-	username = "ADMIN_USERNAME"
-	password = "ADMIN_PASSWORD" 
-	
-	api_key = "API_KEY"
-	host = "api.cognitive.microsoft.com"
-	path = "/bing/v7.0/images/search"
-	max_results = 256
-	
-	def bing_image_search(db_connection, artist_name):
-	    headers = { "Ocp-Apim-Subscription-Key" : api_key}
-	    conn = http.client.HTTPSConnection(host)
-	    query = urllib.parse.quote(artist_name)
-	    conn.request("GET", path + "?q=" + query + "&count=" +str(max_results), headers=headers)
-	    response = conn.getresponse()
-	    result = response.read().decode("utf8")
-	    paintings = json.loads(result)["value"]
-	
-	    for painting in paintings:
-	        width = painting["thumbnail"]["width"]
-	        height = painting["thumbnail"]["height"]
-	        url = painting["thumbnailUrl"]
-	        db_connection.execute("INSERT INTO Paintings (Artist, Width, Height, URL) VALUES ('" + \
-	            artist_name + "', " + str(width) + ", " + str(height) + ", '" + url + "')")
-	
-	    db_connection.commit()
-	
-	# Connect to the database
-	conn = pyodbc.connect("DRIVER={ODBC Driver 13 for SQL Server};SERVER=" + server + \
-	    ";DATABASE=" + database + ";UID=" + username + ";PWD=" + password)
-	
-	# Create a database table
-	conn.execute("DROP TABLE IF EXISTS Paintings")
-	conn.execute("CREATE TABLE Paintings (Artist VARCHAR(64), Width INT, Height INT, URL VARCHAR(255));")
-	conn.commit()
-	
-	# Use Bing Search to find images and populate the database
-	bing_image_search(conn, "Picasso")
-	bing_image_search(conn, "Van Gogh")
-	bing_image_search(conn, "Monet")
+    import pyodbc 
+    import http.client, urllib.parse, json
+
+    # dhash and PIL for image feature generation
+    # https://pypi.python.org/pypi/dhash
+    # https://pypi.python.org/pypi/Pillow
+    import dhash
+    from PIL import Image
+
+    # BytesIO to obtain from URL
+    # https://wiki.python.org/moin/BytesIO
+    from io import BytesIO
+
+    # HTTP for humans
+    # https://pypi.python.org/pypi/requests
+    import requests
+
+    server = "imageserverml.database.windows.net"
+    database = "images"
+    username = "marktab"
+    password = "WestlakeVillage2018" 
+
+    api_key = "1f258d418ac1412ab2b8cbdba740951b"
+    host = "api.cognitive.microsoft.com"
+    path = "/bing/v7.0/images/search"
+    max_results = 256
+
+    def bing_image_search(db_connection, artist_name):
+        headers = { "Ocp-Apim-Subscription-Key" : api_key}
+        conn = http.client.HTTPSConnection(host)
+        query = urllib.parse.quote(artist_name)
+        conn.request("GET", path + "?q=" + query + "&count=" +str(max_results), headers=headers)
+        response = conn.getresponse()
+
+        # Bytes Operations
+        # https://docs.python.org/3/library/stdtypes.html#bytes-and-bytearray-operations
+        result = response.read().decode(errors="replace")
+        paintings = json.loads(result)["value"]
+
+        for painting in paintings:
+            width = painting["thumbnail"]["width"]
+            height = painting["thumbnail"]["height"]
+            encodingFormat = painting["encodingFormat"]
+            name = painting["name"].replace("'", "''")
+            url = painting["thumbnailUrl"]
+            response = requests.get(url)
+            image = Image.open(BytesIO(response.content))
+            row, col = dhash.dhash_row_col(image)
+            DHashHex = dhash.format_hex(row, col)
+            db_connection.execute("INSERT INTO Paintings (Artist, Width, Height, EncodingFormat, Name, URL, DHashHex) VALUES ('" + \
+                artist_name + "', " + str(width) + ", " + str(height) + ", '" + encodingFormat + "', '" + name + "', '" + url + "', '" + DHashHex + "')")
+
+        db_connection.commit()
+
+    # Connect to the database
+    conn = pyodbc.connect("DRIVER={ODBC Driver 13 for SQL Server};SERVER=" + server + \
+        ";DATABASE=" + database + ";UID=" + username + ";PWD=" + password)
+
+    # Create a database table
+    conn.execute("DROP TABLE IF EXISTS Paintings")
+    conn.execute("CREATE TABLE Paintings (Artist VARCHAR(64), Width INT, Height INT, EncodingFormat VARCHAR(32), Name VARCHAR(255), URL VARCHAR(255), DHashHex VARCHAR(32));")
+    conn.commit()
+
+    # Use Bing Search to find images and populate the database
+    bing_image_search(conn, "Picasso Painting")
+    bing_image_search(conn, "Van Gogh Painting")
+    bing_image_search(conn, "Monet Painting")
 	```
 
 	This script imports the ```pyodbc``` package built into the container and uses it to connect to the Azure SQL database and create a table named "Paintings." It also invokes the Bing Image Search API three times to search the Web for images of paintings by famous artists, each time passing your Bing Search API key in an HTTP header. For each painting that it discovers, it writes a record to the "Paintings" table denoting the image's width, height, and URL, as well as the artist name.
