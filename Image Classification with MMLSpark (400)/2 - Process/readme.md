@@ -1,9 +1,5 @@
 ![](Images/header.png)
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur malesuada ipsum at nunc suscipit, sed commodo nunc auctor. Fusce in enim dolor. Cras at tortor et lacus aliquet dignissim. Praesent pellentesque laoreet lacinia. Quisque maximus tellus ac lorem mollis rutrum. Ut pharetra convallis molestie. Donec ornare faucibus mi eget dictum. Nulla nec viverra quam. Proin lectus nisi, accumsan vitae nibh at, varius fermentum ipsum. Pellentesque vitae massa velit. Phasellus vel tincidunt quam, ac molestie dolor.
- 
-Duis eu velit vel odio molestie vestibulum. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Quisque id maximus massa, sed rhoncus nisi. Duis sit amet dignissim lorem, a congue ipsum. Suspendisse tellus nibh, porttitor ut blandit eu, pellentesque blandit enim. Pellentesque condimentum nunc vitae suscipit sollicitudin. Fusce tempor dictum elit, non maximus elit condimentum sit amet. Interdum et malesuada fames ac ante ipsum primis in faucibus. Quisque et felis venenatis, vulputate tellus non, consectetur ligula. Vestibulum volutpat ornare mauris, a porttitor tellus ullamcorper sit amet. Vivamus pharetra finibus felis. Sed ut scelerisque tortor. Vivamus dui diam, posuere sed ullamcorper sit amet, lacinia cursus urna. Pellentesque dictum auctor augue, vel consequat dui cursus id.
-
 In this lab, the second of four in a series, you will prepare the data that you generated and stored in an Azure SQL database in the [previous lab](#) so that it can be used to train a machine-learning model that performs image classification. Preparation will involve using a technique called [perceptual image hashing](https://www.pyimagesearch.com/2017/11/27/image-hashing-opencv-python/) to identify images that are identical or highly similar so the model won't be biased by training it with multiple variations of the same image. In the [next lab](#), you will use the images that you generated to train a machine-learning model that recognizes the artists of famous paintings.
 
 ![](Images/road-map-2.png)
@@ -36,8 +32,9 @@ If you haven't completed the [previous lab in this series](#), you must do so be
 This hands-on lab includes the following exercises:
 
 - [Exercise 1: Connect to Azure SQL from ML Workbench](#Exercise1)
-- [Exercise 2: Normalize the images](#Exercise2)
-- [Exercise 3: Dedupe the images](#Exercise3)
+- [Exercise 2: Create a Standard Azure Blob Storage for Images](#Exercise2)
+- [Exercise 3: Determine Unique Paintings with a Pandas DataFrame](#Exercise3)
+- [Exercise 4: Upload Unique Painting Thumbnails into Azure Blob Storage](#Exercise4)
 
 Estimated time to complete this lab: **40** minutes.
 
@@ -99,78 +96,222 @@ In this exercise, you will connect to the Azure SQL database you created in the 
 TODO: Add closing.
 
 <a name="Exercise2"></a>
-## Exercise 2: Normalize the images ##
+## Exercise 2: Create a Standard Azure Blob Storage for Images ##
 
-TODO: Add introduction.
+In this exercise, you will use the Azure CLI to create an Azure storage account in the cloud. This storage account will store as blobs images acquired from Bing Image Search, and subsequently be used for the HDInsight Spark cluster. Note that you can also create storage accounts using the [Azure Portal](https://portal.azure.com). Whether to use the CLI or the portal is often a matter of personal preference.
 
-1. tk.
+1. If the Azure CLI 2.0 isn't installed on your computer, go to https://docs.microsoft.com/cli/azure/install-azure-cli and install it now. You can determine whether the CLI is installed — and what version is installed — by opening a Command Prompt or terminal window and typing the following command:
 
-	![tk](Images/tk.png)
+	```
+	az -v
+	```
 
-	_tk_
+	If the CLI is installed, the version number will be displayed. If the version number is less than 2.0.23, **download and install the latest version**.
 
-1. tk.
+	> As an alternative to installing the Azure CLI, you can use the [Azure Cloud Shell](https://azure.microsoft.com/features/cloud-shell/) available in the [Azure Portal](https://portal.azure.com). Simply open the portal in your browser and click the **Cloud Shell** button in the toolbar at the top of the page. One of the benefits of using the Cloud Shell is that you're *always* running the latest version.
 
-	![tk](Images/tk.png)
+	![tk](Images/cloud-shell.png)
 
-	_tk_
+	_Opening the Azure Cloud Shell_
 
-1. tk.
+1. Now use the following command to create a general-purpose storage account in the "mmlsparklab-rg" resource group created in lab one. Replace ACCOUNT_NAME with the name you wish to assign the storage account. The account name must be unique within Azure, so if the command fails because the storage-account name is already in use, change the name and try again. In addition, storage-account names must be from 3 to 24 characters in length and can contain only numbers and lowercase letters.
 
-	![tk](Images/tk.png)
+	```
+	az storage account create --name ACCOUNT_NAME --resource-group mmlsparklab-rg --location southcentralus --kind Storage --sku Standard_LRS
+	```
 
-	_tk_
+1. Before you can upload blobs to a storage account, you must create a container to store them in. Use the following command to create a container named "images" in the storage account, replacing ACCOUNT_NAME with the name you assigned to the storage account in the previous step:
 
-1. tk.
+	```
+	az storage container create --name images --account-name ACCOUNT_NAME
+	```
 
-	![tk](Images/tk.png)
+You now have a storage account for storing images for this lab, and a container to store them in. Now let's determine the set of unique paintings for this lab.
 
-	_tk_
-
-1. tk.
-
-	![tk](Images/tk.png)
-
-	_tk_
-
-TODO: Add closing.
 
 <a name="Exercise3"></a>
-## Exercise 3: Dedupe the images ##
+## Exercise 3: Determine Unique Paintings with a Pandas DataFrame ##
 
-TODO: Add introduction.
+Why do we need unique paintings?  Many images may be returned in a general web search, and we need to assure that we don't have the same image in the training and testing set.  
 
-1. tk.
+In this section, we use a Pandas DataFrame to read information from SQL Azure.  SQL Alchemy is the name of a package which allows many convenient functions to complement Pandas DataFrames; even though the full range of functions is beyond scope of this lab, we are using SQL Alchemy to run SQL code at the database.
+
+The SQL query leverages window functions, whose full scope allows for feature creation (especially for time series).  In this lab, we simply need to use the ```ROW_NUMBER``` function to achieve our deduplication goals.
+
+While it would be possible to ```SELECT...INTO``` a new table, we are instead reading the resulting query into a Pandas DataFrame.  In more complicated projects, this technique could be extended to add additional features through the Python environment.  The final DataFrame is then uploaded to a new table.
+
+1. Open **uniquePaintings.py** for editing in Machine Learning Workbench and paste in the following Python code:
+
+    ```python
+    # Unique Paintings
+    #
+    # Use case:
+    # 1) pre-processing data with Python as Pandas
+    # 2) leverage dhash engine
+    # 3) achieving pre-processing in Azure ML Workbench
+
+    # SQL Alchemy for full relational power
+    # http://docs.sqlalchemy.org/en/latest/core/engines.html
+    from sqlalchemy import create_engine
+    import pyodbc 
+
+    # Pandas for DataFrame
+    # https://pypi.python.org/pypi/pandas
+    import pandas as pd
+
+    # Create Engine
+    # http://docs.sqlalchemy.org/en/latest/dialects/mssql.html#module-sqlalchemy.dialects.mssql.pyodbc
+    engine = create_engine("mssql+pyodbc://<username>:<password>@<server>.database.windows.net:1433/<database>?driver=ODBC+Driver+13+for+SQL+Server")
+
+    # Custom SQL Query to remove duplicates
+    # Solution uses T-SQL window functions https://docs.microsoft.com/en-us/sql/t-sql/queries/select-over-clause-transact-sql
+    # Result set keeps the largest width image (then largest height) if the hash is equivalent
+    sql = "WITH RowTagging \
+        AS (SELECT [Artist], \
+                [Width], \
+                [Height], \
+                [EncodingFormat], \
+                [Name], \
+                [URL], \
+                [DHashHex], \
+                ROW_NUMBER() OVER (PARTITION BY DHashHex ORDER BY Width DESC, Height DESC) AS RowNumber \
+            FROM [dbo].[Paintings]) \
+        SELECT R.Artist, \
+            R.Width, \
+            R.Height, \
+            R.EncodingFormat, \
+            R.Name, \
+            R.URL, \
+            R.DHashHex \
+        FROM RowTagging R \
+        WHERE RowNumber = 1;"
+
+    # Run SQL Query in SQL Azure, return results into Pandas DataFrame
+    # http://pandas.pydata.org/pandas-docs/stable/generated/pandas.read_sql.html
+    df = pd.read_sql(sql, engine)
+    print("Columns: ", list(df.columns.values))
+    print("DataFrame Shape: ", df.shape)
+
+    # Output Pandas DataFrame to SQL Azure
+    # Note that the output would add an index by default
+    # http://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.to_sql.html
+    df.to_sql('UniquePaintings', engine, if_exists='replace', index=False)
+    ```
+
+1. As with Exercise 1, use the Azure ML Workbench to open the new datasource, the table named ```UniquePaintings```.
 
 	![tk](Images/tk.png)
 
 	_tk_
 
-1. tk.
+1.  Using the Azure portal, navigate to the ```images``` database, and using Data Explorer, look at the data in the new table ```UniquePaintings```.
 
 	![tk](Images/tk.png)
 
 	_tk_
 
-1. tk.
+
+In this exercise, we started with a table called ```Paintings``` and using a Pandas DataFrame, created a new table called ```UniquePaintings```.  Further navigation is possible either using the Azure ML Workbench or the Data Exploer from the Azure portal.
+
+<a name="Exercise4"></a>
+## Exercise 4: Upload Unique Painting Thumbnails into Azure Blob Storage ##
+
+In this section, we use the UniquePaintings SQL Azure table created in Exercise 3 to populate the Azure Blob Storage.  It is possible to store images in SQL Azure using VARBINARY fields:  however, the typical best practice is saving images in secured locations like Azure Blob Storage.  You may control access to this storage, either on a permanent or temporary basis.
+
+1. Open **blobUpload.py** for editing in Machine Learning Workbench and paste in the following Python code:
+
+    ```python
+    # Blob Upload
+    #
+    # Use case:
+    # 1) accessing Azure blob from Python in Workbench
+    # 2) using SQL Azure URLs as the source
+    # 3) sending a binary stream directly to Azure Blob
+
+    from azure.storage.blob import BlockBlobService
+
+    # Allows public access to the container
+    from azure.storage.blob import PublicAccess
+
+    # Transfer objects to/from Azure Blob storage using Python: https://docs.microsoft.com/en-us/azure/storage/blobs/storage-quickstart-blobs-python
+    from azure.storage.blob import ContentSettings
+
+    # SQL Alchemy for full relational power
+    # http://docs.sqlalchemy.org/en/latest/core/engines.html
+    from sqlalchemy import create_engine
+    import pyodbc 
+
+    # Pandas for DataFrame
+    # https://pypi.python.org/pypi/pandas
+    import pandas as pd
+
+    # HTTP for humans
+    # https://pypi.python.org/pypi/requests
+    import requests
+
+    # PIL for image generation
+    # https://pypi.python.org/pypi/Pillow
+    from PIL import Image
+
+    # BytesIO to obtain from URL
+    # https://wiki.python.org/moin/BytesIO
+    from io import BytesIO
+
+    # Access your blob storage
+    # Help on using Azure Blob in Python:  https://docs.microsoft.com/en-us/azure/storage/blobs/storage-python-how-to-use-blob-storage
+    # Azure Storage Services REST API Reference: https://docs.microsoft.com/en-us/rest/api/storageservices/Azure-Storage-Services-REST-API-Reference
+    block_blob_service = BlockBlobService(account_name='<account name>', account_key='<account key>')
+
+    # Set Container ACL:  https://docs.microsoft.com/en-us/rest/api/storageservices/set-container-acl
+    block_blob_service.set_container_acl('images', public_access=PublicAccess.Container)
+
+    # Create Engine
+    # http://docs.sqlalchemy.org/en/latest/dialects/mssql.html#module-sqlalchemy.dialects.mssql.pyodbc
+    engine = create_engine("mssql+pyodbc://<username>:<passwork>@<server>.database.windows.net:1433/<database>?driver=ODBC+Driver+13+for+SQL+Server")
+
+    # Read a SQL Table into Pandas DataFrame
+    # http://pandas.pydata.org/pandas-docs/stable/generated/pandas.read_sql_table.html
+    df = pd.read_sql_table('UniquePaintings', engine)
+    print("Columns: ", list(df.columns.values))
+    print("DataFrame Shape: ", df.shape)
+
+    # Array of valid image encodings
+    encodingarray = ['jpeg','bmp','png','gif']
+    container_name = 'images'
+    for index, row in df.iterrows():
+        if row['EncodingFormat'] in encodingarray:
+            print (row['URL'],row['DHashHex'],row['EncodingFormat'])
+
+            blob_name = row['Artist'] + "/" + row['DHashHex'] + "." + row['EncodingFormat']
+            response = requests.get(row['URL'], stream=True)
+            # Convert to Binary Stream
+            # https://docs.python.org/3/library/io.html
+            stream = BytesIO(requests.get(row['URL'], stream=True).content)
+            imagecontent = "image/" + row['EncodingFormat']
+
+            # azure.storage.blob.blockblobservice module http://azure.github.io/azure-storage-python/ref/azure.storage.blob.blockblobservice.html
+            block_blob_service.create_blob_from_stream(container_name, blob_name, stream, content_settings=ContentSettings(content_type=imagecontent))
+
+            # memory management
+            del response
+            del stream
+    ```
+
+Only files of type ```pyodbc```, ```pyodbc```, ```pyodbc```, and ```pyodbc``` are being used in this lab (the list being in a modifiable array).
+
+1. Using the web browser, navigate to the location of the uploaded files inside the Azure Blob Storage.
 
 	![tk](Images/tk.png)
 
 	_tk_
 
-1. tk.
+1.  Using Microsoft Azure Storage Explorer, navigate to the location of the uploaded files.  This free software may be downloaded from https://azure.microsoft.com/en-us/features/storage-explorer/.
 
 	![tk](Images/tk.png)
 
 	_tk_
 
-1. tk.
-
-	![tk](Images/tk.png)
-
-	_tk_
-
-TODO: Add closing.
+The unique files have now been uploaded to Azure Blob Storage.  The file names were assigned the dHash values.
 
 <a name="Summary"></a>
 ## Summary ##
