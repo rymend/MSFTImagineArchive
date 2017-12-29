@@ -1,6 +1,6 @@
 ![](Images/header.png)
 
-In the [previous lab](#), you used Azure Machine Learning Workbench to execute a Python script that converts raw data from the [MNIST database](http://yann.lecun.com/exdb/mnist/), which contains 60,000 scanned and normalized images of the hand-written digits 0 through 9, into data that can be used to train neural networks built with the [Microsoft Cognitive Toolkit](https://www.microsoft.com/en-us/research/product/cognitive-toolkit/), also known as CNTK. The script ran in a Docker container, received input from Azure blob storage, and wrote its output to Azure blob storage.
+In the [previous lab](../2%20-%20Process), you used Azure Machine Learning Workbench to execute a Python script that converts raw data from the [MNIST database](http://yann.lecun.com/exdb/mnist/), which contains 60,000 scanned and normalized images of the hand-written digits 0 through 9, into data that can be used to train neural networks built with the [Microsoft Cognitive Toolkit](https://www.microsoft.com/en-us/research/product/cognitive-toolkit/), also known as CNTK. The script ran in a Docker container, received input from Azure blob storage, and wrote its output to Azure blob storage.
 
 In this lab, the third of four in a series, you will return to Machine Learning Workbench and train three machine-learning models that rely on CNTK neural networks. The goal: to find the best model for recognizing hand-written digits, with an eye toward operationalizing the model and building a client app that uses it in the fourth and final lab.
 
@@ -25,7 +25,7 @@ The following are required to complete this hands-on lab:
 - [Azure Machine Learning Workbench](https://docs.microsoft.com/en-us/azure/machine-learning/preview/quickstart-installation)
 - [Docker](https://www.docker.com/)
 
-If you haven't completed the [previous lab in this series](#), you must do so before starting this lab.
+If you haven't completed the [previous lab in this series](../2%20-%20Process), you must do so before starting this lab.
 
 ---
 
@@ -441,7 +441,7 @@ The "Resources" folder accompanying this lab contains the three BrainScript file
 <a name="Summary"></a>
 ## Summary ##
 
-You have now used Machine Learning Workbench and the Microsoft Cognitive Toolkit (CNTK) to train and test three machine-learning models backed by neural networks. And you identified the model that scored the highest in testing. You are now ready to proceed to the fourth and final lab in this series — [Using the Microsoft Cognitive Toolkit (CNTK) to Build Neural Networks, Part 4](#) — in which you will operationalize one of these models and build a Node.js app that uses it to identify digits drawn onto the screen.
+You have now used Machine Learning Workbench and the Microsoft Cognitive Toolkit (CNTK) to train and test three machine-learning models backed by neural networks. And you identified the model that scored the highest in testing. You are now ready to proceed to the fourth and final lab in this series — [Using the Microsoft Cognitive Toolkit (CNTK) to Build Neural Networks, Part 4](../4%20-%20Visualize) — in which you will operationalize one of these models and build a Node.js app that uses it to identify digits drawn onto the screen.
 
 ---
 

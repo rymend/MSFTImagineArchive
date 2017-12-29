@@ -1,6 +1,6 @@
 ![](Images/header.png)
 
-In the [previous lab](#), you used Azure Machine Learning Workbench and the [Microsoft Cognitive Toolkit](https://www.microsoft.com/en-us/research/product/cognitive-toolkit/), also known as CNTK, to train three neural networks to recognize hand-written digits using data from the [MNIST database](http://yann.lecun.com/exdb/mnist/). You also scored the neural networks for accuracy using test data from the same database. The "compiled" networks were written to Azure blob storage.
+In the [previous lab](../3%20-%20Predict), you used Azure Machine Learning Workbench and the [Microsoft Cognitive Toolkit](https://www.microsoft.com/en-us/research/product/cognitive-toolkit/), also known as CNTK, to train three neural networks to recognize hand-written digits using data from the [MNIST database](http://yann.lecun.com/exdb/mnist/). You also scored the neural networks for accuracy using test data from the same database. The "compiled" networks were written to Azure blob storage.
 
 In this lab, the fourth of four in a series, you will build a Docker image containing one of the compiled networks. The container will also include a rudimentary Web server written in [Node.js](https://nodejs.org/en/) that serves up a Web page in which users can sketch digits. A button click submits a digit to the neural network, which "predicts" which digit was drawn, providing a real and tangible demonstration of machine learning in action.
 
@@ -23,7 +23,7 @@ The following are required to complete this hands-on lab:
 - An active Microsoft Azure subscription. If you don't have one, [sign up for a free trial](http://aka.ms/WATK-FreeTrial).
 - [Docker](https://www.docker.com/)
 
-If you haven't completed the [previous lab in this series](#), you must do so before starting this lab.
+If you haven't completed the [previous lab in this series](../3%20-%20Predict), you must do so before starting this lab.
 
 ---
 

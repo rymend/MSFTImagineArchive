@@ -125,7 +125,7 @@ The MNIST data is now in blob storage, where it can be accessed externally by UR
 <a name="Summary"></a>
 ## Summary ##
 
-The Azure Portal makes it easy to create storage accounts, create containers inside those storage accounts, and upload blobs to the containers. Now that you have the MNIST dataset uploaded to blob storage, proceed to the next lab in this series — [Using the Microsoft Cognitive Toolkit (CNTK) to Build Neural Networks, Part 2](#) — to begin shaping the dataset for use in machine learning.
+The Azure Portal makes it easy to create storage accounts, create containers inside those storage accounts, and upload blobs to the containers. Now that you have the MNIST dataset uploaded to blob storage, proceed to the next lab in this series — [Using the Microsoft Cognitive Toolkit (CNTK) to Build Neural Networks, Part 2](../2%20-%20Process) — to begin shaping the dataset for use in machine learning.
 
 ---
 

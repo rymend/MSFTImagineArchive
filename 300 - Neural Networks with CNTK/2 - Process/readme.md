@@ -25,7 +25,7 @@ The following are required to complete this hands-on lab:
 - [Azure Machine Learning Workbench](https://docs.microsoft.com/en-us/azure/machine-learning/preview/quickstart-installation)
 - [Docker](https://www.docker.com/)
 
-If you haven't completed the [previous lab in this series](#), you must do so before starting this lab.
+If you haven't completed the [previous lab in this series](../1%20-%20Ingest), you must do so before starting this lab.
 
 ---
 
@@ -333,7 +333,7 @@ _CNTK-formatted data_
 <a name="Summary"></a>
 ## Summary ##
 
-The raw MNIST data has been converted into CNTK format and is ready to be used to train a neural network. This sets the stage for the next lab in this series — [Using the Microsoft Cognitive Toolkit (CNTK) to Build Neural Networks, Part 3](#) — in which you will use CNTK and Machine Learning Workbench to build a set of neural networks and compare their accuracy.
+The raw MNIST data has been converted into CNTK format and is ready to be used to train a neural network. This sets the stage for the next lab in this series — [Using the Microsoft Cognitive Toolkit (CNTK) to Build Neural Networks, Part 3](../3%20-%20Predict) — in which you will use CNTK and Machine Learning Workbench to build a set of neural networks and compare their accuracy.
 
 ---
 
