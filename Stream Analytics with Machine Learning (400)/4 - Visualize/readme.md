@@ -1,10 +1,10 @@
 ![](Images/header.png)
 
-The goal of business intelligence is being able to quickly identify and respond to ever-changing trends in business and industry. Whether you’re a data analyst delivering reports and analytics to your organization or a stakeholder or decision-maker in need of critical insights, Power BI can organize and unify all of your organization's data to provide a clear view of your world.
+The goal of business intelligence is being able to quickly identify and respond to ever-changing trends in business and industry. Whether you’re a data analyst delivering reports and analytics to your organization or a stakeholder or decision-maker in need of critical insights, Power BI can organize and unify all of your organization's data to provide a clear view of the world around you.
 
 [Microsoft Power BI](https://powerbi.microsoft.com/en-us/mobile/) was created to address the data explosion in commercial and academic organizations, the need to analyze that data, and the need for rich, interactive visuals to represent the data and reveal key insights. It contains a suite of tools that assist in data analysis, from data discovery and collection to data transformation, aggregation, sharing, and collaboration. Moreover, it allows you to create rich visualizations and package them in interactive dashboards.
 
-In this lab, the fourth of four in a series, you will connect Microsoft Power BI to the Azure SQL database you created in the previous lab to capture information emanating from the virtual camera array you deployed in the Arctic. Then you will use Power BI to build a dashboard that shows where polar bears are being spotted.
+In this lab, the fourth of four in a series, you will connect Microsoft Power BI to the Azure SQL database you created in the previous lab to capture information emanating from the virtual camera array you deployed in the Arctic. Then you will use Power BI to build a report that shows in near real-time where polar bears are being spotted.
 
 ![](Images/road-map-4.png)
 
@@ -15,14 +15,14 @@ In this hands-on lab, you will learn how to:
 
 - Connect Power BI to an Azure SQL database
 - Use Power BI to visualize data written to the database
-- Create a dashboard that can be shared with colleagues
+- Create a report that can be shared with colleagues
 
 <a name="Prerequisites"></a>
 ### Prerequisites ###
 
 The following are required to complete this hands-on lab:
 
-- An active Microsoft work/school or organizational account.
+- An active Microsoft work/school or organizational account
 - An active Microsoft Power BI subscription. If you don't have one, [sign up for a free trial](https://app.powerbi.com/signupredirect?pbi_source=web).
 
 If you haven't completed the [previous lab in this series](#), you must do so before starting this lab.
@@ -43,17 +43,17 @@ Estimated time to complete this lab: **30** minutes.
 <a name="Exercise1"></a>
 ## Exercise 1: Connect Power BI to Azure SQL ##
 
-In the previous lab, you used the [Custom Vision Service](https://azure.microsoft.com/services/cognitive-services/custom-vision-service/) to train an image-classification model to differentiate between different types of Arctic wildlife, and modified the Azure Function you wrote to write the results to an Azure SQL database. The first step in using Microsoft Power BI to explore and visualize this data is connecting it to Power BI as a data source. In this exercise, you will connect the [Power BI service](https://docs.microsoft.com/en-us/power-bi/service-get-started) to the Azure SQL database.
+In the previous lab, you used the [Custom Vision Service](https://azure.microsoft.com/services/cognitive-services/custom-vision-service/) to train an image-classification model to differentiate between different types of Arctic wildlife, and modified the Azure Function you wrote to output the results to an Azure SQL database. The first step in using Microsoft Power BI to explore and visualize this data is connecting it to Power BI as a data source. In this exercise, you will connect the [Power BI service](https://docs.microsoft.com/en-us/power-bi/service-get-started) to the Azure SQL database.
 
 1. Go to the Power BI service portal at https://app.powerbi.com. If asked to log in, do so with your work/school or organizational account.
 
-	> There are two types of Microsoft accounts: personal Microsoft accounts and work/school accounts, also known as organizational accounts. Power BI accepts the latter but not the former. If you have an Office 365 subscription, it uses your work/school account. You can have a work/school account without having an Office 365 subscription, however. For an explanation of the difference between personal Microsoft accounts and work/school accounts, see [Understanding Microsoft Work And Personal Accounts](http://www.brucebnews.com/2016/06/finding-your-way-through-microsofts-maze-of-work-and-personal-accounts/).
+	> There are two types of Microsoft accounts: personal Microsoft accounts and work/school accounts, also known as organizational accounts. Power BI accepts the latter but not the former. If you have an Office 365 subscription, it uses your work/school account. You can have a work/school account without having an Office 365 subscription, however. For an explanation of the differences between personal Microsoft accounts and work/school accounts, see [Understanding Microsoft Work And Personal Accounts](http://www.brucebnews.com/2016/06/finding-your-way-through-microsofts-maze-of-work-and-personal-accounts/).
 
 1. Click **Get Data** in the menu bar on the left.
 
-    ![Accessing Power BI data sources](Images/portal-get-data.png)
+    ![Adding a data source](Images/portal-get-data.png)
 
-    _Accessing Power BI data sources_
+    _Adding a data source_
 
 1. Click the **Get** button in the "Databases" tile.
 
@@ -67,15 +67,15 @@ In the previous lab, you used the [Custom Vision Service](https://azure.microsof
 
     _Connecting to an Azure SQL Data Warehouse_
 
-1. Enter the server's host name (the server name plus ".database.windows.net" since it's an Azure SQL database server) and database name that you specified when you created the database and database server in the previous lab. Enable **Enable Advanced Options**, and then type the query below into the **Custom Filters** box to select the 20 most recently added rows in the "PolarBears" table. When you're done, click **Next**.
+1. Enter the server's host name (the server name plus ".database.windows.net" since it's an Azure SQL database server) and the database name that you specified in the previous lab. Enable **Enable Advanced Options**, and then type the query below into the **Custom Filters** box to select the 20 most recently added rows in the "PolarBears" table. This is the query that the report will use to pull information from the database. When you're done, click **Next**.
 
 	```sql
 	SELECT TOP 20 Id, CameraId, Latitude, Longitude, Url, Timestamp, FORMAT(Timestamp,'MM/dd/yyyy h:mm:ss tt') AS TimestampLabel, IsPolarBear FROM dbo.PolarBears ORDER BY Timestamp DESC
 	```
 
-    ![Specifying a database and filter](Images/connect-to-database-3.png)
+    ![Specifying a database and query](Images/connect-to-database-3.png)
 
-    _Specifying a database and filter_
+    _Specifying a database and query_
 
 1. In the subsequent dialog, enter the user name and password you specified when you created the database server. Then click **Sign in**.
 
@@ -88,7 +88,7 @@ After a short delay, Power BI will connect to the database and import a dataset 
 <a name="Exercise2"></a>
 ## Exercise 2: Build a report in Power BI ##
 
-Visualizations (or simply "visuals") are the primary element that make up Power BI reports and dashboards. In this exercise, you will use the Power BI report designer to create visuals from the database you connected to in the previous exercise, and adjust filters and aggregates to refine the way the data is displayed.
+Visualizations (or simply "visuals") are the primary element that make up Power BI reports. In this exercise, you will use the Power BI report designer to create visuals from the database you connected to in the previous exercise, adjust filters and aggregates to refine the way the data is displayed, and format the visuals to produce compelling output.
 
 1. Click **streaminglab-database** under **My Workspace** > **Datasets** in the panel on the left. This is the dataset that was imported when you connected to the database in the previous exercise.
 
@@ -116,9 +116,9 @@ Visualizations (or simply "visuals") are the primary element that make up Power 
 
 1. Return to the "Fields" panel and check the **IsPolarBear** box to add that field to the map. Then resize the map so that it looks something like this:
 
-	![Resizing the map visual](Images/map-visual.png)
+	![Resizing the map](Images/map-visual.png)
 
-	_Resizing the map visual_
+	_Resizing the map_
 
 	Note that the number and location of the "bubbles" in your map will probably be different than what's shown here.
 
@@ -134,13 +134,13 @@ Visualizations (or simply "visuals") are the primary element that make up Power 
 
 	_Adding a pie-chart visual_
 
-1. Click the down arrow next to **Average of Latitude** and select **Count** from the menu to configure the pie chart to show a count of sightings and the proportion of sightings that were polar bears. 
+1. Click the down arrow next to **Average of Latitude** and select **Count** from the menu to configure the pie chart to show a count of sightings and the proportion of sightings in which polar bears were detected. 
 
-	![Formatting the pie-chart visual](Images/pie-chart-visual.png)
+	![Refining the pie-chart visual](Images/pie-chart-visual.png)
 
-	_Formatting the pie-chart visual_
+	_Refining the pie-chart visual_
 
-1. Deselect the pie-chart visual and click the **Slicer** icon to add a slicer to the report. Slicers provide a convenient means for filtering information in a Power BI report, because they narrow the portion of the dataset shown in other visualizations on the page.
+1. Deselect the pie-chart visual and click the **Slicer** icon to add a slicer to the report. Slicers provide a convenient means for filtering information in a Power BI report by narrowing the data shown in other visuals.
 
 	![Adding a slicer](Images/add-slicer.png)
 
@@ -148,9 +148,9 @@ Visualizations (or simply "visuals") are the primary element that make up Power 
 
 1. Select the **IsPolarBear** field in the "Fields" panel so the slicer shows checkboxes labeled "True" and "False." 
 
-	![Formatting the slicer](Images/slicer-visual.png)
+	![Refining the slicer](Images/slicer-visual.png)
 
-	_Formatting the slicer_
+	_Refining the slicer_
 
 1. Now resize and reposition the visuals to achieve a layout similar to this:
 
@@ -158,7 +158,7 @@ Visualizations (or simply "visuals") are the primary element that make up Power 
 
 	_Adjusting the layout_
 
-1. With the report structure in place, the next task is to use some of Power BI's rich formatting options to embellish the visuals. Start by selecting the map visual in the report designer, and then clicking the **Format** tab in the "Visualizations" panel.
+1. With the report structure in place, the next task is to use some of Power BI's rich formatting options to embellish the visuals. Start by selecting the map visual in the report designer. Then click the **Format** icon in the "Visualizations" panel.
 
 	![Formatting the map visual](Images/format-map.png)
 
@@ -167,12 +167,12 @@ Visualizations (or simply "visuals") are the primary element that make up Power 
 1. Use the formatting controls in the "Visualizations" panel to make the following changes to the map visual:
 
 	- Under "Legend," set "Legend Name" to "Polar bear sighted?"
-	- Under "Data Colors," set the color for False to 00FF00 (pure green) and the color for True to FF0000 (pure red)
+	- Under "Data colors," set the color for False to 00FF00 (pure green) and the color for True to FF0000 (pure red)
 	- Under "Bubbles," set  the bubble size to 30%
 	- Under "Map styles," set the theme to "Aerial"
 	- Turn "Title" from on to off
 
-	Confirm that the resulting map visual looks something like this:
+	Confirm that the resulting map looks something like this:
 
 	![Formatted map visual](Images/formatted-map-visual.png)
 
@@ -180,7 +180,7 @@ Visualizations (or simply "visuals") are the primary element that make up Power 
 
 1. Select the pie-chart visual and use the formatting controls in the "Visualizations" panel to make the following changes:
 
-	- Under "Data Colors," set set the color for False to 00FF00 and the color for True to FF0000
+	- Under "Data colors," set False to 00FF00 and True to FF0000
 	- Under "Detail  labels," change the label style to "Data value, percent of total"
 	- Under "Title," change the title text to "Proportion of polar bear sightings"
 
@@ -192,10 +192,10 @@ Visualizations (or simply "visuals") are the primary element that make up Power 
 
 1. Select the table visual and use the formatting controls in the "Visualizations" panel to make the following changes:
 
-	- Under "Table style," change to style to "Alternating rows"
+	- Under "Table style," change the style to "Alternating rows"
 	- Turn "Title" on, and change the title text to "Camera activity" 
 
-	Confirm that the resulting table visual looks like this:
+	Confirm that the resulting table looks like this:
 
 	![Formatted table visual](Images/formatted-table-visual.png)
 
@@ -220,9 +220,9 @@ _The formatted report_
 <a name="Exercise3"></a>
 ## Exercise 3: Run the end-to-end solution ##
 
-Now that the report is prepared in Power BI, your final task is to run the end-to-end solution that you built in this series of hands-on labs. Let's go sight some polar bears!
+Now that the report is prepared in Power BI, your final task is to run the end-to-end solution that you built in this series of hands-on labs and check for polar bears!
 
-1. Open the database that you created in [Lab 3](#) in the [Azure Portal](https://portal.azure.com) and use the Data Explorer to execute the following query to delete all rows from the "PolarBears" table:
+1. Open the database that you created in [Lab 3](#) in the [Azure Portal](https://portal.azure.com) and use the Data Explorer to execute the following query and delete all rows from the "PolarBears" table:
 
 	```sql
 	DELETE FROM dbo.PolarBears
@@ -242,11 +242,13 @@ Now that the report is prepared in Power BI, your final task is to run the end-t
 
 	_Refreshing the report_
 
-1. Confirm that red and green bubbles appear at various locations around the island. Red bubbles indicate the presence of polar bears, while green bubbles represent locations where a photo was taken, but the photo didn't contain a polar bear. Locations that have a mixture of sightings will show red *and* green, as pictured below.
+1. Confirm that red and green bubbles appear at various locations around the island. Red bubbles indicate the presence of polar bears, while green bubbles represent locations where photos were taken but no polar bears were detected. Locations that have a mixture of sightings will show red *and* green, as pictured below.
 
 	![There be polar bears!](Images/report-in-action.png)
 
 	_There be polar bears!_
+
+1. Suppose you *only* wanted to show locations where polar bears were detected. Check the **True** box in the slicer visual. What happens in the map?
 
 1. Continue running for a few minutes and refreshing the report once or twice a minute. Confirm that there are polar bears active on the island!
 
@@ -257,9 +259,9 @@ You now have a report that shows, in near real-time, polar-bear activity on the 
 <a name="Summary"></a>
 ## Summary ##
 
-In a series of four hands-on labs, you built a solution that feeds data from a simulated array of cameras into an [Azure IoT hub](https://azure.microsoft.com/services/iot-hub/), uploads photographs to [Azure Storage](https://azure.microsoft.com/services/storage/?v=16.50), processes the data using [Azure Stream Analytics](https://azure.microsoft.com/services/stream-analytics/), analyzes the photographs using the [Custom Vision Service](https://azure.microsoft.com/services/cognitive-services/custom-vision-service/), and visualizes the output using [Microsoft Power BI](https://powerbi.microsoft.com/). You also got first-hand experience using [Azure Functions](https://azure.microsoft.com/services/functions/) and [Azure SQL Database](https://azure.microsoft.com/services/sql-database/). It's a sophisticated solution, and one that has application in the real world.
+In a series of four hands-on labs, you built a solution that feeds data from a simulated array of cameras into an [Azure IoT hub](https://azure.microsoft.com/services/iot-hub/), uploads photographs to [Azure Storage](https://azure.microsoft.com/services/storage/?v=16.50), processes the data using [Azure Stream Analytics](https://azure.microsoft.com/services/stream-analytics/), analyzes the photographs using the [Custom Vision Service](https://azure.microsoft.com/services/cognitive-services/custom-vision-service/), and visualizes the output using [Microsoft Power BI](https://powerbi.microsoft.com/). You also got first-hand experience using [Azure Functions](https://azure.microsoft.com/services/functions/) and [Azure SQL Database](https://azure.microsoft.com/services/sql-database/). It's a sophisticated solution, and one that has applications in the real world.
 
-Once you're finished using the solution, you should delete all the Azure services you deployed so they no longer charge to your subscription. To delete them, simply go to the Azure Portal and delete the "streaminglab-rg" resource group. That's one of the many benefits of using resource groups: one simple action deletes the resource group and everything inside it. Once deleted, a resource group cannot be recovered, so make sure you're finished with it before deleting it.
+Once you're finished using the solution, you should delete all the Azure services you deployed so they no longer charge to your subscription. To delete them, simply go to the Azure Portal and delete the "streaminglab-rg" resource group. That's one of the many benefits of using resource groups: one simple action deletes the resource group and everything inside it. Once deleted, a resource group cannot be recovered, so make sure you're finished using it before deleting it.
 
 ---
 
