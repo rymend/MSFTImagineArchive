@@ -211,7 +211,7 @@ Visualizations (or simply "visuals") are the primary element that make up Power 
 
 1. Save the report by clicking **Save** in the upper-right corner of the page. Enter a report name such as "Polar Bear Activity."
 
-The formatted report should resemble the one below. Feel free to embellish it further. You could, for example, add a title in a large font at the top of the report. Once you're satisfied with the layout and content, let's put it to work using a live data source.
+The formatted report should resemble the one below. Feel free to embellish it further. You could, for example, add a title in a large font at the top of the report. Once you're satisfied with the layout and content, it's time to put it to work using a live data source.
 
 ![The formatted report](Images/formatted-report.png)
 
@@ -225,7 +225,7 @@ Now that the report is prepared in Power BI, your final task is to run the end-t
 1. Open the database that you created in [Lab 3](#) in the [Azure Portal](https://portal.azure.com) and use the Data Explorer to execute the following query to delete all rows from the "PolarBears" table:
 
 	```sql
-	DELETE * FROM dbo.PolarBears
+	DELETE FROM dbo.PolarBears
 	```
 
 1. Open the Stream Analytics job that you created in [Lab 2](#) in the Azure Portal and start the job running.
@@ -236,39 +236,31 @@ Now that the report is prepared in Power BI, your final task is to run the end-t
 	node run.js
 	```
 
-1. Return to the Power BI report in the Power BI service portal and refresh the page in the browser every 15 seconds or so.
+1. Return to the Power BI report in the Power BI service portal and click **Refresh** at the top of the page. Then refresh it again every 15 seconds or so. The report will refresh automatically every 15 minutes, but you can refresh it manually as often as you would like to update the visuals. 
 
-1. Confirm that red and green bubbles appear at various locations around the island. Red bubbles indicate the presence of polar bears, while green bubbles represent locations where a photo was taken, but the photo didn't contain a polar bear.
+	![Refreshing the report](Images/refresh-report.png)
 
-	![tk](Images/tk.png)
+	_Refreshing the report_
 
-	_tk_
+1. Confirm that red and green bubbles appear at various locations around the island. Red bubbles indicate the presence of polar bears, while green bubbles represent locations where a photo was taken, but the photo didn't contain a polar bear. Locations that have a mixture of sightings will show red *and* green, as pictured below.
 
-1. tk.
+	![There be polar bears!](Images/report-in-action.png)
 
-	![tk](Images/tk.png)
+	_There be polar bears!_
 
-	_tk_
+1. Continue running for a few minutes and refreshing the report once or twice a minute. Confirm that there are polar bears active on the island!
 
-1. tk.
+1. When you're satisfied that the solution is working as intended, stop the cameras and stop the Stream Analytics job.
 
-	![tk](Images/tk.png)
-
-	_tk_
-
-TODO: Add closing.
+You now have a report that shows, in near real-time, polar-bear activity on the island. If you have a [Power BI Pro or Power BI Premium](https://powerbi.microsoft.com/blog/power-bi-pro-power-bi-premium-flexibility-to-choose-the-licensing-best-for-you-and-your-organization/) account, you can share the report with other Power BI users so they, too, can monitor polar-bear activity. For more information about sharing your work, see [Share Power BI Dashboards and Reports](https://docs.microsoft.com/en-us/power-bi/service-how-to-collaborate-distribute-dashboards-reports "Share Power BI Dashboards and Reports"). Reports can also be viewed in the [Power BI mobile apps](https://docs.microsoft.com/power-bi/mobile-apps-for-mobile-devices) so you can keep track of polar bears on your Windows, Android, or iOS device — even on an Apple watch!
 
 <a name="Summary"></a>
 ## Summary ##
 
-With your Power BI report formatted and the layout adjusted for a great experience, sharing your report is a breeze. Sharing can be achieved in a number of ways, the most popular being to create a Power BI Dashboard and sharing the Dashboard with other users in your organization.
+In a series of four hands-on labs, you built a solution that feeds data from a simulated array of cameras into an [Azure IoT hub](https://azure.microsoft.com/services/iot-hub/), uploads photographs to [Azure Storage](https://azure.microsoft.com/services/storage/?v=16.50), processes the data using [Azure Stream Analytics](https://azure.microsoft.com/services/stream-analytics/), analyzes the photographs using the [Custom Vision Service](https://azure.microsoft.com/services/cognitive-services/custom-vision-service/), and visualizes the output using [Microsoft Power BI](https://powerbi.microsoft.com/). You also got first-hand experience using [Azure Functions](https://azure.microsoft.com/services/functions/) and [Azure SQL Database](https://azure.microsoft.com/services/sql-database/). It's a sophisticated solution, and one that has application in the real world.
 
-To create and share a Power BI Dashboard:
+Once you're finished using the solution, you should delete all the Azure services you deployed so they no longer charge to your subscription. To delete them, simply go to the Azure Portal and delete the "streaminglab-rg" resource group. That's one of the many benefits of using resource groups: one simple action deletes the resource group and everything inside it. Once deleted, a resource group cannot be recovered, so make sure you're finished with it before deleting it.
 
-1. In the Power BI report workspace, click **Pin Live Page**, select **New Dashboard**, then name the Dashboard "Hourly Polar Bear Activity", and click **Pin Live**.
-
-1. Select **Hourly Polar Bear Activity** from the "Dashboards" panel in the left-menu, then click **Share** in the top-right workspace menu. More information about sharing dashboards can be found at: [Share Power BI Dashboards and Reports](https://docs.microsoft.com/en-us/power-bi/service-how-to-collaborate-distribute-dashboards-reports "Share Power BI Dashboards and Reports").
-2. 
 ---
 
 Copyright 2017 Microsoft Corporation. All rights reserved. Except where otherwise noted, these materials are licensed under the terms of the MIT License. You may use them according to the license as is most appropriate for your project. The terms of this license can be found at https://opensource.org/licenses/MIT.
