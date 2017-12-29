@@ -178,7 +178,7 @@ One way to connect a Stream Analytics job to a machine-learning model running in
 
     _Creating an Azure Function App_
 
-1. Enter an app name that is unique to Azure. Place the function app in the "streaminglab-rg" resource group and set **Hosting Plan** to **App Service Plan**. Then click **App Service plan/location** and create a new App Service plan in the South Central US region. Under **Storage**, select the storage account that you created in [Part 1](../1%20-%20Ingest). Finally, click **OK** to create a new Azure Function app.
+1. Enter an app name that is unique to Azure. Place the function app in the "streaminglab-rg" resource group and set **Hosting Plan** to **App Service Plan**. Then click **App Service plan/location** and create a new App Service plan in the South Central US region. Under **Storage**, select the storage account that you created in [the previous lab](../1%20-%20Ingest). Finally, click **OK** to create a new Azure Function app.
 
 	> When you create an Azure Function App, you can choose from two hosting plans: Consumption plan or App Service plan. The former is cheaper because you only pay when the function executes. But with Consumption plan, the function might not execute for several minutes after it's called. With App Service plan, you pay more, but the function runs immediately.
  

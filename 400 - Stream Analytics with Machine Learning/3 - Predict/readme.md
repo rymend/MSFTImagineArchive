@@ -25,7 +25,7 @@ The following are required to complete this hands-on lab:
 - An active Microsoft Azure subscription. If you don't have one, [sign up for a free trial](http://aka.ms/WATK-FreeTrial).
 - The [Azure CLI](https://docs.microsoft.com/cli/azure/install-azure-cli)
 
-If you haven't completed the [previous lab in this series](#), you must do so before starting this lab.
+If you haven't completed the [previous lab in this series](../2%20-%20Process), you must do so before starting this lab.
 
 ---
 
@@ -382,7 +382,7 @@ In the next lab, you will use Power BI to produce a more compelling — and grap
 <a name="Summary"></a>
 ## Summary ##
 
-In this lab, you used the Custom Vision Service to train an image-classification model that can differentiate between different types of Arctic wildlife. Then you modified the Azure Function you wrote in the previous lab to call the model and write the results to an Azure SQL database.You may now proceed to the final lab in this series — [Processing IoT Data in Real Time Using Stream Analytics and Machine Learning, Part 4](#) — to apply the finishing touches by building a live dashboard that shows where polar bears are being spotted in the wild.
+In this lab, you used the Custom Vision Service to train an image-classification model that can differentiate between different types of Arctic wildlife. Then you modified the Azure Function you wrote in the previous lab to call the model and write the results to an Azure SQL database.You may now proceed to the final lab in this series — [Processing IoT Data in Real Time Using Stream Analytics and Machine Learning, Part 4](../4%20-%20Visualize) — to apply the finishing touches by building a live dashboard that shows where polar bears are being spotted in the wild.
 
 ---
 

@@ -25,7 +25,7 @@ The following are required to complete this hands-on lab:
 - An active Microsoft work/school or organizational account
 - An active Microsoft Power BI subscription. If you don't have one, [sign up for a free trial](https://app.powerbi.com/signupredirect?pbi_source=web).
 
-If you haven't completed the [previous lab in this series](#), you must do so before starting this lab.
+If you haven't completed the [previous lab in this series](../3%20-%20Predict), you must do so before starting this lab.
 
 ---
 
@@ -222,15 +222,15 @@ _The formatted report_
 
 Now that the report is prepared in Power BI, your final task is to run the end-to-end solution that you built in this series of hands-on labs and check for polar bears!
 
-1. Open the database that you created in [Lab 3](#) in the [Azure Portal](https://portal.azure.com) and use the Data Explorer to execute the following query and delete all rows from the "PolarBears" table:
+1. Open the database that you created in [Part 3](../3%20-%20Predict) in the [Azure Portal](https://portal.azure.com) and use the Data Explorer to execute the following query and delete all rows from the "PolarBears" table:
 
 	```sql
 	DELETE FROM dbo.PolarBears
 	```
 
-1. Open the Stream Analytics job that you created in [Lab 2](#) in the Azure Portal and start the job running.
+1. Open the Stream Analytics job that you created in [Part 2](../2%20-%20Process) in the Azure Portal and start the job running.
 
-1. Wait until the job is running. Then open a Command Prompt or terminal window and ```cd``` to the project directory you created in [Lab 1](#). Use the following command to start the virtual cameras running:
+1. Wait until the job is running. Then open a Command Prompt or terminal window and ```cd``` to the project directory you created in [Part 1](../1%20-%20Ingest). Use the following command to start the virtual cameras running:
 
 	```
 	node run.js

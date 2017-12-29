@@ -1,6 +1,6 @@
 ![](Images/header.png)
 
-In this lab, the second of four in a series, you will prepare the data that you generated and stored in an Azure SQL database in the [previous lab](#) so that it can be used to train a machine-learning model that performs image classification. Preparation will involve using a technique called [perceptual image hashing](https://www.pyimagesearch.com/2017/11/27/image-hashing-opencv-python/) to identify images that are identical or highly similar so the model won't be biased by training it with multiple variations of the same image. In the [next lab](#), you will use the images that you generated to train a machine-learning model that recognizes the artists of famous paintings.
+In this lab, the second of four in a series, you will prepare the data that you generated and stored in an Azure SQL database in the [previous lab](../1%20-%20Ingest) so that it can be used to train a machine-learning model that performs image classification. Preparation will involve using a technique called [perceptual image hashing](https://www.pyimagesearch.com/2017/11/27/image-hashing-opencv-python/) to identify images that are identical or highly similar so the model won't be biased by training it with multiple variations of the same image. In the [next lab](../3%20-%20Predict), you will use the images that you generated to train a machine-learning model that recognizes the artists of famous paintings.
 
 ![](Images/road-map-2.png)
 
@@ -22,7 +22,7 @@ The following are required to complete this hands-on lab:
 - [Azure Machine Learning Workbench](https://docs.microsoft.com/en-us/azure/machine-learning/preview/quickstart-installation)
 - [Docker](https://www.docker.com/)
 
-If you haven't completed the [previous lab in this series](#), you must do so before starting this lab.
+If you haven't completed the [previous lab in this series](../1%20-%20Ingest), you must do so before starting this lab.
 
 ---
 

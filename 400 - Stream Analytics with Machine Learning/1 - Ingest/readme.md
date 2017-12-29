@@ -422,7 +422,7 @@ If you would like to see a list of devices registered with the IoT hub, click **
 <a name="Summary"></a>
 ## Summary ##
 
-In this lab, you created an Azure IoT hub, registered an array of simulated devices, and sent a message to the IoT hub from one of the devices to confirm that everything was set up correctly. You also created an Azure storage account and a blob container inside it and demonstrated that a device simulated in software could upload blobs to it. You may now proceed to the next lab in this series — [Processing IoT Data in Real Time Using Stream Analytics and Machine Learning, Part 2](#) — to create an [Azure Stream Analytics](https://azure.microsoft.com/services/stream-analytics/) job and connect it to the IoT hub.
+In this lab, you created an Azure IoT hub, registered an array of simulated devices, and sent a message to the IoT hub from one of the devices to confirm that everything was set up correctly. You also created an Azure storage account and a blob container inside it and demonstrated that a device simulated in software could upload blobs to it. You may now proceed to the next lab in this series — [Processing IoT Data in Real Time Using Stream Analytics and Machine Learning, Part 2](../2%20-%20Process) — to create an [Azure Stream Analytics](https://azure.microsoft.com/services/stream-analytics/) job and connect it to the IoT hub.
 
 ---
 
