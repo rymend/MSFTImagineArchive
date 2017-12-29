@@ -205,7 +205,7 @@ If you check the "flights" directory, you should find that it now contains a fil
 <a name="Summary"></a>
 ## Summary ##
 
-The Data Science Virtual Machine for Linux provides a preconfigured virtual machine ready to handle data-science workloads large and small. Now that you have an instance up and running and have a dataset loaded into it, proceed to the next lab in this series — [Using Microsoft's Data Science Virtual Machine to Build Predictive Machine-Learning Models, Part 2](#) — to begin shaping the dataset for machine learning.
+The Data Science Virtual Machine for Linux provides a preconfigured virtual machine ready to handle data-science workloads large and small. Now that you have an instance up and running and have a dataset loaded into it, proceed to the next lab in this series — [Using Microsoft's Data Science Virtual Machine to Build Predictive Machine-Learning Models, Part 2](../2 - Process) — to begin shaping the dataset for machine learning.
 
 ---
 
