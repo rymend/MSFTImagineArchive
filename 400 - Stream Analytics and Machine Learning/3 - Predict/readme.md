@@ -77,13 +77,13 @@ In this exercise, you will create a new Custom Vision Service project. Then you 
 
     _Uploading Arctic-fox images_ 
  
-1. Click **Add images** at the top of the page and repeat the previous step to upload all of the images in the "Training/Polar Bear" directory to the Custom Vision Service and tag them with the term "Polar bear." Wait for the upload to complete, and then click **Done**.
+1. Click **Add images** at the top of the page and repeat the previous step to upload all of the images in the "Training Images/Polar Bear" directory to the Custom Vision Service and tag them with the term "Polar bear." Wait for the upload to complete, and then click **Done**.
 
 	![Uploading polar-bear images](Images/upload-files-2.png)
 
     _Uploading polar-bear images_ 
 
-1. Repeat the previous step to upload all of the images in the "Training/Walrus" directory to the Custom Vision Service and tag them with the term "Walrus." Wait for the upload to complete, and then click **Done**.
+1. Repeat the previous step to upload all of the images in the "Training Images/Walrus" directory to the Custom Vision Service and tag them with the term "Walrus." Wait for the upload to complete, and then click **Done**.
 
 	![Uploading polar-bear images](Images/upload-files-3.png)
 
