@@ -61,7 +61,7 @@ In this exercise, you will download the files created for the "One Convolution" 
 
 1. Create a subdirectory named "models" in the project directory and copy all the files that you downloaded from blob storage in Step 2 into the "models" directory.
 
-1. Create a subdirectory named "cntk" in the project directory and copy the file named **02-OneConv.cntk** from the resources accompanying this lab into the "cntk" directory.
+1. Create a subdirectory named "cntk" in the project directory and copy the file named **02-OneConv.cntk** from the [resources that you downloaded for the previous lab](https://topcs.blob.core.windows.net/public/300-cntk-resources-03.zip) into the "cntk" directory.
 
 1. Create an empty subdirectory named "mnist" in the project directory.
 

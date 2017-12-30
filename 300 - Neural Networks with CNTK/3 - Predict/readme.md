@@ -27,6 +27,11 @@ The following are required to complete this hands-on lab:
 
 If you haven't completed the [previous lab in this series](../2%20-%20Process), you must do so before starting this lab.
 
+<a name="Resources"></a>
+### Resources ###
+
+[Click here](https://topcs.blob.core.windows.net/public/300-cntk-resources-03.zip) to download a zip file containing the resources used in this lab. Copy the contents of the zip file into a folder on your hard disk.
+
 ---
 
 <a name="Exercises"></a>
@@ -436,7 +441,7 @@ In this exercise, you will train and score a third neural network and compare th
 
 1. Run **train.py** and examine the output to determine how accurately the model is able to identify hand-written digits. Rather than present an ```err``` value, this model will present ```rmse```, which stands for [root mean square error](https://twitter.com/ClowESPN/status/939133034636414976). A simple way to compare ```rmse``` to ```err``` is to multiply the ```rmse``` value by 100, so that 0.02, for example, becomes 2%. Based on that, is this network more or less accurate than the other networks you trained?
 
-The "Resources" folder accompanying this lab contains the three BrainScript files that you used to train neural networks, as well as four that you didn't use. Feel free to train additional networks if you would like using the extra files. For a great tutorial on training various types of machine-learning models with CNTK and additional insights into BrainScript, see https://github.com/Microsoft/CNTK/wiki/Tutorial.
+The [resources that accompany this lab](https://topcs.blob.core.windows.net/public/300-cntk-resources-03.zip) include the three BrainScript files that you used to train neural networks, and four more that you didn't use. Feel free to train additional networks if you would like using the extra files. For a great tutorial on training various types of machine-learning models with CNTK and additional insights into BrainScript, see https://github.com/Microsoft/CNTK/wiki/Tutorial.
 
 <a name="Summary"></a>
 ## Summary ##
