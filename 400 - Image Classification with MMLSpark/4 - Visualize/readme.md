@@ -31,11 +31,10 @@ If you haven't completed the [previous lab in this series](../3%20-%20Predict), 
 
 This hands-on lab includes the following exercises:
 
-- [Exercise 1: tk](#Exercise1)
-- [Exercise 2: tk](#Exercise2)
-- [Exercise 3: tk](#Exercise3)
+- [Exercise 1: Create an app using Node.js and Electron](#Exercise1)
+- [Exercise 2: Use the app to classify images](#Exercise2)
 
-Estimated time to complete this lab: **tk** minutes.
+Estimated time to complete this lab: **30** minutes.
 
 <a name="Exercise1"></a>
 ## Exercise 1: tk ##
