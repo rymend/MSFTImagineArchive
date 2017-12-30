@@ -364,7 +364,7 @@ Wait for the build process to complete. The container image is ready. Now let's 
 <a name="Exercise2"></a>
 ## Exercise 2: Run the image in a local container ##
 
-In this exercise, you will operationalize the "One Convolution" network by running the image that you built in the previous exercise in a Docker container. You will run the container locally, but note that the same container could also be hosted in the cloud using the [Azure Container Service](https://azure.microsoft.com/services/container-service/) or [Azure Container Instances](https://azure.microsoft.com/services/container-instances/). It could even be hosted in another container service such as the [Amazon Elastic Container Service](https://aws.amazon.com/ecs/).
+In this exercise, you will operationalize the "One Convolution" network by running the image that you built in the previous exercise in a Docker container. You will run the container locally, but note that the same container could also be hosted in the cloud using the [Azure Container Service](https://azure.microsoft.com/services/container-service/) or [Azure Container Instances](https://azure.microsoft.com/services/container-instances/).
 
 1. Return to the Command Prompt or terminal window in which you executed the ```docker build``` command in the previous exercise. Then execute the following command to run a container that uses the Docker image that you built:
 
