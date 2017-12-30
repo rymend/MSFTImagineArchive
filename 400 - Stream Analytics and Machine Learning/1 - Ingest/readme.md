@@ -27,6 +27,11 @@ The following are required to complete this hands-on lab:
 - The [Azure CLI](https://docs.microsoft.com/cli/azure/install-azure-cli)
 - [Node.js](https://nodejs.org/)
 
+<a name="Resources"></a>
+### Resources ###
+
+[Click here](https://topcs.blob.core.windows.net/public/400-streaming-resources-01.zip) to download a zip file containing the resources used in this lab. Copy the contents of the zip file into a folder on your hard disk.
+
 ---
 
 <a name="Exercises"></a>
@@ -265,7 +270,7 @@ Finish up by verifying that a file named **cameras.json** was created in the pro
 
 In this exercise, you will write code to test the camera array that you deployed in the previous exercise. That code will transmit an event from one of the virtual cameras to the IoT hub, and it will upload an image to the storage account that you created in [Exercise 1](#Exercise1).
 
-1. Create a subdirectory named "photos" in the project directory that you created in the previous exercise. Then copy all 30 JPEG files from the [resources that accompany this lab](#) to the "photos" directory. These are the images that the simulated cameras will upload to blob storage, samples of which are shown below. Wildlife depicted in the images include Arctic foxes, polar bears, and walruses.
+1. Create a subdirectory named "photos" in the project directory that you created in the previous exercise. Then copy all 30 JPG files from the [resources that accompany this lab](https://topcs.blob.core.windows.net/public/400-streaming-resources-01.zip) to the "photos" directory. These are the images that the simulated cameras will upload to blob storage, samples of which are shown below. Wildlife depicted in the images include Arctic foxes, polar bears, and walruses.
 
 	![Sample wildlife images](Images/wildlife-images.png)
 

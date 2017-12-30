@@ -28,6 +28,11 @@ The following are required to complete this hands-on lab:
 
 If you haven't completed the [previous lab in this series](../1%20-%20Ingest), you must do so before starting this lab.
 
+<a name="Resources"></a>
+### Resources ###
+
+[Click here](https://topcs.blob.core.windows.net/public/400-streaming-resources-02.zip) to download a zip file containing the resources used in this lab. Copy the contents of the zip file into a folder on your hard disk.
+
 ---
 
 <a name="Exercises"></a>
@@ -104,7 +109,7 @@ The heart of a Stream Analytics job is the query that extracts information from 
 
     _Uploading sample data_
 
-1. Click the **folder** icon on the right and select the file named **sample-data.json** from the [resources included with this lab](#). Then click **OK** to upload the file.
+1. Click the **folder** icon on the right and select the file named **sample-data.json** from the [resources included with this lab](https://topcs.blob.core.windows.net/public/400-streaming-resources-02.zip). Then click **OK** to upload the file.
 
     ![Uploading sample-data.json](Images/upload-test-data-2.png)
 

@@ -27,6 +27,11 @@ The following are required to complete this hands-on lab:
 
 If you haven't completed the [previous lab in this series](../2%20-%20Process), you must do so before starting this lab.
 
+<a name="Resources"></a>
+### Resources ###
+
+[Click here](https://topcs.blob.core.windows.net/public/400-streaming-resources-03.zip) to download a zip file containing the resources used in this lab. Copy the contents of the zip file into a folder on your hard disk.
+
 ---
 
 <a name="Exercises"></a>
@@ -66,7 +71,7 @@ In this exercise, you will create a new Custom Vision Service project. Then you 
 
     _Adding images to the project_ 
  
-1. Click **Browse local files**. Browse to the folder containing the [resources that accompany this lab](#) and select all of the files in the "Training/Arctic Fox" directory. Then OK the selection, enter "Arctic fox" as the tag for the images, and click the **Upload 130 files** button. Wait for the upload to complete, and then click **Done**.
+1. Click **Browse local files**. Browse to the folder containing the [resources that accompany this lab](https://topcs.blob.core.windows.net/public/400-streaming-resources-03.zip) and select all of the files in the "Training Images/Arctic Fox" directory. Then OK the selection, enter "Arctic fox" as the tag for the images, and click the **Upload 130 files** button. Wait for the upload to complete, and then click **Done**.
 
 	![Uploading Arctic-fox images](Images/upload-files-1.png)
 
@@ -103,7 +108,7 @@ In this exercise, you will train the model using the images that you tagged and 
 
 1. Now let's test the model using the portal's Quick Test feature, which allows you to submit images to the model and see how it classifies them using the knowledge gained during training.
 
-	Click the **Quick Test** button at the top of the page. Then click **Browse local files**, browse to the "Testing/Polar bear" directory in the resources accompanying this lab, and select any one of the test images in that directory.
+	Click the **Quick Test** button at the top of the page. Then click **Browse local files**, browse to the "Testing Images/Polar bear" directory in the resources accompanying this lab, and select any one of the test images in that directory.
 
 1. Examine the results of the test in the "Quick Test" dialog. What is the probability that the image contains a polar bear? What is the probability that it contains an Arctic fox or a walrus?
 
@@ -111,13 +116,13 @@ In this exercise, you will train the model using the images that you tagged and 
 
 	_Testing the model with a polar-bear image_
 
-1. Repeat this test with one of the images in the "Testing/Arctic Fox" directory. How well is the model able to differentiate between Arctic foxes and polar bears?
+1. Repeat this test with one of the images in the "Testing Images/Arctic Fox" directory. How well is the model able to differentiate between Arctic foxes and polar bears?
 
 	![Testing the model with an Arctic-fox image](Images/quick-test-2.png)
 
 	_Testing the model with an Arctic-fox image_
 
-1. The "Testing" directory in the lab resources contains subdirectories with a total of 30 different images for testing. Perform additional quick tests using these images until you are satisfied that the model is reasonably adept at predicting whether an image contains a polar bear.
+1. The "Testing Images" directory in the lab resources contains subdirectories with a total of 30 different images for testing. Perform additional quick tests using these images until you are satisfied that the model is reasonably adept at predicting whether an image contains a polar bear.
 
 1. Return to the "Performance" tab in your project and click **Make default** to make sure the latest iteration of the model is the default iteration (the one that will be exposed as a Web service). Then click **Prediction URL**.
 
