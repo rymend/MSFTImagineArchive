@@ -295,12 +295,12 @@ In this exercise, you will use Azure Machine Learning Workbench to write and exe
     # https://pypi.python.org/pypi/requests
     import requests
 
-    server = "imageserverml.database.windows.net"
-    database = "images"
-    username = "marktab"
-    password = "WestlakeVillage2018" 
+    server = "<SERVER_NAME>.database.windows.net"
+    database = "<DATABASE_NAME>"
+    username = "<ADMIN_USERNAME>"
+    password = "<ADMIN_PASSWORD>" 
 
-    api_key = "1f258d418ac1412ab2b8cbdba740951b"
+    api_key = "<API_KEY>"
     host = "api.cognitive.microsoft.com"
     path = "/bing/v7.0/images/search"
     max_results = 256
@@ -317,6 +317,11 @@ In this exercise, you will use Azure Machine Learning Workbench to write and exe
         result = response.read().decode(errors="replace")
         paintings = json.loads(result)["value"]
 
+        # Artist values are the same for all paintings
+        artist_number = searchDictionary[artist_name]
+        # Remove spaces for later file processing
+        artist_name = artist_name.replace(" ", "")
+
         for painting in paintings:
             width = painting["thumbnail"]["width"]
             height = painting["thumbnail"]["height"]
@@ -325,10 +330,24 @@ In this exercise, you will use Azure Machine Learning Workbench to write and exe
             url = painting["thumbnailUrl"]
             response = requests.get(url)
             image = Image.open(BytesIO(response.content))
-            row, col = dhash.dhash_row_col(image)
-            DHashHex = dhash.format_hex(row, col)
-            db_connection.execute("INSERT INTO Paintings (Artist, Width, Height, EncodingFormat, Name, URL, DHashHex) VALUES ('" + \
-                artist_name + "', " + str(width) + ", " + str(height) + ", '" + encodingFormat + "', '" + name + "', '" + url + "', '" + DHashHex + "')")
+            row8, col8 = dhash.dhash_row_col(image, size=8)
+            DHashHex8 = dhash.format_hex(row8, col8, size=8)
+            row7, col7 = dhash.dhash_row_col(image, size=7)
+            DHashHex7 = dhash.format_hex(row7, col7, size=7)
+            row6, col6 = dhash.dhash_row_col(image, size=6)
+            DHashHex6 = dhash.format_hex(row6, col6, size=6)
+            row5, col5 = dhash.dhash_row_col(image, size=5)
+            DHashHex5 = dhash.format_hex(row5, col5, size=5)
+            row4, col4 = dhash.dhash_row_col(image, size=4)
+            DHashHex4 = dhash.format_hex(row4, col4, size=4)
+            row3, col3 = dhash.dhash_row_col(image, size=3)
+            DHashHex3 = dhash.format_hex(row3, col3, size=3)     
+            row2, col2 = dhash.dhash_row_col(image, size=2)
+            DHashHex2 = dhash.format_hex(row2, col2, size=2)     
+            row1, col1 = dhash.dhash_row_col(image, size=1)
+            DHashHex1 = dhash.format_hex(row1, col1, size=1)                    
+            db_connection.execute("INSERT INTO Paintings (Artist, ArtistNumber, Width, Height, EncodingFormat, Name, URL, DHashHex8, DHashHex7, DHashHex6, DHashHex5, DHashHex4, DHashHex3, DHashHex2, DHashHex1) VALUES ('" + \
+                artist_name + "', " + str(artist_number) + ", " + str(width) + ", " + str(height) + ", '" + encodingFormat + "', '" + name + "', '" + url + "', '" + DHashHex8 + "', '" + DHashHex7 + "', '" + DHashHex6 + "', '" + DHashHex5 + "', '" + DHashHex4 + "', '" + DHashHex3 + "', '" + DHashHex2 + "', '" + DHashHex1 + "')")
 
         db_connection.commit()
 
@@ -338,24 +357,25 @@ In this exercise, you will use Azure Machine Learning Workbench to write and exe
 
     # Create a database table
     conn.execute("DROP TABLE IF EXISTS Paintings")
-    conn.execute("CREATE TABLE Paintings (Artist VARCHAR(64), Width INT, Height INT, EncodingFormat VARCHAR(32), Name VARCHAR(255), URL VARCHAR(255), DHashHex VARCHAR(32));")
+    conn.execute("CREATE TABLE Paintings (Artist VARCHAR(32), ArtistNumber INT, Width INT, Height INT, EncodingFormat VARCHAR(32), Name VARCHAR(255), URL VARCHAR(255), DHashHex8 VARCHAR(32), DHashHex7 VARCHAR(32), DHashHex6 VARCHAR(32), DHashHex5 VARCHAR(32), DHashHex4 VARCHAR(32), DHashHex3 VARCHAR(32), DHashHex2 VARCHAR(32), DHashHex1 VARCHAR(32));")
     conn.commit()
 
     # Use Bing Search to find images and populate the database
-    bing_image_search(conn, "Picasso Painting")
-    bing_image_search(conn, "Van Gogh Painting")
-    bing_image_search(conn, "Monet Painting")
+    searchDictionary = {'Picasso Painting':0, 'Van Gogh Painting':1, 'Monet Painting':2}
+    for key, value in searchDictionary.items():
+        print('Searching Images for ' + key)
+        bing_image_search(conn, key)
 	```
 
 	This script imports the ```pyodbc``` package built into the container and uses it to connect to the Azure SQL database and create a table named "Paintings." It also invokes the Bing Image Search API three times to search the Web for images of paintings by famous artists, each time passing your Bing Search API key in an HTTP header. For each painting that it discovers, it writes a record to the "Paintings" table denoting the image's width, height, and URL, as well as the artist name.
 
 1. Replace the following values in **load.py**. Then save the file.
 
-	- Replace SERVER_NAME on line 4 with the server name you specified in Exercise 1, Step 3
-	- Replace DATABASE_NAME on line 5 with the database name you specified in Exercise 1, Step 5
-	- Replace ADMIN_USERNAME on line 6 with the server name you specified in Exercise 1, Step 3
-	- Replace ADMIN_PASSWORD on line 7 with the server name you specified in Exercise 1, Step 3
-	- Replace API_KEY on line 9 with the API key you copied in Exercise 2, Step 5
+	- Replace SERVER_NAME on line 18 with the server name you specified in Exercise 1, Step 3
+	- Replace DATABASE_NAME on line 19 with the database name you specified in Exercise 1, Step 5
+	- Replace ADMIN_USERNAME on line 20 with the server name you specified in Exercise 1, Step 3
+	- Replace ADMIN_PASSWORD on line 21 with the server name you specified in Exercise 1, Step 3
+	- Replace API_KEY on line 23 with the API key you copied in Exercise 2, Step 5
 
 1. Select **Docker** from the Run Configuration drop-down and **load.py** from the Script drop-down to configure Workbench to run **load.py** in a Docker container. Then click the **Run** button.
 

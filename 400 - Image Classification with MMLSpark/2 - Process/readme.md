@@ -125,6 +125,11 @@ In this exercise, you will use the Azure CLI to create an Azure storage account 
 	```
 	az storage container create --name images --account-name ACCOUNT_NAME
 	```
+1. Use the Azure Portal to obtain the ACCESS KEY for this newly created Storage Account.
+
+	![tk](Images/storage_account_access_keys.png)
+
+	_Copying the Access Key_
 
 You now have a storage account for storing images for this lab, and a container to store them in. Now let's determine the set of unique paintings for this lab.
 
@@ -159,30 +164,35 @@ While it would be possible to ```SELECT...INTO``` a new table, we are instead re
     # https://pypi.python.org/pypi/pandas
     import pandas as pd
 
+    # Numpy
+    import numpy as np
+
     # Create Engine
     # http://docs.sqlalchemy.org/en/latest/dialects/mssql.html#module-sqlalchemy.dialects.mssql.pyodbc
-    engine = create_engine("mssql+pyodbc://<username>:<password>@<server>.database.windows.net:1433/<database>?driver=ODBC+Driver+13+for+SQL+Server")
+    engine = create_engine("mssql+pyodbc://<ADMIN_USERNAME>:<ADMIN_PASSWORD>@<SERVER_NAME>.database.windows.net:1433/<DATABASE_NAME>?driver=ODBC+Driver+13+for+SQL+Server")
 
     # Custom SQL Query to remove duplicates
     # Solution uses T-SQL window functions https://docs.microsoft.com/en-us/sql/t-sql/queries/select-over-clause-transact-sql
     # Result set keeps the largest width image (then largest height) if the hash is equivalent
     sql = "WITH RowTagging \
         AS (SELECT [Artist], \
+                [ArtistNumber], \
                 [Width], \
                 [Height], \
                 [EncodingFormat], \
                 [Name], \
                 [URL], \
-                [DHashHex], \
-                ROW_NUMBER() OVER (PARTITION BY DHashHex ORDER BY Width DESC, Height DESC) AS RowNumber \
+                [DHashHex3], \
+                ROW_NUMBER() OVER (PARTITION BY DHashHex3 ORDER BY Width DESC, Height DESC) AS RowNumber \
             FROM [dbo].[Paintings]) \
         SELECT R.Artist, \
+            R.ArtistNumber, \
             R.Width, \
             R.Height, \
             R.EncodingFormat, \
             R.Name, \
             R.URL, \
-            R.DHashHex \
+            R.DHashHex3 \
         FROM RowTagging R \
         WHERE RowNumber = 1;"
 
@@ -192,11 +202,20 @@ While it would be possible to ```SELECT...INTO``` a new table, we are instead re
     print("Columns: ", list(df.columns.values))
     print("DataFrame Shape: ", df.shape)
 
+    # Assign a random column using numpy
+    df['Random'] = np.random.rand(df.shape[0])
+
     # Output Pandas DataFrame to SQL Azure
     # Note that the output would add an index by default
     # http://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.to_sql.html
     df.to_sql('UniquePaintings', engine, if_exists='replace', index=False)
     ```
+1. Replace the following values in **uniquePaintings.py**. Then save the file.
+
+	- Replace ADMIN_USERNAME on line 22 with the admin name you specified in Lab 1, Exercise 1, Step 3
+	- Replace ADMIN_PASSWORD on line 22 with the admin password you specified in Lab 1, Exercise 1, Step 3
+	- Replace SERVER_NAME on line 22 with the server name you specified in Lab 1, Exercise 1, Step 3
+	- Replace DATABASE_NAME on line 22 with the database name you specified in Lab 1, Exercise 1, Step 5
 
 1. As with Exercise 1, use the Azure ML Workbench to open the new datasource, the table named ```UniquePaintings```.
 
@@ -227,6 +246,7 @@ In this section, we use the UniquePaintings SQL Azure table created in Exercise 
     # 1) accessing Azure blob from Python in Workbench
     # 2) using SQL Azure URLs as the source
     # 3) sending a binary stream directly to Azure Blob
+    # 4) sending metadata files to the Azure Blob (map.txt and uniqueclasses.txt)
 
     from azure.storage.blob import BlockBlobService
 
@@ -235,6 +255,9 @@ In this section, we use the UniquePaintings SQL Azure table created in Exercise 
 
     # Transfer objects to/from Azure Blob storage using Python: https://docs.microsoft.com/en-us/azure/storage/blobs/storage-quickstart-blobs-python
     from azure.storage.blob import ContentSettings
+
+    # Allow appending to blob
+    from azure.storage.blob import AppendBlobService
 
     # SQL Alchemy for full relational power
     # http://docs.sqlalchemy.org/en/latest/core/engines.html
@@ -257,17 +280,27 @@ In this section, we use the UniquePaintings SQL Azure table created in Exercise 
     # https://wiki.python.org/moin/BytesIO
     from io import BytesIO
 
+    # StringIO to create TXT files
+    # https://docs.python.org/3/library/io.html
+    from io import StringIO
+
     # Access your blob storage
     # Help on using Azure Blob in Python:  https://docs.microsoft.com/en-us/azure/storage/blobs/storage-python-how-to-use-blob-storage
     # Azure Storage Services REST API Reference: https://docs.microsoft.com/en-us/rest/api/storageservices/Azure-Storage-Services-REST-API-Reference
-    block_blob_service = BlockBlobService(account_name='<account name>', account_key='<account key>')
+    myaccount = '<ACCOUNT NAME>'
+    mykey = '<ACCESS KEY>'
+    block_blob_service = BlockBlobService(account_name=myaccount, account_key=mykey)
 
     # Set Container ACL:  https://docs.microsoft.com/en-us/rest/api/storageservices/set-container-acl
     block_blob_service.set_container_acl('images', public_access=PublicAccess.Container)
 
     # Create Engine
     # http://docs.sqlalchemy.org/en/latest/dialects/mssql.html#module-sqlalchemy.dialects.mssql.pyodbc
-    engine = create_engine("mssql+pyodbc://<username>:<passwork>@<server>.database.windows.net:1433/<database>?driver=ODBC+Driver+13+for+SQL+Server")
+    engine = create_engine("mssql+pyodbc://<ADMIN_USERNAME>:<ADMIN_PASSWORD>@<SERVER_NAME>.database.windows.net:1433/<DATABASE_NAME>?driver=ODBC+Driver+13+for+SQL+Server")
+
+    # Create Directory stem for HDInsight
+    azure_blob_root = 'wasbs://images@marktabblob.blob.core.windows.net/'
+    url_blob_root = 'https://marktabblob.blob.core.windows.net/images/'
 
     # Read a SQL Table into Pandas DataFrame
     # http://pandas.pydata.org/pandas-docs/stable/generated/pandas.read_sql_table.html
@@ -278,26 +311,85 @@ In this section, we use the UniquePaintings SQL Azure table created in Exercise 
     # Array of valid image encodings
     encodingarray = ['jpeg','bmp','png','gif']
     container_name = 'images'
+    paintings_stem = 'Image/DataSets/Paintings/'
+    training_blob_name = paintings_stem + 'Train/map.txt'
+    testing_blob_name = paintings_stem + 'Test/map.txt'
+    uniqueclass_blob_name = paintings_stem + 'uniqueclasses.txt'
+    transfer_images_blob_name = paintings_stem + 'transferimages.txt'
+
+    # Create empty StringIO objects to allow appending
+    training_stream = StringIO()
+    testing_stream = StringIO()
+    uniqueclasses_stream = StringIO()
+    transfer_images_stream = StringIO()
+
+    uniqueClasses = []
     for index, row in df.iterrows():
         if row['EncodingFormat'] in encodingarray:
-            print (row['URL'],row['DHashHex'],row['EncodingFormat'])
+            print (row['URL'],row['DHashHex3'],row['EncodingFormat'])
 
-            blob_name = row['Artist'] + "/" + row['DHashHex'] + "." + row['EncodingFormat']
-            response = requests.get(row['URL'], stream=True)
+            # Assign to test or train (80/20 split) based on the random number value
+            # Because the random number is stored, you may modify to a different split value
+            # Also, build a map.txt file in the appropriate directory
+            # How to use Azure Blob Storage: https://docs.microsoft.com/en-us/azure/storage/blobs/storage-python-how-to-use-blob-storage
+            if row['Random'] < .80:
+                image_base = row['Artist'] + "/" + row['DHashHex3'] + "." + row['EncodingFormat']
+                image_blob_name = paintings_stem + "Train/" + image_base
+                training_output = "DataSets/Paintings/Train/" + image_base + " " + str(row['ArtistNumber']) + '\n'
+                training_stream.write(training_output)
+            else:
+                image_base = row['Artist'] + "/" + row['DHashHex3'] + "." + row['EncodingFormat']
+                image_blob_name = paintings_stem + "Test/" + image_base
+                testing_output = "DataSets/Paintings/Test/" + image_base + " " + str(row['ArtistNumber']) + '\n'
+                testing_stream.write(testing_output)
+
+            # Single stream for all uploaded images for transferring into HDInsight file system
+            transfer_images_stream.write(url_blob_root + image_blob_name + ' ' + image_base + '\n')
+
+            # Accumulate Unique Classes
+            if row['Artist'] not in uniqueClasses:
+                uniqueClasses.append(row['Artist'])  
+
+            # Acquire image:  "response" could be saved as an image file
+            # response = requests.get(row['URL'], stream=True)
+
             # Convert to Binary Stream
             # https://docs.python.org/3/library/io.html
-            stream = BytesIO(requests.get(row['URL'], stream=True).content)
+            image_stream = BytesIO(requests.get(row['URL'], stream=True).content)
             imagecontent = "image/" + row['EncodingFormat']
 
             # azure.storage.blob.blockblobservice module http://azure.github.io/azure-storage-python/ref/azure.storage.blob.blockblobservice.html
-            block_blob_service.create_blob_from_stream(container_name, blob_name, stream, content_settings=ContentSettings(content_type=imagecontent))
+            block_blob_service.create_blob_from_stream(container_name, image_blob_name, image_stream, content_settings=ContentSettings(content_type=imagecontent))
 
             # memory management
-            del response
-            del stream
+            del image_stream
+
+    # Write number of unique classes
+    uniqueclasses_stream.write(str(len(uniqueClasses)))
+
+    # write to block blobs:  using create_blob_from_text 
+    block_blob_service.create_blob_from_text(container_name, training_blob_name, training_stream.getvalue())
+    block_blob_service.create_blob_from_text(container_name, testing_blob_name, testing_stream.getvalue())
+    block_blob_service.create_blob_from_text(container_name, uniqueclass_blob_name, uniqueclasses_stream.getvalue())
+    block_blob_service.create_blob_from_text(container_name, transfer_images_blob_name, transfer_images_stream.getvalue())
+
+    # memory management
+    del training_stream
+    del testing_stream
+    del uniqueclasses_stream
+    del transfer_images_stream
     ```
 
-Only files of type ```pyodbc```, ```pyodbc```, ```pyodbc```, and ```pyodbc``` are being used in this lab (the list being in a modifiable array).
+Only files of type ```jpeg```, ```bmp```, ```png```, and ```gif``` are being used in this lab (the list being in a modifiable array).
+
+1. Replace the following values in **blobUpload.py**. Then save the file.
+
+	- Replace ACCOUNT_NAME on line 50 with the account name you specified in Exercise 2, Step 2
+	- Replace ACCESS_KEY on line 51 with the access key you acquired in Exercise 2, Step 4
+	- Replace ADMIN_USERNAME on line 59 with the admin name you specified in Lab 1, Exercise 1, Step 3
+	- Replace ADMIN_PASSWORD on line 59 with the admin password you specified in Lab 1, Exercise 1, Step 3
+	- Replace SERVER_NAME on line 59 with the server name you specified in Lab 1, Exercise 1, Step 3
+	- Replace DATABASE_NAME on line 59 with the database name you specified in Lab 1, Exercise 1, Step 5
 
 1. Using the web browser, navigate to the location of the uploaded files inside the Azure Blob Storage.
 
