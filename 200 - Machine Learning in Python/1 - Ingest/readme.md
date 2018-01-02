@@ -46,7 +46,7 @@ The Ubuntu Data Science Virtual Machine for Linux is a virtual-machine image tha
 
 1. Open the [Azure Portal](https://portal.azure.com) in your browser. If asked to log in, do so using your Microsoft account.
 
-1. Click **+ New** in the menu on the left side of the portal, and then type "data science" (without quotation marks) into the search box. Select **Data Science Virtual Machine (Ubuntu)** from the results list.
+1. Click **+ New** in the menu on the left side of the portal, and then type "data science" (without quotation marks) into the search box. Select **Data Science Virtual Machine for Linux (Ubuntu)** from the results list.
 
     ![Finding the Ubuntu Data Science VM](Images/new-data-science-vm-1.png)
 
@@ -70,17 +70,9 @@ The Ubuntu Data Science Virtual Machine for Linux is a virtual-machine image tha
 
     _Choosing a VM size_
 
-1. Scroll down in the "Settings" blade and enable **Auto-shutdown**. Enter a **Shutdown time** and select a **Time zone** to configure the VM to shut down at a specified time. Then click **OK**.
+1. Click **OK** at the bottom of the "Settings" blade. Then take a moment to review the options you selected for the VM, and click **Create** to create it.
 
-	> VMs incur charges regardless of whether they're being used. By configuring the VM to shut down at a specified time, you can ensure that it is shut down for the night even if you don't explicitly shut it down when you're finished with it for the day.
-
-    ![Configuring the VM to shut down automatically](Images/create-data-science-vm-3.png)
-
-    _Configuring the VM to shut down automatically_
-
-1. Take a moment to review the options you selected for the VM. Then click **Create** to create it.
-
-    ![Creating the VM](Images/create-data-science-vm-4.png)
+    ![Creating the VM](Images/create-data-science-vm-3.png)
 
     _Creating the VM_
 
@@ -90,7 +82,7 @@ The Ubuntu Data Science Virtual Machine for Linux is a virtual-machine image tha
 
     _Opening the resource group_
 
-1. Wait until "Deploying" changes to "Succeeded" indicating that deployment has completed. Deployment typically takes about 5 minutes. Periodically cick the **Refresh** button at the top of the blade to refresh the deployment status.
+1. Wait until "Deploying" changes to "Succeeded" indicating that deployment has completed. Deployment typically takes 5 minutes or less. Periodically cick the **Refresh** button at the top of the blade to refresh the deployment status.
 
     ![Monitoring the deployment status](Images/deployment-succeeded.png)
 
@@ -101,7 +93,9 @@ The VM has been created. The next step is to connect to it remotely so you can w
 <a name="Exercise2"></a>
 ## Exercise 2: Connect to the Data Science VM ##
 
-In this exercise, you will connect remotely to the Ubuntu desktop in the VM that you created in the previous exercise. To do so, you need a client that supports [Xfce](https://xfce.org/), which is a lightweight desktop environment for Linux. If you don't already have an Xfce client installed, download the [X2Go client](https://wiki.x2go.org/doku.php/download:start) and install it now. X2Go is a free and open-source Xfce solution that works on a variety of operating systems. The instructions in this exercise assume you are using X2Go, but you can use any client as long as it supports Xfce.
+In this exercise, you will connect remotely to the Ubuntu desktop in the VM that you created in the previous exercise. To do so, you need a client that supports [Xfce](https://xfce.org/), which is a lightweight desktop environment for Linux.
+
+1. If you don't already have an Xfce client installed, download the [X2Go client](https://wiki.x2go.org/doku.php/download:start) and install it now. X2Go is a free and open-source Xfce solution that works on a variety of operating systems. The instructions in this exercise assume you are using X2Go, but you can use any client as long as it supports Xfce.
 
 1. Return to the Azure Portal and the blade for the resource group containing the Data Science VM. Then click the VM.
 
@@ -158,7 +152,7 @@ In this exercise, you will import a dataset from Azure blob storage into the VM 
     cd notebooks
     mkdir flights
     cd flights
-    curl https://a4r.blob.core.windows.net/public/FlightData.csv --output flightdata.csv
+    curl https://topcs.blob.core.windows.net/public/FlightData.csv --output flightdata.csv
     ```
 
 1. Click **Applications** in the upper-left corner of the desktop. Then click **Development**, followed by **JupyterHub**.
@@ -173,7 +167,7 @@ In this exercise, you will import a dataset from Azure blob storage into the VM 
 
     _Opening the "flights" directory_
 
-1. Confirm that **flightdata.csv** is present in the "flights" directory. Then click the **New** button and choose **Python 3** from the drop-down list to create a new Jupyter notebook with a Python 3 kernel.
+1. Confirm that **flightdata.csv** is present in the "flights" directory. Then click the **New** button and choose **Python 3 Spark - local** from the drop-down list to create a new Jupyter notebook with a Python 3 kernel.
 
     ![Creating a new Jupyter notebook](Images/new-python-3.png)
 
@@ -194,7 +188,7 @@ In this exercise, you will import a dataset from Azure blob storage into the VM 
 
     _Loading the dataset_
 
-	The DataFrame that you created contains on-time arrival information for a major U.S. airline. It has more than 11,000 rows and 26 columns. (The output says "5 rows" because DataFrame's [head](https://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.head.html) only returns the first five rows.) Each row represents one flight and contains information such as the origin, the destination, the scheduled departure time, and whether the flight arrived on time or late. You will learn more about the data, including its content and structure, in the next lab.
+	The DataFrame that you created contains on-time arrival information for a major U.S. airline. It has more than 11,000 rows and 26 columns. (The output says "5 rows" because DataFrame's [head](https://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.head.html) function only returns the first five rows.) Each row represents one flight and contains information such as the origin, the destination, the scheduled departure time, and whether the flight arrived on time or late. You will learn more about the data, including its content and structure, in the next lab.
 
 1. Use the **File** -> **Save and Checkpoint** command to save the notebook.
 
