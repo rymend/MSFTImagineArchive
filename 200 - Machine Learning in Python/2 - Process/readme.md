@@ -5,7 +5,7 @@
 
 In the real world, few datasets can be used as is to train machine-learning models. It is not uncommon for data scientists to spend 80% or more of their time on a project cleaning, preparing, and shaping the data — a process sometimes referred to as *data wrangling*. Typical actions include removing duplicate rows, removing rows or columns with missing values or algorithmically replacing the missing values, normalizing data, and selecting feature columns. A machine-learning model is only as good as the data it is trained with. Preparing the data is arguably the most crucial step in the machine-learning process. 
 
-In this lab, the second of four in a series, you will use the [Data Science Virtual Machine](https://docs.microsoft.com/en-us/azure/machine-learning/data-science-virtual-machine/overview) and the Jupyter notebook you created in the previous lab to wrangle the dataset containing on-time arrival information that you imported. You will use the [Python Data Analysis Library](https://pandas.pydata.org/pandas-docs/stable/) (Pandas) to do the bulk of the work in transforming the data. The goal is to get the dataset ready to use in a machine-learning model, and to get first-hand experience with Pandas along the way.
+In this lab, the second of four in a series, you will use the [Data Science Virtual Machine](https://docs.microsoft.com/en-us/azure/machine-learning/data-science-virtual-machine/overview) and the Jupyter notebook you created in the previous lab to wrangle the dataset that you imported. You will use the [Python Data Analysis Library](https://pandas.pydata.org/pandas-docs/stable/) (Pandas) to do the bulk of the work in transforming the data. The goal is to get the dataset ready to use in a machine-learning model, and to get first-hand experience with Pandas.
 
 ![](Images/road-map-2.png)
 
@@ -47,9 +47,9 @@ A [DataFrame](https://pandas.pydata.org/pandas-docs/stable/generated/pandas.Data
 
 1. Return to the Data Science VM that you created in the previous lab. If you are not connected to it, use [X2Go](https://wiki.x2go.org/doku.php/download:start) or the Xfce client of your choice to connect to the VM's Ubuntu desktop.
 
-1. Open the Jupyter notebook that you created in the previous lab if it isn't already open.
+1. Open the Jupyter notebook that you created in the previous lab.
 
-	> An easy way to reopen the notebook is to double-click the Jupyter icon on the desktop. Once Jupyter opens in your browser, click **flights** to navigate to the "flights" directory, and **FlightData.ipynb** to open the notebook.
+	> An easy way to reopen the notebook is to double-click the Jupyter icon on the desktop. Once Jupyter opens in a browser, click **flights** to navigate to the "flights" directory, and **FlightData.ipynb** to open the notebook.
 
 	![The FlightData notebook](Images/dataframe.png)
 
@@ -61,7 +61,7 @@ A [DataFrame](https://pandas.pydata.org/pandas-docs/stable/generated/pandas.Data
 
 	_Running the notebook_
 
-1. The code that you added to the notebook in the previous lab creates a DataFrame from **flightdata.csv** and calls ```head``` on it to display the first five rows. One of the first things you typically want to know about a dataset is how many rows it contains. To get a count, use the **Insert** -> **Insert Cell Below** command to insert a new cell into the notebook. Then type the following statement into the cell and run it by pressing **Ctrl+Enter**:
+1. The code that you added to the notebook in the previous lab creates a DataFrame from **flightdata.csv** and calls [DataFrame.head](https://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.head.html) on it to display the first five rows. One of the first things you typically want to know about a dataset is how many rows it contains. To get a count, use the **Insert** -> **Insert Cell Below** command to insert a new cell into the notebook. Then type the following statement into the cell and run it by pressing **Ctrl+Enter**:
 
 	```python
 	df.shape
@@ -75,7 +75,7 @@ A [DataFrame](https://pandas.pydata.org/pandas-docs/stable/generated/pandas.Data
 
 1. Now take a moment to examine the 26 columns in the dataset. They contain important information such as the date that the flight took place (YEAR, MONTH, and DAY_OF_MONTH), the origin and destination (ORIGIN and DEST), the scheduled departure and arrival times (CRS_DEP_TIME and CRS_ARR_TIME), the difference between the scheduled arrival time and the actual arrival time in minutes (ARR_DELAY), and whether the flight was late by 15 minutes or more (ARR_DEL15). 
 
-	Here is a complete list of the columns in the dataset. Times are expressed in 24-hour military time, where, for example, 1130 equals 11:30 a.m. and 1500 equals 3:00 p.m.
+	Here is a complete list of the columns in the dataset. Times are expressed in 24-hour military time. For example, 1130 equals 11:30 a.m. and 1500 equals 3:00 p.m.
 
 	| Column              | Description                                                                      |
 	|---------------------|----------------------------------------------------------------------------------|

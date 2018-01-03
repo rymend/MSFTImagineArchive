@@ -184,7 +184,7 @@ In this exercise, you will import a dataset from Azure blob storage into the VM 
 
 1. Select the **Run Cells** command from the **Cell** menu (or press **Ctrl+Enter**) to execute the Python code. Confirm that the output resembles the output below.
 
-    ![Loading the dataset](Images/dataframe.png)
+    ![Loading the dataset](Images/first-run.png)
 
     _Loading the dataset_
 
