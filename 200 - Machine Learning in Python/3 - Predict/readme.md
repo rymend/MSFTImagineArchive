@@ -5,7 +5,7 @@
 
 Machine learning, which facilitates predictive analytics using large volumes of data by employing algorithms that iteratively learn from that data, is one of the fastest growing areas of data science. Its uses range from credit-card fraud detection and self-driving cars to optical character recognition (OCR) and online shopping recommendations. It makes us smarter by making computers smarter. And its usefulness will only increase as more and more data becomes available and the desire to perform predictive analytics from that data grows, too.
 
-One of the most popular tools for building machine-learning models is [Scikit-learn](http://scikit-learn.org/stable/), a free and open-source toolkit for Python programmers. It has built-in support for popular regression, classification, and clustering algorithms and works with other Python libraries such as [NumPy](http://www.numpy.org/) and [SciPy](https://www.scipy.org/). With Sckit-learn, a simple method call can replace hundreds of lines of hand-written code. Sckit-learn allows you to focus on building, training, tuning, and testing machine-learning models without getting bogged down in the nuts and bolts of coding the algorithms.
+One of the most popular tools for building machine-learning models is [Scikit-learn](http://scikit-learn.org/stable/), a free and open-source toolkit for Python programmers. It has built-in support for popular regression, classification, and clustering algorithms and works with other Python libraries such as [NumPy](http://www.numpy.org/) and [SciPy](https://www.scipy.org/). With Sckit-learn, a simple method call can replace hundreds of lines of hand-written code. Sckit-learn allows you to focus on building, training, tuning, and testing machine-learning models without getting bogged down coding algorithms.
 
 In this lab, the third of four in a series, you will use Sckit-learn to build a machine-learning model utilizing on-time arrival data for a major U.S. airline. The goal is to create a model that might be useful in the real world for predicting whether a flight is likely to arrive on time. It is precisely the kind of problem that machine learning is commonly used to solve. And it's a great way to increase your machine-learning chops while getting acquainted with Scikit-learn.
 
@@ -41,25 +41,19 @@ Estimated time to complete this lab: **20** minutes.
 <a name="Exercise1"></a>
 ## Exercise 1: Split the data ##
 
-To create a machine-learning model, you need two datasets: one for training and one for testing. In practice, you often have only one dataset, so you split it into two datasets for training and testing purposes. In this exercise, you will perform an 80-20 split on the DataFrame you prepared in the previous lab so you can use it to train a machine-learning model. You will also separate the DataFrame into feature columns and label columns. The former contains the columns used as input to the model (for example, the flight's origin and destination and the scheduled departure time), while the latter contains the column that the model will attempt to predict — in this case, the ARR_DEL15 column which indicates whether a flight will arrive on time.
+To create a machine-learning model, you need two datasets: one for training and one for testing. In practice, you often have only one dataset, so you split it into two datasets. In this exercise, you will perform an 80-20 split on the DataFrame you prepared in the previous lab so you can use it to train a machine-learning model. You will also separate the DataFrame into feature columns and label columns. The former contains the columns used as input to the model (for example, the flight's origin and destination and the scheduled departure time), while the latter contains the column that the model will attempt to predict — in this case, the ARR_DEL15 column which indicates whether a flight will arrive on time.
 
 1. Return to the Data Science VM that you worked with in the previous lab. If you are not connected to it, use [X2Go](https://wiki.x2go.org/doku.php/download:start) or the Xfce client of your choice to connect to the VM's Ubuntu desktop.
 
-1. Open the Jupyter notebook that you worked with in the previous lab if it isn't already open.
+1. Open the Jupyter notebook that you worked with in the previous lab.
 
-	> An easy way to reopen the notebook is to double-click the Jupyter icon on the desktop. Once Jupyter opens in your browser, click **flights** to navigate to the "flights" directory, and **FlightData.ipynb** to open the notebook.
+	> An easy way to reopen the notebook is to double-click the Jupyter icon on the desktop. Once Jupyter opens in a browser, click **flights** to navigate to the "flights" directory, and **FlightData.ipynb** to open the notebook.
 
 	![The FlightData notebook](Images/dataframe.png)
 
 	_The FlightData notebook_
 
-1. Use the **Cell** -> **Run All** command to run the notebook.
-
-	![Running the notebook](Images/run-all.png)
-
-	_Running the notebook_
-
-1. Add a new cell to the notebook. Then enter the following statements and press **Ctrl+Enter** to execute them: 
+1. Use the **Cell** -> **Run All** command to run the notebook. Then add a new cell to the notebook, enter the following statements, and press **Ctrl+Enter** to execute them: 
 
 	```python
 	from sklearn.model_selection import train_test_split
@@ -89,7 +83,7 @@ Can you predict what you would see if you called ```shape``` on the other two Da
 
 There are many types of machine-learning models. One of the most common is the regression model, which uses one of a number of regression algorithms to produce a numeric value — for example, a person's age or the probability that a credit-card transaction is fraudulent. You will train a classification model, which seeks to resolve a set of inputs into one of a set of known outputs. A classic example of a classification model is one that examines e-mails and classifies them as "spam" or "not spam." Your model will be a binary classification model that predicts whether a flight will arrive on-time or late ("binary" because there are only two possible outputs).
 
-One of the benefits to using Sckit-learn is that you don't have to build these models — or implement the algorithms that they use — by hand. Sckit-learn includes a variety of classes for implementing common machine-learning models. One of them is [RandomForestClassifier](http://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html), which fits multiple decision trees to the data and uses averaging to boost the overall accuracy and control overfitting. 
+One of the benefits of using Sckit-learn is that you don't have to build these models — or implement the algorithms that they use — by hand. Sckit-learn includes a variety of classes for implementing common machine-learning models. One of them is [RandomForestClassifier](http://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html), which fits multiple decision trees to the data and uses averaging to boost the overall accuracy and control overfitting. 
 
 1. Add a cell to the notebook. Use the following code to create a ```RandomForestClassifier``` object and train it by calling the [fit](http://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html#sklearn.ensemble.RandomForestClassifier.fit) method.
 
@@ -202,7 +196,7 @@ There are several ways to measure the accuracy of a classification model. One of
 
 1. Use the **File** -> **Save and Checkpoint** command to save the notebook.
 
-In the real world, a trained data scientist would look for ways to make the model even more accurate. Among other things, he or she would try different algorithms and takes steps to *tune* the chosen algorithm to find the optimum combination of parameters. Another likely step would be to expand the dataset to millions of rows rather than a few thousand and also attempt to reduce the imbalance between late and on-time arrivals. But for our purposes, the model is fine as is.
+In the real world, a trained data scientist would look for ways to make the model even more accurate. Among other things, he or she would try different algorithms and take steps to *tune* the chosen algorithm to find the optimum combination of parameters. Another likely step would be to expand the dataset to millions of rows rather than a few thousand and also attempt to reduce the imbalance between late and on-time arrivals. But for our purposes, the model is fine as is.
 
 <a name="Summary"></a>
 ## Summary ##
