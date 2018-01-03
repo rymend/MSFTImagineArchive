@@ -85,7 +85,7 @@ You now have a storage account in which you can store blobs, and a container to 
 <a name="Exercise2"></a>
 ## Exercise 2: Upload data to blob storage ##
 
-In this exercise, you will the MNIST dataset to your local computer, and then upload it to the container you created in the previous exercise. The dataset comprises four compressed GZ files containing images for training and testing as well as labels for training and testing.
+In this exercise, you will download the MNIST dataset to your local computer, and then upload it to the container you created in the previous exercise. The dataset consists of four compressed GZ files containing images and labels for training and testing.
 
 1. Download the files from the following URLs and save them on your hard disk:
 
@@ -120,12 +120,12 @@ In this exercise, you will the MNIST dataset to your local computer, and then up
 
 	_The uploaded MNIST data_
 
-The MNIST data is now in blob storage, where it can be accessed externally by URL. For example, the first of the four files can be read from https://cntklab.blob.core.windows.net/mnist-data/t10k-images-idx3-ubyte.gz. In the next lab, you will use [Azure Machine Learning Workbench](https://docs.microsoft.com/azure/machine-learning/preview/quickstart-installation) to prepare the data to be used in a machine-learning model by converting it to CNTK format.
+The MNIST data is now in blob storage, where it can be accessed by applications that are granted access to it using the storage account's access key or connection string. In the next lab, you will retrieve a connection string and use [Azure Machine Learning Workbench](https://docs.microsoft.com/azure/machine-learning/preview/quickstart-installation) to prepare the data for use in machine learning.
 
 <a name="Summary"></a>
 ## Summary ##
 
-The Azure Portal makes it easy to create storage accounts, create containers inside those storage accounts, and upload blobs to the containers. Now that you have the MNIST dataset uploaded to blob storage, proceed to the next lab in this series — [Using the Microsoft Cognitive Toolkit (CNTK) to Build Neural Networks, Part 2](../2%20-%20Process) — to begin shaping the dataset for use in machine learning.
+The Azure Portal makes it easy to create storage accounts, create containers inside those storage accounts, and upload blobs to the containers. Now that you have the MNIST dataset uploaded to blob storage, proceed to the next lab in this series — [Using the Microsoft Cognitive Toolkit (CNTK) to Build Neural Networks, Part 2](../2%20-%20Process) — to begin shaping the dataset for machine learning.
 
 ---
 

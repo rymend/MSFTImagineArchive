@@ -53,7 +53,7 @@ In this exercise, you will install Azure Machine Learning Workbench and create a
 
 	If a Docker version number is displayed, then Docker is installed.
 
-1. If Azure Machine Learning Workbench isn't installed on your computer, go to https://docs.microsoft.com/azure/machine-learning/preview/quickstart-installation and follow the instructions there to install it, create a Machine Learning Experimentation account, and sign in to Machine Learning Workbench for the first time. The experimentation account is required in order to use Azure Machine Learning Workbench. Stop when you reach the section entitled "Create a new project."
+1. If Azure Machine Learning Workbench isn't installed on your computer, go to https://docs.microsoft.com/azure/machine-learning/preview/quickstart-installation and follow the instructions there to install it, create a Machine Learning Experimentation account, and sign in to Machine Learning Workbench for the first time. The experimentation account is required in order to use Azure Machine Learning Workbench.
 
 1. Launch Azure Machine Learning Workbench if it isn't already running. Then click the **+** sign in the "Projects" panel and select **New Project**.
 
@@ -67,7 +67,7 @@ In this exercise, you will install Azure Machine Learning Workbench and create a
 
 	_Creating a new project_
 
-1. Open a File Explorer window (Windows) or a Finder window (macOS) and navigate to the directory that you specified in the previous step. Confirm that it contains a subdirectory with the same name as the project. Open the subdirectory and examine its contents. Confirm that it contains a subdirectory named "aml_config" and a pair of Python scripts named **train.py** and **score.py**, as shown below.
+1. Open a File Explorer window (Windows) or a Finder window (macOS) and navigate to the project directory that you specified in the previous step. Confirm that it contains a subdirectory with the same name as the project. Open the subdirectory and examine its contents. Confirm that it contains a subdirectory named "aml_config" and a pair of Python scripts named **train.py** and **score.py**, as shown below.
 
 	![Inspecting the project directory](Images/project-directory.png)
 
@@ -78,7 +78,7 @@ The files in the project directory are merely starter files that will need to be
 <a name="Exercise2"></a>
 ## Exercise 2: Customize the project ##
 
-One of the tasks at which Machine Learning Workbench excels is in helping you prepare data for training machine-learning models. For example, its [Derive Column by Example](https://docs.microsoft.com/azure/machine-learning/preview/data-prep-derive-column-by-example) lets you create new feature columns with information derived from the data in other columns, and it uses AI to learn by example. You do the first few transformations, and it does the rest. It also has features for replacing missing values, trimming strings, and other common data-cleaning operations.
+One of the tasks at which Machine Learning Workbench excels is helping you prepare data for training machine-learning models. For example, its [Derive Column by Example](https://docs.microsoft.com/azure/machine-learning/preview/data-prep-derive-column-by-example) feature lets you create new feature columns with information derived from data in other columns, and it uses AI to learn by example. You do the first few transformations, and it does the rest. It also includes features for replacing missing values, trimming strings, and performing other common data-cleaning operations.
 
 The MNIST data that you uploaded to blob storage in the previous lab doesn't require cleaning in the conventional sense, but it does need to be converted into a format that is compatible with CNTK. In this exercise, you will write Python scripts to perform the conversion, and configure the project to execute them.
 
@@ -105,7 +105,7 @@ The MNIST data that you uploaded to blob storage in the previous lab doesn't req
 	Framework: "Python"
 	```
 
-1. Open the [Azure Portal](https://portal.azure.com) in your browser and open the storage account that you created in the previous lab.
+1. Open the [Azure Portal](https://portal.azure.com) in your browser and open the storage account that you created in the [previous lab](../1%20-%20Ingest).
 
 	![Opening the storage account](Images/open-storage-account.png)
 
@@ -306,7 +306,7 @@ In this exercise, you will run the **convert.py** script that you created in the
 
 	_Running convert.py_
 
-1. Wait for the job to complete. The first run may take a few minutes because Machine Learning Workbench has to download the base Docker image from Docker Hub. Subsequent runs will be much faster.
+1. Wait for the job to complete. The first run may take a few minutes because Machine Learning Workbench has to download the base Docker image from Docker Hub. Subsequent runs should be much faster.
 
 	![Successful run](Images/run-completed.png)
 
@@ -324,7 +324,7 @@ In this exercise, you will run the **convert.py** script that you created in the
 
 	_Blobs containing CNTK input_
 
-If you are curious to know what data formatted for input to CNTK looks like, download the blob named **Test-28x28_cntk_text.txt** and open it in your favorite text editor. The blob contains one row for each digitized image. Each row contains a section named "labels" and a section named "features." The "labels" data denotes the digit represented by the image. The first value is 1 or 0 for 0, the second is 1 or 0 for 1, and so on. For the digit 7, all of the values in "labels" will be 0 except the 8th, which will contain a 1. The "features" data represents the image itself. There are 784 values, one for each pixel in a 28 x 28 array, and each value is a grayscale value from 0 to 255, with 0 representing empty space and 255 representing filled space ("ink").
+If you are curious to know what data formatted for input to CNTK looks like, download the blob named **Test-28x28_cntk_text.txt** and open it in your favorite text editor. The blob contains one row for each digitized image. Each row contains a section named "labels" and a section named "features." The "labels" data denotes the digit represented by the image. The first value is 1 or 0 for 0, the second is 1 or 0 for 1, and so on. For the digit 7, all of the values in "labels" will be 0 except the 8th, which will contain a 1. The "features" data represents the image itself. There are 784 values, one for each pixel in a 28 x 28 array, and each value is a grayscale value from 0 to 255, with 0 representing empty space and 255 representing filled space.
 
 ![CNTK-formatted data](Images/cntk-data.png)
 
