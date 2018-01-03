@@ -211,6 +211,8 @@ In four hands-on labs, you learned how to:
 
 Pandas, Scikit-learn, and Matplotlib are three of the most popular Python libraries on the planet. With them, you can prepare data for use in machine learning, build sophisticated machine-learning models from the data, and chart the output. They are among dozens of tools preinstalled in Microsoft's Data Science VM, and they are just the tip of the iceberg in terms of what you can do with it. For more information, see https://docs.microsoft.com/azure/machine-learning/data-science-virtual-machine/dsvm-tools-overview.
 
+Once you're finished using the Data Science VM, you should delete it so it no longer charges to your Azure subscription. To delete it and the other resources that were created along with it, simply go to the Azure Portal and delete the "data-science-rg" resource group that you created in [Lab 1](../1%20-%20Ingest). That's one of the many benefits of using resource groups: one simple action deletes the resource group and everything inside it. Once deleted, a resource group cannot be recovered, so make sure you're finished with it before deleting it.
+
 ---
 
 Copyright 2018 Microsoft Corporation. All rights reserved. Except where otherwise noted, these materials are licensed under the terms of the MIT License. You may use them according to the license as is most appropriate for your project. The terms of this license can be found at https://opensource.org/licenses/MIT.
