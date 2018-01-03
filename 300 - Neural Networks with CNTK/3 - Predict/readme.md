@@ -209,13 +209,13 @@ One of the simplest network types is the "One Hidden Layer" network, which is no
 
 	_Training a neural network_
 
-1. Wait for the run to complete and confirm that it completed successfully. It may take a few minutes to complete, and the duration will depend somewhat on your connection speed since the CNTK-formatted data you generated in the previous lab has to be downloaded from blob storage.
+1. Wait for the run to complete and confirm that it completed successfully. It may take a few minutes to complete, and the duration will depend somewhat on your connection speed since the CNTK-formatted data has to be downloaded from blob storage.
 
 	Now click the completed run in the "Jobs" panel. Scroll to the bottom of the output window that appears and find the value named ```errs```. This is the percentage of errors that were encountered when the model was tested. Lower percentages mean that the neural network was able to correctly identify more digits in the test dataset. It appears that this network is reasonably adept at identifying hand-written digits.
 
-	![Accuracy of the neural network](Images/output-one-hidden.png)
+	![Gauging the accuracy of the neural network](Images/output-one-hidden.png)
 
-	_Accuracy of the neural network_
+	_Gauging the accuracy of the neural network_
 
 1. Close the output window and return in the Azure Portal to the storage account that you created in the first lab. Confirm that it now has a container named "models." Then click the container to view its contents.
 

@@ -2,7 +2,7 @@
 
 In the [previous lab](../3%20-%20Predict), you used Azure Machine Learning Workbench and the [Microsoft Cognitive Toolkit](https://www.microsoft.com/en-us/research/product/cognitive-toolkit/), also known as CNTK, to train three neural networks to recognize hand-written digits using data from the [MNIST database](http://yann.lecun.com/exdb/mnist/). You also scored the neural networks for accuracy using test data from the same database. The "compiled" networks were written to Azure blob storage.
 
-In this lab, the fourth of four in a series, you will build a Docker image containing one of the compiled networks. The container will also include a rudimentary Web server written in [Node.js](https://nodejs.org/en/) that serves up a Web page in which users can sketch digits. A button click submits a digit to the neural network, which "predicts" which digit was drawn, providing a real and tangible demonstration of machine learning in action.
+In this lab, the fourth of four in a series, you will build a Docker image containing one of the compiled networks. The container will also include a rudimentary Web server written in [Node.js](https://nodejs.org/en/) that serves up a Web page in which users can sketch digits. A button click submits a digit to the neural network, which "predicts" which digit was drawn, providing a tangible demonstration of machine learning in action.
 
 ![](Images/road-map-4.png)
 
@@ -203,7 +203,7 @@ In this exercise, you will download the files created for the "One Convolution" 
 	</html>
 	```
 
-	This is the Web page that the Web server running inside the container serves up to allow users to draw digits and submit them to the model. It uses HTML5's [Canvas API](http://www.w3.org/TR/2dcontext/) to do the drawing in response to mouse events. And it features a PREDICT button that, when clicked, uses AJAX to call a REST endpoint in the container and pass in the digit that was drawn. 
+	This is the Web page that the Web server running inside the container serves up to allow users to draw digits and submit them to the model. It uses HTML5's [Canvas API](http://www.w3.org/TR/2dcontext/) to do the drawing in response to mouse events. And it features a PREDICT button that, when clicked, uses AJAX to call a REST endpoint in the container and pass in the data representing the digit that was drawn. 
 
 1. Add a file named **index.js** containing the following statements to the project directory:
 
@@ -335,7 +335,7 @@ In this exercise, you will download the files created for the "One Convolution" 
 	CMD npm start
 	```
 
-	This file contains instructions for building a Docker container image. It uses Microsoft's ```microsoft/mmlspark:plus-0.7.91``` as a base image and adds CNTK. It also installs Node.js in the container image, copies the files and subdirectories in the project directory into the container image, and opens port 3003 for HTTP traffic.
+	This file contains instructions for building a Docker container image. It uses Microsoft's ```microsoft/mmlspark:plus-0.7.91``` as a base image and adds CNTK. It also installs Node.js in the container image, copies the files and subdirectories in the project directory into the container image, and opens port 3003 to HTTP traffic.
 
 1. Add a file named **.dockerignore** containing the following statement to the project directory:
 
@@ -372,7 +372,7 @@ In this exercise, you will operationalize the "One Convolution" network by runni
 	docker run -p 1234:3003 -it mycntk
 	```
 
-	This command creates a container from the image named "mycntk" and runs it in interactive mode so that output from the code running in the container flows out to the Command Prompt or terminal window. The ```-p``` switch redirects traffic destined for port 1234 on the local machine to port 3003 in the container — the port that the Web server running inside the container is listening on.
+	This command creates a container from the image named "mycntk" and runs it in interactive mode so that output from the code running in the container can be seen in the Command Prompt or terminal window. The ```-p``` switch redirects traffic destined for port 1234 on the local machine to port 3003 in the container — the port that the Web server running inside the container is listening on.
 
 1. Confirm that the following output appears in the Command Prompt or terminal window indicating that the container is running and that the Web server is listening on port 3003:
 
@@ -401,7 +401,7 @@ In this exercise, you will use the HTML page in the container to draw a few digi
 
 1. In a moment, a message appears telling you what digit you drew. Is it correct?
 
-1. Click the **Clear** button to clear the display and try a few other digits. You'll probably find that the model you built is better at identifying some digits than others, and that you get the best results when the digits you draw fill the expanse of the grid as much as possible.
+1. Click the **Clear** button to clear the display. Then try a few other digits. You'll probably find that the model you built is better at identifying some digits than others, and that you get the best results when the digits you draw fill the expanse of the drawing area as much as possible.
 
 It's a pretty impressive feat for an app to perform basic OCR in this manner. And it's indicative of the kinds of apps you can build when you have machine learning working for you on the back end.
 
