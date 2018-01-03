@@ -317,7 +317,7 @@ In this exercise, you will download the files created for the "One Convolution" 
 
 1. Add a file named **Dockerfile** (no file-name extension) containing the following statements to the project directory:
 
-	```
+	```dockerfile
 	FROM microsoft/mmlspark:plus-0.7.91
 	USER root
 	RUN curl https://cntk.ai/BinaryDrop/CNTK-2-3-Linux-64bit-CPU-Only.tar.gz  -o /home/mmlspark/CNTK.tar.gz && \

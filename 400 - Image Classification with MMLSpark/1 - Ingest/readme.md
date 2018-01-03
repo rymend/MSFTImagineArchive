@@ -127,11 +127,19 @@ Finish up by pasting the key that is on the clipboard into your favorite text ed
 <a name="Exercise3"></a>
 ## Exercise 3: Create a Docker container image ##
 
-In [Exercise 4](#Exercise4), you will use a Python script to search the Web for images of paintings by famous artists and write the results to the Azure SQL database you created in [Exercise 1](#Exercise1). Connecting to an Azure SQL database from Python requires an environment specially prepared with certain packages and drivers. In this exercise, you will create a custom Docker container image that has those packages and drivers installed. In the next exercise, you will use a container created from this image to host the Python code that connects to the database.
+In [Exercise 4](#Exercise4), you will use a Python script to search the Web for images of paintings by famous artists and write the results to the database you created in [Exercise 1](#Exercise1). Connecting to an Azure SQL database from Python requires an environment specially prepared with certain packages and drivers. In this exercise, you will create a custom Docker container image that has those packages and drivers installed. In the next exercise, you will use a container created from this image to host the Python code that connects to the database.
+
+1. If Docker isn't installed on your computer, go to https://www.docker.com/ and download and install [Docker for Windows](https://www.docker.com/docker-windows) or [Docker for Mac](https://www.docker.com/docker-mac). If you are not sure whether Docker is installed on your computer, open a Command Prompt or terminal window and type the following command:
+
+	```
+	docker -v
+	```
+
+	If a Docker version number is displayed, then Docker is installed. If Docker not installed, you should restart your PC after installing it.
 
 1. Create a directory on your hard disk and name it anything you want. Then add a text file named **Dockerfile** (no file-name extension) to that directory and insert the following statements:
 
-	```
+	```dockerfile
 	FROM microsoft/mmlspark:plus-0.9.9
 	USER root
 	RUN apt-get update && apt-get install -y \
@@ -158,7 +166,7 @@ In [Exercise 4](#Exercise4), you will use a Python script to search the Web for 
         pip install scikit-image
 	```
 
-	This **Dockerfile** contains instructions for building a Docker container image. It uses ```microsoft/mmlspark:plus-0.9.9``` as the base image and adds (for example) Python packages named ```pyodbc``` and ```sqlalchemy``` that permit Python scripts to access Azure SQL databases (as well as on-premises SQL Server databases). The Docker image also installs several packages are recommended for this vision analysis lab.
+	This **Dockerfile** contains instructions for building a Docker container image. It uses [microsoft/mmlspark](https://hub.docker.com/r/microsoft/mmlspark/) as the base image and adds several Python packages that permit Python scripts to access Azure SQL databases (as well as on-premises SQL Server databases) and Azure Storage. It also installs a version of the [Microsoft Cognitive Toolkit](https://www.microsoft.com/cognitive-toolkit/), also known as CNTK, that doesn't require a GPU, and packages that simplify image processing, including [Scikit-image](http://scikit-image.org/) and [dhash](https://pypi.python.org/pypi/dhash).
 
 1. Open a Command Prompt or terminal window and navigate to the directory you created in the previous step (the directory that contains the **Dockerfile**). Then execute the following command to build a custom container image named ```spark-sql```:
 
@@ -173,17 +181,9 @@ The container image has been created and cached on the local machine. If you wou
 <a name="Exercise4"></a>
 ## Exercise 4: Populate the database ##
 
-In this exercise, you will use Azure Machine Learning Workbench to write and execute a Python script that uses the Bing Image Search API to find images of paintings by famous artists such as Picasso, Van Gogh, and Monet and record information about the images, including their URLs, in the Azure SQL database that you created in [Exercise 1](#Exercise1).
+In this exercise, you will use Azure Machine Learning Workbench to execute a Python script that uses the Bing Image Search API to find images of paintings by famous artists such as Picasso, Van Gogh, and Monet and record information about the images, including their URLs, in the Azure SQL database that you created in [Exercise 1](#Exercise1).
 
-1. Azure Machine Learning Workbench runs jobs in Docker containers, and as such, it requires that Docker be installed on your computer. If you haven't installed Docker, go to https://www.docker.com/ and download and install [Docker for Windows](https://www.docker.com/docker-windows) or [Docker for Mac](https://www.docker.com/docker-mac). If you are not sure whether Docker is installed on your computer, open a Command Prompt window (Windows) or a terminal window (macOS) and type the following command:
-
-	```
-	docker -v
-	```
-
-	If a Docker version number is displayed, then Docker is installed.
-
-1. If Azure Machine Learning Workbench isn't installed on your computer, go to https://docs.microsoft.com/azure/machine-learning/preview/quickstart-installation and follow the instructions there to install it, create a Machine Learning Experimentation account, and sign in to Machine Learning Workbench for the first time. The experimentation account is required in order to use Azure Machine Learning Workbench. Stop when you reach the section entitled "Create a new project."
+1. If Azure Machine Learning Workbench isn't installed on your computer, go to https://docs.microsoft.com/azure/machine-learning/preview/quickstart-installation and follow the instructions there to install it, create a Machine Learning Experimentation account, and sign in to Machine Learning Workbench for the first time. The experimentation account is required in order to use Azure Machine Learning Workbench.
 
 1. Launch Azure Machine Learning Workbench if it isn't already running. Then click the **+** sign in the "Projects" panel and select **New Project**.
 

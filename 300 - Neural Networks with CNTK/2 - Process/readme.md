@@ -51,7 +51,7 @@ In this exercise, you will install Azure Machine Learning Workbench and create a
 	docker -v
 	```
 
-	If a Docker version number is displayed, then Docker is installed.
+	If a Docker version number is displayed, then Docker is installed. If Docker not installed, you should restart your PC after installing it.
 
 1. If Azure Machine Learning Workbench isn't installed on your computer, go to https://docs.microsoft.com/azure/machine-learning/preview/quickstart-installation and follow the instructions there to install it, create a Machine Learning Experimentation account, and sign in to Machine Learning Workbench for the first time. The experimentation account is required in order to use Azure Machine Learning Workbench.
 
