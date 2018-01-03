@@ -3,7 +3,7 @@
 <a name="Overview"></a>
 ## Overview ##
 
-Now that you that have trained a machine-learning model to perform predictive analytics, it's time to put it to work. In this lab, the final one in the series, you will write a function that uses the machine-learning model you built in the previous lab to predict whether a flight will arrive on time or late. And you will use [Matplotlib](https://matplotlib.org/), the popular plotting and charting library for Python, to visualize the results.
+Now that you that have trained a machine-learning model to perform predictive analytics, it's time to put it to work. In this lab, the final one in the series, you will write a function that uses the machine-learning model you built in the [previous lab](../3%20-%20Predict) to predict whether a flight will arrive on time or late. And you will use [Matplotlib](https://matplotlib.org/), the popular plotting and charting library for Python, to visualize the results.
 
 ![](Images/road-map-4.png)
 
@@ -41,21 +41,15 @@ In this exercise, you will import Matplotlib into the Jupyter notebook you have 
 
 1. Return to the Data Science VM that you worked with in the previous lab. If you are not connected to it, use [X2Go](https://wiki.x2go.org/doku.php/download:start) or the Xfce client of your choice to connect to the VM's Ubuntu desktop.
 
-1. Open the Jupyter notebook that you worked with in the previous lab if it isn't already open.
+1. Open the Jupyter notebook that you worked with in the previous lab.
 
-	> An easy way to reopen the notebook is to double-click the Jupyter icon on the desktop. Once Jupyter opens in your browser, click **flights** to navigate to the "flights" directory, and **FlightData.ipynb** to open the notebook.
+	> An easy way to reopen the notebook is to double-click the Jupyter icon on the desktop. Once Jupyter opens in a browser, click **flights** to navigate to the "flights" directory, and **FlightData.ipynb** to open the notebook.
 
 	![The FlightData notebook](Images/dataframe.png)
 
 	_The FlightData notebook_
 
-1. Use the **Cell** -> **Run All** command to run the notebook.
-
-	![Running the notebook](Images/run-all.png)
-
-	_Running the notebook_
-
-1. Add a cell to the notebook. Then add and execute the following statements:
+1. Use the **Cell** -> **Run All** command to run the notebook. Then add a cell to the notebook and execute the following statements:
 
 	```python
 	%matplotlib inline
@@ -127,7 +121,7 @@ The reason you built a machine-learning model is to predict whether a flight wil
 	    return model.predict_proba(pd.DataFrame(input))[0][0]
     ```
 
-	This function takes as input a date and time, an origin airport code, and a destination airport code, and returns a value between 0.0 and 1.0 indicating the probability that the flight will arrive at its destination on time. It uses the machine-learning model you built in the previous lab to compute the probability. And to call the model, it passes a DataFrame containing the input values to ```predict_proba```. The structure of the DataFrame exactly matches the structure of the DataFrame depicted in Exercise 3, Step 3 of Lab 2.
+	This function takes as input a date and time, an origin airport code, and a destination airport code, and returns a value between 0.0 and 1.0 indicating the probability that the flight will arrive at its destination on time. It uses the machine-learning model you built in the previous lab to compute the probability. And to call the model, it passes a DataFrame containing the input values to ```predict_proba```. The structure of the DataFrame exactly matches the structure of the DataFrame depicted in Exercise 3, Step 3 of [Lab 2](../2%20-%20Process).
 
 	Note that dates input to the ```predict_delay``` function use the international date format ```dd/mm/year```.
 
