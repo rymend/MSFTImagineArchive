@@ -229,18 +229,17 @@ In this exercise, you will use Azure Machine Learning Workbench to execute a Pyt
 
 1. Use the **File** > **Save** command to save the modified **docker.compute** file.
 
-1. Open **conda_dependencies.yml** for editing in Machine Learning Workbench. Then add the following line to the ```- pip``` section of the file:
+1. Open **conda_dependencies.yml** for editing in Machine Learning Workbench. Then add the following lines to the ```- pip``` section of the file:
 
 	```yml
-    # Added pip
-    - pyodbc
-    - dhash
-    - pillow
-    - sqlalchemy
-    - azure-storage-blob
-    - azure-storage-file
-    - azure-storage-queue
-    - scikit-image
+	- pyodbc
+	- dhash
+	- pillow
+	- sqlalchemy
+	- azure-storage-blob
+	- azure-storage-file
+	- azure-storage-queue
+	- scikit-image
 	```
 
 	The modified ```- pip``` section should look like this:
@@ -249,23 +248,21 @@ In this exercise, you will use Azure Machine Learning Workbench to execute a Pyt
 	- pip:
 	    # The API for Azure Machine Learning Model Management Service.
 	    # Details: https://github.com/Azure/Machine-Learning-Operationalization
-      - azure-ml-api-sdk==0.1.0a10
- 
-        # Added pip
-        - pyodbc
-        - dhash
-        - pillow
-        - sqlalchemy
-        - azure-storage-blob
-        - azure-storage-file
-        - azure-storage-queue
-        - scikit-image   
+	    - azure-ml-api-sdk==0.1.0a10
+	    - pyodbc
+	    - dhash
+	    - pillow
+	    - sqlalchemy
+	    - azure-storage-blob
+	    - azure-storage-file
+	    - azure-storage-queue
+	    - scikit-image   
 	
 	    # Helper utilities for dealing with Azure ML Workbench Assets.
 	    - https://azuremldownloads.blob.core.windows.net/wheels/latest/azureml.assets-1.0.0-py3-none-any.whl?sv=2016-05-31&si=ro-2017&sr=c&sig=xnUdTm0B%2F%2FfknhTaRInBXyu2QTTt8wA3OsXwGVgU%2BJk%3D
 	```
 
-	This addition exposes the ```pyodbc``` package and other added packages built into the container image to the Anaconda run-time installed with Workbench so the package can be imported into Python scripts run in the container. It is this package that enables Python scripts to connect to Azure SQL databases.
+	These additions expose the extra packages built into the container image to the Anaconda run-time installed with Workbench so the packages can be imported into Python scripts run in the container.
 
 1. Use the **File** > **Save** command to save the modified **conda_dependencies.yml** file.
 
@@ -295,15 +292,15 @@ In this exercise, you will use Azure Machine Learning Workbench to execute a Pyt
     # https://pypi.python.org/pypi/requests
     import requests
 
-    server = "<SERVER_NAME>.database.windows.net"
-    database = "<DATABASE_NAME>"
-    username = "<ADMIN_USERNAME>"
-    password = "<ADMIN_PASSWORD>" 
+    server = "SERVER_NAME.database.windows.net"
+    database = "DATABASE_NAME"
+    username = "ADMIN_USERNAME"
+    password = "ADMIN_PASSWORD" 
 
-    api_key = "<API_KEY>"
+    api_key = "API_KEY"
     host = "api.cognitive.microsoft.com"
     path = "/bing/v7.0/images/search"
-    max_results = 256
+    max_results = 150
 
     def bing_image_search(db_connection, artist_name):
         headers = { "Ocp-Apim-Subscription-Key" : api_key}
@@ -367,7 +364,7 @@ In this exercise, you will use Azure Machine Learning Workbench to execute a Pyt
         bing_image_search(conn, key)
 	```
 
-	This script imports the ```pyodbc``` package built into the container and uses it to connect to the Azure SQL database and create a table named "Paintings." It also invokes the Bing Image Search API three times to search the Web for images of paintings by famous artists, each time passing your Bing Search API key in an HTTP header. For each painting that it discovers, it writes a record to the "Paintings" table denoting the image's width, height, and URL, as well as the artist name.
+	This script connects to the Azure SQL database and creates a table named "Paintings." It also invokes the Bing Image Search API three times to search the Web for images of paintings by famous artists, each time passing your Bing Search API key in an HTTP header. For each painting that it discovers, it creates a series of [perceptual image hashes](https://en.wikipedia.org/wiki/Perceptual_hashing) of various bit depths and writes the hashes to the "Paintings" table along with values denoting the image's width, height, URL, and artist. Perceptual hashes are usful for detecting images that are similar (but not necessarily identical) to each other, and are extremely useful for eliminating images that are too similar from image sets used to train image-classification models. You will learn more about perceptual image hashing in the next lab.
 
 1. Replace the following values in **load.py**. Then save the file.
 
@@ -383,7 +380,7 @@ In this exercise, you will use Azure Machine Learning Workbench to execute a Pyt
 
 	_Running load.py_
 
-1. Wait for the run to complete and confirm that it completed successfully.
+1. Wait for the run to complete and confirm that it completed successfully. It will probably take several minutes to run since it downloads a few hundred images and hashes them.
 
 	![Successful run](Images/run-completed.png)
 
@@ -402,7 +399,7 @@ In this exercise, you will use the Azure Portal to view the information regardin
 
 	_Opening the database_
 
-1. Click **Data explorer** in the menu on the left. Then click **Login** at the top of the blade, enter the user name and password you specified in Exercise 1, Step 3, and click **OK** to log in to the database.
+1. Click **Data explorer** in the menu on the left. Then click **Login** at the top of the blade, select **SQL server authentication** as the authenitcation type, enter the user name and password you specified in Exercise 1, and click **OK** to log in to the database.
 
 	![Logging in to the database](Images/login-to-database.png)
 
@@ -414,12 +411,12 @@ In this exercise, you will use the Azure Portal to view the information regardin
 
 	_Running a query_
 
-Scroll down in the results window and examine the data displayed there. The results should include several hundred rows, each containing the URL, width, and height of a painting by Picasso, Van Gogh, or Monet. This is the raw data that you will use to train a machine-learning model in [Part 3](../3%20-%20Predict) after cleaning and preparing it in [Part 2](../2%20-%20Process).
+Scroll horizontally and vertically in the results window and examine the data displayed there. The results should include several hundred rows, each containing information about a painting by Picasso, Van Gogh, or Monet. This is the raw data that you will use to train a machine-learning model in [Lab 3](../3%20-%20Predict) after cleaning and preparing it in [Lab 2](../2%20-%20Process).
 
 <a name="Summary"></a>
 ## Summary ##
 
-In this lab, you created a dataset that will later be used to train a machine-learning model to recognize the artists of famous paintings. But before the model can be trained, the data requires cleaning. Among other things, it needs to be deduped so that the model isn't trained with multiple images of the same painting. That isn't as straightforward as it might sound, because you will need code that examines two images and determines whether they represent the same painting. But where there's a will, there's a way, and you may now proceed to the next lab in this series — [Using the Microsoft Machine Learning Library for Apache Spark (MMLSpark) to Perform Image Classification, Part 2](../2%20-%20Process) — to get the cleaning process started.
+In this lab, you created a dataset that will later be used to train a machine-learning model to recognize the artists of famous paintings. But before the model can be trained, the data requires cleaning. Among other things, it needs to be deduped so that the model isn't trained with multiple images of the same painting. You may now proceed to the next lab in this series — [Using the Microsoft Machine Learning Library for Apache Spark (MMLSpark) to Perform Image Classification, Part 2](../2%20-%20Process) — to get the cleaning process started.
 
 ---
 
