@@ -221,7 +221,7 @@ In this exercise, you will modify the Azure Function that you created in the pre
 	```
 	npm install request
 	npm install tedious
-	npm azure-storage
+	npm install azure-storage
 	```
 
 	> Azure Functions written in JavaScript execute in a Node.js environment. The function console gives you access to that environment and lets you install NPM packages the same as you would in a local environment.
@@ -241,7 +241,7 @@ In this exercise, you will modify the Azure Function that you created in the pre
 	
 	    // Parse input
 	    var input = JSON.parse(req.rawBody)[0];
-	    var id = input.deviceId;
+	    var id = input.deviceid;
 	    var latitude = input.latitude;
 	    var longitude = input.longitude;
 	    var url = input.url;
