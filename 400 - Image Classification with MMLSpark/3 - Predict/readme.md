@@ -9,9 +9,10 @@ TODO: Add introduction.
 
 In this hands-on lab, you will learn how to:
 
-- tk
-- tk
-- tk
+- Provision an HDInsight Spark Cluster running Spark 2.0
+- Customize the HDInsight cluster by adding CNTK and other Python packages
+- Move images from Azure Blob Storage into HDInsight's active Linux directory
+- Run Transfer Learning using a Jupyter notebook to build a paintings classifier
 
 <a name="Prerequisites"></a>
 ### Prerequisites ###
@@ -35,7 +36,7 @@ This hands-on lab includes the following exercises:
 - [Exercise 2: Add MMLSpark and CNTK to the Spark Cluster](#Exercise2)
 - [Exercise 3: Use a Jupyter Notebook to run Transfer Learning](#Exercise3)
 
-Estimated time to complete this lab: **tk** minutes.
+Estimated time to complete this lab: **45** minutes.
 
 <a name="Exercise1"></a>
 ## Exercise 1: Provision an HDInsight Spark Cluster ##
@@ -222,15 +223,27 @@ rest of the options as shown on the screenshot below.
     startServiceViaRest JUPYTER
     ```
 
-1. Using Microsoft Azure Storage Explorer, upload this file into the ```images``` container created in lab two.
+1. Using the Azure web portal, upload this file into the ```images``` container created in lab two.
 
-	![tk](Images/cntkinstallscript.png)
+	![tk](Images/select-blobs.png)
 
-	_CNTK Install script uploaded to Azure Blob Storage_
+	_Select Blobs in the Azure web portal_
 
-1. Using Copy URL, copy the name of the script.
+	![tk](Images/choose-container.png)
 
-	![tk](Images/cntkinstallscriptcopyurl.png)
+	_Choose the container for uploading images_
+
+	![tk](Images/upload-script.png)
+
+	_Upload the script into the container for uploading images_
+
+	![tk](Images/upload-blob.png)
+
+	_Upload the script (as a **block blob**)_
+
+1. Once uploaded, then obtain the name of the script.  Tap the name of the script to open the **properties** window, and then press the copy icon to save the URL of the script.  
+
+	![tk](Images/full-script-url.png)
 
 	_Copy URL for the script_
 
@@ -240,49 +253,61 @@ rest of the options as shown on the screenshot below.
 
 	_Installing CNTK 2.3.1 to the HDInsight Spark Cluster_
 
-TODO: Add closing.
+1. The CNTK install script stops and starts the Jupyter and Livy services.  You will need those services running before proceeding, and sometimes it's a few moments after the interface shows that the script has completed.  To see the status of these services (and to start them manually if necessary), naviagate to <HDINSIGHT CLUSTERNAME>.azurehdinsight.net to see the status.  The dashboard should look similar to this screenshot.
+
+	![tk](Images/ambari.png)
+
+	_Monitoring the HDInsight Spark cluster using Ambari_
+
+In this section, we used the script actions to customize the HDInsight Spark cluster.  Having performed this task, we are ready to run Spark to analyze our imaages with CNTK deep learning.
 
 <a name="Exercise3"></a>
 ## Exercise 3: Use a Jupyter Notebook to run Transfer Learning ##
 
-TODO: Add introduction.
+Jupyter notebooks are increasing a recommended way for data scientists to perform development, such as model building.  Individual notebooks may be saved, uploaded to another Jupyter installation; also, a notebook may be downloaded or printed or saved in other printable formats.  This task of building a deep learning model is appropriate for this task, and in this lab you will end up with a **model** file, which could be subsequently put into production.
 
-1. tk.
+1. We have already prepared a Jupyter notebook for this lab.  You will need to upload this notebook to the appropriate location using Jupyter.  Navigate to the HDInsight cluster, and you will see the **Cluster dashboard** option.
 
-	![tk](Images/tk.png)
+	![tk](Images/choose-cluster-dashboard.png)
 
-	_tk_
+	_Choose cluster dashboard_
 
-1. tk.
+1. Choose Jupyter Notebook:  you may be asked to enter your HDInsight user id and password if you have not logged in.  *If you make a mistake on the username or password, you will see an error screen:  our best recommendation is to clear the web cache and open the window again.**
 
-	![tk](Images/tk.png)
+	![tk](Images/choose-jupyter.png)
 
-	_tk_
+	_Open Jupyter_
 
-1. tk.
+1. As mentioned, Jupyter is already running (as we know from the Ambari dashboard):  what we are doing is simply navigating to the top level of the notebook hierarchy.  Then choose, **Upload** and select the notebook named "Painting+Image+Recognition+with+Deep+Transfer+Learning.ipynb" in the **Resources** folder for this lab (Jupyter replaces spaces with the **+** character when downloading).
 
-	![tk](Images/tk.png)
+	![tk](Images/upload-jupyter-notebook.png)
 
-	_tk_
+	_Choosing to Upload a Jupyter notebook_
 
-1. tk.
+1. You may then open the notebook.  We recommend running the cells indivdiually as you are reading the text in the Jupyter notebook:  you may choose to **Run All** but please read through the text so that you can understand what deep learning is accomplishing.  Many comments also appear in the code allowing you to modify this template for other purposes later.
 
-	![tk](Images/tk.png)
+	![tk](Images/painting-image-recognition.png)
 
-	_tk_
+	_Screenshot of the Jupyter notebook_
 
-1. tk.
+1.  For this lab, we used a Jupyter notebook originally written for virtual machines.  We made adaptations for a workflow which includes Azure Blob Storage.  The original tutorial only worked with GPU, but CNTK 2.3.1 allows transfer learning to work on CPUs (the only configuraion currently on HDInsight Spark).   Also, we added some code improvements:  for example, the following intermittent code error called for adding **.convert(RGBA)** when opening an image.  In practice, you may have to make modifications to this code as module APIs and hardware features evolve.
 
-	![tk](Images/tk.png)
+	![tk](Images/bad-transparency-mask.png)
 
-	_tk_
+	_Transparency Mask Error (Resolved)_
 
-TODO: Add closing.
+1. The Jupyter notebook includes some choices for rerunning the deep learning:  try setting the **isFast** flag to **False** and allowing more epochs.  After changing the code, you will need to run that single cell, which you may do on the icon toolbar.  On our runs, we noticed that simply rerunning a model with the same hyperparameter settings would produce slightly different accuracy results.  Again, a cross-validation approach would be best to assure one of the reliability of the results.  
+
+	![tk](Images/isFast.png)
+
+	_Running a single cell_
+
+In this exercise, we took the images selected from Azure ML Workbench, and applied CNTK 2.3.1 using HDInsight Spark on Linux.  The final technique of Transfer Learning is one of the active areas of both application and research.  
 
 <a name="Summary"></a>
 ## Summary ##
 
-TODO: Add summary.
+CNTK Deep Learning may be accomplished through using HDInsight Spark.  In this lab, you saw how to upload and update the Python available using custom scripts.  Also, using Jupyter and Azure Blob Storage, you have tools to scale this concept to much larger projects than this lab.  In the next lab, we next turn to visualization.
 
 ---
 

@@ -158,7 +158,7 @@ In [Exercise 4](#Exercise4), you will use a Python script to search the Web for 
         pip install scikit-image
 	```
 
-	This **Dockerfile** contains instructions for building a Docker container image. It uses ```microsoft/mmlspark:plus-0.9.9``` as the base image and adds a Python package named ```pyodbc``` that permits Python scripts to access Azure SQL databases (as well as on-premises SQL Server databases). It also installs several packages that ```pyodbc``` depends on, and other packages needed for this lab.
+	This **Dockerfile** contains instructions for building a Docker container image. It uses ```microsoft/mmlspark:plus-0.9.9``` as the base image and adds (for example) Python packages named ```pyodbc``` and ```sqlalchemy``` that permit Python scripts to access Azure SQL databases (as well as on-premises SQL Server databases). The Docker image also installs several packages are recommended for this vision analysis lab.
 
 1. Open a Command Prompt or terminal window and navigate to the directory you created in the previous step (the directory that contains the **Dockerfile**). Then execute the following command to build a custom container image named ```spark-sql```:
 
