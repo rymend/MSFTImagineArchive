@@ -352,7 +352,6 @@ In this exercise, you will write code to test the camera array that you deployed
 
 	By default, blobs stored in an Azure storage account are private and are only accessible to persons who have access to the subscription under which the account was created. Access keys allow other parties, including apps, to access the contents of a storage account. You should treat access keys with great care and **never** give them to someone you don't trust.
 
-
 1. Copy the ```value``` property of either of the two keys that is displayed in the command output to the clipboard. Then replace ACCOUNT_KEY on line 3 of **test.js** with the access key. That line should now look something like this:
 
 	```javascript
