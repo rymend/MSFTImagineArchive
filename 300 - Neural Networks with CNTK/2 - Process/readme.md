@@ -51,7 +51,7 @@ In this exercise, you will install Azure Machine Learning Workbench and create a
 	docker -v
 	```
 
-	If a Docker version number is displayed, then Docker is installed. If Docker not installed, you should restart your PC after installing it.
+	If a Docker version number is displayed, then Docker is installed. If Docker is not installed, execute the installer and restart your PC.
 
 1. If Azure Machine Learning Workbench isn't installed on your computer, go to https://docs.microsoft.com/azure/machine-learning/preview/quickstart-installation and follow the instructions there to install it, create a Machine Learning Experimentation account, and sign in to Machine Learning Workbench for the first time. The experimentation account is required in order to use Azure Machine Learning Workbench.
 
@@ -78,7 +78,7 @@ The files in the project directory are merely starter files that will need to be
 <a name="Exercise2"></a>
 ## Exercise 2: Customize the project ##
 
-One of the tasks at which Machine Learning Workbench excels is helping you prepare data for training machine-learning models. For example, its [Derive Column by Example](https://docs.microsoft.com/azure/machine-learning/preview/data-prep-derive-column-by-example) feature lets you create new feature columns with information derived from data in other columns, and it uses AI to learn by example. You do the first few transformations, and it does the rest. It also includes features for replacing missing values, trimming strings, and performing other common data-cleaning operations.
+One of the tasks that Machine Learning Workbench excels at is helping you prepare data for training machine-learning models. For example, its [Derive Column by Example](https://docs.microsoft.com/azure/machine-learning/preview/data-prep-derive-column-by-example) feature lets you create new feature columns with information derived from data in other columns, and it uses AI to learn by example. You do the first few transformations, and it does the rest. It also includes features for replacing missing values, trimming strings, and performing other common data-cleaning operations.
 
 The MNIST data that you uploaded to blob storage in the previous lab doesn't require cleaning in the conventional sense, but it does need to be converted into a format that is compatible with CNTK. In this exercise, you will write Python scripts to perform the conversion, and configure the project to execute them.
 
@@ -117,7 +117,7 @@ The MNIST data that you uploaded to blob storage in the previous lab doesn't req
 
 	_Copying the connection string_
 
-1. Return to Machine Learning Workbench and replace CONNECTION_STRING on line 12 of **docker.runconfig** with the connection string on the clipboard. This assigns the connection string to an environment variable so it can be retrieved at run-time by scripts executed by Machine Learning Workbench.
+1. Return to Machine Learning Workbench and replace CONNECTION_STRING on line 12 of **docker.runconfig** with the connection string in the clipboard. This assigns the connection string to an environment variable so it can be retrieved at run-time by scripts executed by Machine Learning Workbench.
 
 1. On line 30 of **docker.runconfig**, change the value of ```PrepareEnvironment``` from false to true:
 
@@ -333,7 +333,7 @@ _CNTK-formatted data_
 <a name="Summary"></a>
 ## Summary ##
 
-The raw MNIST data has been converted into CNTK format and is ready to be used to train a neural network. This sets the stage for the next lab in this series — [Using the Microsoft Cognitive Toolkit (CNTK) to Build Neural Networks, Part 3](../3%20-%20Predict) — in which you will use CNTK and Machine Learning Workbench to build a set of neural networks and compare their accuracy.
+The raw MNIST data has been converted into the CNTK format and is ready to be used to train a neural network. This sets the stage for the next lab in this series — [Using the Microsoft Cognitive Toolkit (CNTK) to Build Neural Networks, Part 3](../3%20-%20Predict) — in which you will use CNTK and Machine Learning Workbench to build a set of neural networks and compare their accuracy.
 
 ---
 

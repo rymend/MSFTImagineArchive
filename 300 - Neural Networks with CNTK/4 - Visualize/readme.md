@@ -65,7 +65,7 @@ In this exercise, you will download the files created for the "One Convolution" 
 
 1. Create an empty subdirectory named "mnist" in the project directory.
 
-1. Create a subdirectory named "public" in the project directory and add an HTML file named **index.html** containing the following statements to the "public" directory;
+1. Create a subdirectory named "public" in the project directory and add an HTML file named **index.html** containing the following statements:
 
 	```html
 	<html>

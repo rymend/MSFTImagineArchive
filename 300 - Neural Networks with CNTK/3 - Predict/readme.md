@@ -1,6 +1,6 @@
 ![](Images/header.png)
 
-In the [previous lab](../2%20-%20Process), you used Azure Machine Learning Workbench to execute a Python script that converts raw data from the [MNIST database](http://yann.lecun.com/exdb/mnist/), which contains 60,000 scanned and normalized images of the hand-written digits 0 through 9, into data that can be used to train neural networks built with the [Microsoft Cognitive Toolkit](https://www.microsoft.com/en-us/research/product/cognitive-toolkit/), also known as CNTK. The script ran in a Docker container, received input from Azure blob storage, and wrote its output to Azure blob storage.
+In the [previous lab](../2%20-%20Process), you used Azure Machine Learning Workbench to execute a Python script that converts raw data from the [MNIST database](http://yann.lecun.com/exdb/mnist/), which contains 60,000 scanned and normalized images of the hand-written digits 0 through 9.  That data can now be used to train neural networks built with the [Microsoft Cognitive Toolkit](https://www.microsoft.com/en-us/research/product/cognitive-toolkit/), also known as CNTK. The script ran in a Docker container, received input from Azure blob storage, and wrote its output to Azure blob storage.
 
 In this lab, the third of four in a series, you will return to Machine Learning Workbench and train three machine-learning models that rely on CNTK neural networks. The goal: to find the best model for recognizing hand-written digits, with an eye toward operationalizing the model and building a client app that uses it in the fourth and final lab.
 
@@ -48,7 +48,7 @@ Estimated time to complete this lab: **30** minutes.
 <a name="Exercise1"></a>
 ## Exercise 1: Train a neural network and score it for accuracy ##
 
-It's time to leverage the work you performed in the first two labs by using the CNTK-formatted data that you generated to train and test a machine-learning model that utilizes a CNTK neural network. The Microsoft Cognitive Toolkit comes with several [BrainScript](https://docs.microsoft.com/cognitive-toolkit/brainscript-basic-concepts) files enabling various types of neural networks to be trained and tested with a single command. BrainScript provides a simple way to define a network in code-like fashion using expressions, variables, functions, and other constructs. CNTK networks can also be defined in pure Python, but BrainScript files are shorter, more concise, and generally more readable.
+It's time to leverage the work you performed in the first two labs by using the CNTK-formatted data that you generated to train and test a machine-learning model that utilizes a CNTK neural network. The Microsoft Cognitive Toolkit comes with several [BrainScript](https://docs.microsoft.com/cognitive-toolkit/brainscript-basic-concepts) files enabling various types of neural networks to be trained and tested with a single command. BrainScript provides a simple way to define a network in a code-like fashion using expressions, variables, functions, and other constructs. CNTK networks can also be defined in pure Python, but BrainScript files are shorter, more concise, and generally more readable.
 
 One of the simplest network types is the "One Hidden Layer" network, which is not a deep neural network, but rather one that contains a single layer of hidden nodes. In this exercise, you will write a Python script that uses BrainScript to train and score a "One Hidden Layer" network that recognizes hand-written digits, and execute the script in a Docker container from Azure Machine Learning Workbench.
 
@@ -201,7 +201,7 @@ One of the simplest network types is the "One Hidden Layer" network, which is no
 	}
 	```
 
-	This file contains [BrainScript](https://docs.microsoft.com/cognitive-toolkit/brainscript-basic-concepts) code that defines a neural network. It is a slightly modified version of a file of the same name that comes with CNTK. The first section — TRAINING CONFIG — defines a network with one hidden layer and identifies the shape and source of the training data. The TEST CONFIG section identifies the file containing testing data. The files containing the training and testing data are local versions of the files that you created in the previous lab and downloaded from blob storage.
+	This file contains [BrainScript](https://docs.microsoft.com/cognitive-toolkit/brainscript-basic-concepts) code that defines a neural network. It is a slightly modified version of a file of the same name that comes with CNTK. The first section — TRAINING CONFIG — defines a network with one hidden layer and identifies the shape and source of the training data. The — TEST CONFIG — section identifies the file containing testing data. The files containing the training and testing data are local versions of the files that you created in the previous lab and downloaded from blob storage.
 
 1. Select **Docker** from the Run Configuration drop-down and **train.py** from the Script drop-down to configure Workbench to run **train.py** in a Docker container. Then click **Run**.
 
@@ -443,7 +443,7 @@ In this exercise, you will train and score a third neural network and compare th
 
 1. Run **train.py** and examine the output to determine how accurately the model is able to identify hand-written digits. Rather than present an ```err``` value, this model will present ```rmse```, which stands for [root mean square error](https://twitter.com/ClowESPN/status/939133034636414976). A simple way to compare ```rmse``` to ```err``` is to multiply the ```rmse``` value by 100, so that 0.02, for example, becomes 2%. Based on that, is this network more or less accurate than the other networks you trained?
 
-The [resources that accompany this lab](https://topcs.blob.core.windows.net/public/300-cntk-resources-03.zip) include the three BrainScript files that you used to train neural networks, and four more that you didn't use. Feel free to train additional networks if you would like using the extra files. For a great tutorial on training various types of machine-learning models with CNTK and additional insights into BrainScript, see https://github.com/Microsoft/CNTK/wiki/Tutorial.
+The [resources that accompany this lab](https://topcs.blob.core.windows.net/public/300-cntk-resources-03.zip) include the three BrainScript files that you used to train neural networks, and four more that you didn't use. Feel free to train additional networks using the extra files. For a great tutorial on training various types of machine-learning models with CNTK and additional insights into BrainScript, see https://github.com/Microsoft/CNTK/wiki/Tutorial.
 
 <a name="Summary"></a>
 ## Summary ##
