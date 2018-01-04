@@ -1,6 +1,6 @@
 ![](Images/header.png)
 
-In the [previous lab](../2%20-%20Process), you uploaded a collection of images depicting paintings by three famous artists to Azure blob storage. The images were discovered using Bing Image Search, and images that were similar to one another were identified using [perceptual image hashes](https://www.pyimagesearch.com/2017/11/27/image-hashing-opencv-python/) and removed from the dataset. The Python code that uploaded the images to blob storage put them into separate folders for training and testing.
+In the [previous lab](../2%20-%20Process), you uploaded a collection of images depicting paintings by three famous artists to Azure blob storage. The images were discovered using [Bing Image Search](https://azure.microsoft.com/services/cognitive-services/bing-image-search-api/), and images that were similar to one another were identified using [perceptual image hashes](https://www.pyimagesearch.com/2017/11/27/image-hashing-opencv-python/) and removed from the dataset. The Python code that uploaded the images to blob storage put them into separate folders for training and testing.
 
 In this lab, you will use these images to train and test a machine-learning model that can identify the artist of a painting by Picasso, Monet, and Van Gogh. The model will be built with the [Microsoft Cognitive Toolkit](https://www.microsoft.com/cognitive-toolkit/), also known as CNTK, and the [Microsoft Machine Learning Library for Apache Spark](https://github.com/Azure/mmlspark) (MMLSpark), which simplifies machine learning by abstracting many of Spark ML's lower-level APIs and providing near-seamless integration with the Cognitive Toolkit and other deep-learning libraries.
 
@@ -24,8 +24,6 @@ In this hands-on lab, you will learn how to:
 The following are required to complete this hands-on lab:
 
 - An active Microsoft Azure subscription. If you don't have one, [sign up for a free trial](http://aka.ms/WATK-FreeTrial).
-- tk
-- tk
 
 If you haven't completed the [previous lab in this series](../2%20-%20Process), you must do so before starting this lab.
 
@@ -45,41 +43,43 @@ Estimated time to complete this lab: **45** minutes.
 <a name="Exercise1"></a>
 ## Exercise 1: Provision an HDInsight Spark cluster ##
 
-TODO: Add introduction.
+In this exercise, you will create an HDInsight cluster provisioned with [Apache Spark](http://spark.apache.org/). Spark is renowned for its versatility and is built for speed, performing some operations on large datasets 100 times faster than Hadoop. It also supports [Spark ML](http://spark.apache.org/docs/latest/ml-guide.html), which provides a DataFrame-based API for building machine-learning models.
 
 1. Open the [Azure Portal](https://portal.azure.com) in your browser. If asked to log in, do so using your Microsoft account.
 
-1. tk.
+1. Click **+ New** in the upper-left corner of the portal. Then click **Data + Analytics**, followed by **HDInsight**.
 
-	![tk](Images/tk.png)
+    ![Creating an HDInsight cluster](Images/new-hdinsight-cluster-1.png)
 
-	_tk_
+    _Creating an HDInsight cluster_
 
-1. tk.
+1. In the "Basics" blade, enter a unique DNS name for the cluster and make sure a green check mark appears next to it indicating that the name is valid and unique. Enter a password and be sure to *remember what you entered*. Place the cluster in the "mmlsparklab-rg" resource group and select **South Central US** as the location. Then click **Cluster type** to open a "Cluster configuration" blade.
 
-	![tk](Images/tk.png)
+	In the "Cluster configuration" blade, select **Spark** as the cluster type and accept the default Spark version on the right. Then click the **Select** button at the bottom of the blade, followed by the **Next** button at the bottom of the "Basics" blade
 
-	_tk_
+    ![Entering cluster settings](Images/new-hdinsight-cluster-2.png)
 
-1. tk.
+    _Entering cluster settings_
 
-	![tk](Images/tk.png)
+1. Make sure **Primary storage type** is set to **Azure Storage** and **Selection method** is set to **My subscriptions**. Then select the storage account you created in the previous lab. Type "mmlsparklab-cluster" into the **Default container** box, and then click **Next**.
 
-	_tk_
+	> The storage account associated with the cluster contains the cluster's file system and the software installed in it.
 
-1. tk.
+    ![Entering cluster-storage settings](Images/new-hdinsight-cluster-3.png)
 
-	![tk](Images/tk.png)
+    _Entering cluster-storage settings_
 
-	_tk_
+1. Review the cluster settings and make sure everything is correct. Then click **Create** to begin deploying the cluster.
 
-1. tk.
+	> By accepting the defaults, you are deploying a cluster that contains two head nodes and four worker nodes. The head nodes each contain four cores and 28 GB of RAM, while the worker nodes each contain eight cores and 56 GB of RAM. If you would like to change the number of nodes or the sizes of the nodes, you may do so by clicking the **Edit** link next to **Cluster size** before clicking **Create**. 
 
-	![tk](Images/tk.png)
+1. Deploying an HDInsight cluster can take 15 minutes or more. Open the "mmlsparklab-rg" resource group in the portal. Wait until "Deploying" changes to "Succeeded," indicating that the cluster has been deployed. Periodically click **Refresh** at the top of the blade to refresh the deployment status.
 
-	_tk_
+    ![Deployment completed](Images/new-hdinsight-cluster-4.png)
 
-TODO: Add closing.
+    _Deployment completed_
+
+In this exercise, you provisioned an HDInsight Spark cluster on Azure. But before you can use it to train a machine-learning model, the cluster requires some additional configuration. 
 
 <a name="Exercise2"></a>
 ## Exercise 2: Add MMLSpark and CNTK to the cluster ##
