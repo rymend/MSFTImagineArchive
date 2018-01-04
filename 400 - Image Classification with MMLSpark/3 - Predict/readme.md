@@ -1,6 +1,10 @@
 ![](Images/header.png)
 
-TODO: Add introduction.
+In the [previous lab](../2%20-%20Process), you uploaded a collection of images depicting paintings by three famous artists to Azure blob storage. The images were discovered using Bing Image Search, and images that were similar to one another were identified using [perceptual image hashes](https://www.pyimagesearch.com/2017/11/27/image-hashing-opencv-python/) and removed from the dataset. The Python code that uploaded the images to blob storage put them into separate folders for training and testing.
+
+In this lab, you will use these images to train and test a machine-learning model that can identify the artist of a painting by Picasso, Monet, and Van Gogh. The model will be built with the [Microsoft Cognitive Toolkit](https://www.microsoft.com/cognitive-toolkit/), also known as CNTK, and the [Microsoft Machine Learning Library for Apache Spark](https://github.com/Azure/mmlspark) (MMLSpark), which simplifies machine learning by abstracting many of Spark ML's lower-level APIs and providing near-seamless integration with the Cognitive Toolkit and other deep-learning libraries.
+
+Rather than train the model locally on your PC, you will train it on an [Azure HDInsight](https://azure.microsoft.com/services/hdinsight/) Spark cluster. In the real world, training sophisticated machine-learning models frequently requires more computing power than a single PC can provide. With HDInsight, you can spin up high-performance computing (HPC) clusters of any size, with or without GPUs, and use them to process massively large datasets in a fraction of the time that would be required on a single CPU.
 
 ![](Images/road-map-3.png)
 
@@ -11,7 +15,7 @@ In this hands-on lab, you will learn how to:
 
 - Provision an HDInsight Spark Cluster running Spark 2.0
 - Customize the HDInsight cluster by adding CNTK and other Python packages
-- Move images from Azure Blob Storage into HDInsight's active Linux directory
+- Move images from Azure blob storage to HDInsight
 - Run Transfer Learning using a Jupyter notebook to build a paintings classifier
 
 <a name="Prerequisites"></a>
@@ -23,7 +27,7 @@ The following are required to complete this hands-on lab:
 - tk
 - tk
 
-If you haven't completed the [previous lab in this series](../1%20-%20Ingest), you must do so before starting this lab.
+If you haven't completed the [previous lab in this series](../2%20-%20Process), you must do so before starting this lab.
 
 ---
 
@@ -32,14 +36,14 @@ If you haven't completed the [previous lab in this series](../1%20-%20Ingest), y
 
 This hands-on lab includes the following exercises:
 
-- [Exercise 1: Provision an HDInsight Spark Cluster](#Exercise1)
-- [Exercise 2: Add MMLSpark and CNTK to the Spark Cluster](#Exercise2)
-- [Exercise 3: Use a Jupyter Notebook to run Transfer Learning](#Exercise3)
+- [Exercise 1: Provision an HDInsight Spark cluster](#Exercise1)
+- [Exercise 2: Add MMLSpark and CNTK to the cluster](#Exercise2)
+- [Exercise 3: Use a Jupyter notebook to run Transfer Learning](#Exercise3)
 
 Estimated time to complete this lab: **45** minutes.
 
 <a name="Exercise1"></a>
-## Exercise 1: Provision an HDInsight Spark Cluster ##
+## Exercise 1: Provision an HDInsight Spark cluster ##
 
 TODO: Add introduction.
 
@@ -78,7 +82,7 @@ TODO: Add introduction.
 TODO: Add closing.
 
 <a name="Exercise2"></a>
-## Exercise 2: Add MMLSpark and CNTK to the Spark Cluster ##
+## Exercise 2: Add MMLSpark and CNTK to the cluster ##
 
 MMLSpark is the generally recommended package for running CNTK since CNTK and OpenCV are already included (and used in this lab).  At present, the MMLSpark distribution does not have the latest CNTK version, which we will need to run batch normalization training on a CPU (only GPU works in earlier CNTK versions).  Never fear:  we can run an additional script to achieve that goal.
 
@@ -262,7 +266,7 @@ rest of the options as shown on the screenshot below.
 In this section, we used the script actions to customize the HDInsight Spark cluster.  Having performed this task, we are ready to run Spark to analyze our imaages with CNTK deep learning.
 
 <a name="Exercise3"></a>
-## Exercise 3: Use a Jupyter Notebook to run Transfer Learning ##
+## Exercise 3: Use a Jupyter notebook to run Transfer Learning ##
 
 Jupyter notebooks are increasing a recommended way for data scientists to perform development, such as model building.  Individual notebooks may be saved, uploaded to another Jupyter installation; also, a notebook may be downloaded or printed or saved in other printable formats.  This task of building a deep learning model is appropriate for this task, and in this lab you will end up with a **model** file, which could be subsequently put into production.
 
