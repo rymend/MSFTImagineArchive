@@ -1,6 +1,6 @@
 ![](Images/header.png)
 
-In this lab, the second of four in a series, you will prepare the data that you generated and stored in an Azure SQL database in the [previous lab](../1%20-%20Ingest) so that it can be used to train a machine-learning model that performs image classification. Preparation will involve using a technique called [perceptual image hashing](https://www.pyimagesearch.com/2017/11/27/image-hashing-opencv-python/) to identify images that are identical or highly similar so the model won't be biased by training it with multiple variations of the same image. In the [next lab](../3%20-%20Predict), you will use the images that you generated to train a machine-learning model that recognizes the artists of famous paintings.
+In this lab, the second of four in a series, you will prepare the image data that you stored in an Azure SQL database in the [previous lab](../1%20-%20Ingest) so it can be used to train a machine-learning model that performs image classification. Preparation will involve using a technique called [perceptual image hashing](https://www.pyimagesearch.com/2017/11/27/image-hashing-opencv-python/) to identify images that are identical or highly similar so the model won't be biased by training it with multiple variations of the same image. In the [next lab](../3%20-%20Predict), you will use the deduped image set to train a machine-learning model to recognize the artists of famous paintings.
 
 ![](Images/road-map-2.png)
 
@@ -11,8 +11,7 @@ In this hands-on lab, you will learn how to:
 
 - Use an Azure SQL database as a data source in Machine Learning Workbench
 - Use perceptual image hashing to identify similar images
-- Make decisions on what hashing is best given the project objectives
-- Upload chosen images to Azure Blob Storage for further processing
+- Upload images to Azure blob storage
 
 <a name="Prerequisites"></a>
 ### Prerequisites ###
@@ -57,7 +56,7 @@ In this exercise, you will connect to the Azure SQL database you created in the 
 
 	_Adding a database as a data source_
 
-1. In the **Server Address** box, enter "SERVER_NAME.database.windows.net" (without quotation marks), where SERVER_NAME is the name you assigned to the database server in the previous lab. Make sure **Server** is selected as the **Authentication Type**, and enter the admin user name and password that you specified in the previous lab for logging in to the database. In **Database To Connect To**, enter the name you assigned to the database in the previous lab. Scroll down and enter the following statement into the **Query** box:
+1. In the **Server Address** box, enter "SERVER_NAME.database.windows.net" (without quotation marks), where SERVER_NAME is the name you assigned to the database server in the previous lab. Make sure **Server** is selected as the **Authentication Type**, and enter the admin user name and password that you specified in the previous lab for logging in to the database. In **Database To Connect To**, enter the name you assigned to the database in the previous lab. Next, scroll down and enter the following statement into the **Query** box:
 
 	```
 	SELECT * FROM dbo.Paintings
@@ -75,9 +74,9 @@ In this exercise, you will connect to the Azure SQL database you created in the 
 
 	_Data imported from the Azure SQL database_
 
-	Scroll to the right and observe that the table includes fields named "DHashHex8," "DHashHex7," and so on, all the way down to "DHashHex1." The **load.py** script that you ran in the previous lab used Bing Search to find images of paintings by famous artists. Then it downloaded each image and generated a series of [dHashes](https://pypi.python.org/pypi/dhash) with bit sizes from 8 to 1. A dHash is a [perceptual image hash](https://www.pyimagesearch.com/2017/11/27/image-hashing-opencv-python/); its purpose is to quantify the similarity between images. Higher bit sizes produce finer-grained results, meaning images have to be more alike to produce the same dHash. Image hashing is an important part of a strategy to clean the data because you don't want to train a machine-learning model with 50 images of the same Van Gogh. Perceptual hashes wouldn't be needed if training images were picked by hand. They are extraordinarily useful when training images are picked algorithmically.
+	Scroll to the right and observe that the table includes fields named "DHashHex8," "DHashHex7," and so on, all the way down to "DHashHex1." The **load.py** script that you ran in the previous lab used Bing Image Search to find images of paintings by famous artists. Then it downloaded each image and generated a series of [dHashes](https://pypi.python.org/pypi/dhash) with bit sizes from 8 to 1. A dHash is a [perceptual image hash](https://www.pyimagesearch.com/2017/11/27/image-hashing-opencv-python/); its purpose is to quantify the similarity between images. Higher bit sizes produce finer-grained results, meaning images have to be more alike to produce the same dHash. Image hashing is an important part of a strategy to clean the data because you don't want to train a machine-learning model that recognizes Van Gogh paintings with 50 images of the same Van Gogh. Perceptual hashes wouldn't be needed if training images were picked by hand. They are extraordinarily useful when picking images algorithmically.
 
-1. Return to the [Azure Portal](https://portal.azure.com) and open the database that you created in the previous lab. Then use Data Explorer to execute the following query, which uses common table expressions (CTEs) to tabulate the number of unique images by artist:
+1. Return to the [Azure Portal](https://portal.azure.com) and open the database that you created in the previous lab. Then use Data Explorer to execute the following query, which uses common table expressions (CTEs) to tabulate the number of unique images for each artist:
 
 	``` SQL
 	WITH RowTagging
@@ -230,7 +229,7 @@ In this exercise, you will run some Python code in Azure Machine Learning Workbe
 	df.to_sql('UniquePaintings', engine, if_exists='replace', index=False)
 	```
 
-	This code uses a Python package named [SQLAlchemy](https://www.sqlalchemy.org/) to query the database and read the results into a [Pandas DataFrame](https://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html). In cases in which multiple images have the same dHash, the query uses T-SQL's [ROW_NUMBER](https://docs.microsoft.com/en-us/sql/t-sql/functions/row-number-transact-sql) function to exclude all but the largest of those images. The Python script then writes the resulting DataFrame to the database's "UniquePaintings" table, which gets created if it doesn't already exist.
+	This code uses a Python package named [SQLAlchemy](https://www.sqlalchemy.org/) to query the database and read the results into a [Pandas DataFrame](https://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html). In cases in which multiple images have the same dHash, the query uses T-SQL's [ROW_NUMBER](https://docs.microsoft.com/en-us/sql/t-sql/functions/row-number-transact-sql) function to exclude all but the largest of those images. The Python script then writes the resulting DataFrame to the database's "UniquePaintings" table, which gets created if it doesn't exist and replaced if it does.
 
 1. Replace the following values on line 22. Then save the file.
 
@@ -266,11 +265,11 @@ In this exercise, you will use the Azure CLI to create an Azure storage account 
 
 	> As an alternative to installing the Azure CLI, you can use the [Azure Cloud Shell](https://azure.microsoft.com/features/cloud-shell/) available in the [Azure Portal](https://portal.azure.com). Simply open the portal in your browser and click the **Cloud Shell** button in the toolbar at the top of the page. One of the benefits of using the Cloud Shell is that you're *always* running the latest version.
 
-	![tk](Images/cloud-shell.png)
+	![Opening the Azure Cloud Shell](Images/cloud-shell.png)
 
 	_Opening the Azure Cloud Shell_
 
-1. Use the following command to create a general-purpose storage account in the "mmlsparklab-rg" resource group created in [Lab 1](../1%20-%20Ingest). Replace ACCOUNT_NAME with the name you wish to assign the storage account. The account name must be unique within Azure, so if the command fails because the storage-account name is already in use, change the name and try again. In addition, storage-account names must be from 3 to 24 characters in length and can contain only numbers and lowercase letters.
+1. Use the following command to create a general-purpose storage account in the "mmlsparklab-rg" resource group. Replace ACCOUNT_NAME with the name you wish to assign the storage account. The account name must be unique within Azure, so if the command fails because the storage-account name is already in use, change the name and try again. In addition, storage-account names must be from 3 to 24 characters in length and can contain only numbers and lowercase letters.
 
 	```
 	az storage account create --name ACCOUNT_NAME --resource-group mmlsparklab-rg --location southcentralus --kind Storage --sku Standard_LRS
@@ -407,7 +406,7 @@ In this exercise, you will run a Python script in Machine Learning Workbench tha
 	del transfer_images_stream
 	```
 
-	This code downloads the ```jpeg```, ```bmp```, ```png```, and ```gif``` files listed in the "UniquePaintings" table and uploads them to the storage account's "images" container. Note that the files are never saved in the local file system; instead, they are uploaded directly to blob storage.
+	This code downloads the ```jpeg```, ```bmp```, ```png```, and ```gif``` files referenced in the "UniquePaintings" table and uploads them to the storage account's "images" container. Note that the files are never saved in the local file system; instead, they are uploaded directly to blob storage.
 
 1. Replace the following values in **upload.py**:
 
@@ -429,7 +428,7 @@ In this exercise, you will run a Python script in Machine Learning Workbench tha
 
 1. Use Machine Learning Workbench to run **upload.py** in a Docker container.
 
-1. Wait for the run to complete and confirm that it completed successfully. Then go to the storage account in the Azure Portal, open the "images" container, and navigate down the folder hierarchy until you find folders named "Test" and "Train." Each contains subfolders with images for testing and training a machine-learning model. Examine the content of some of these subfolders and confirm that they contain a collection of image blobs, as shown below.
+1. Wait for the run to complete and confirm that it completed successfully. Then go to the storage account in the Azure Portal, open the "images" container, and navigate down the folder hierarchy until you find folders named "Test" and "Train." Each contains subfolders with images for testing and training a machine-learning model. Examine some of these subfolders and confirm that they contain collections of image blobs, as shown below.
 
 	> Blob storage doesn't support nested containers, but you can create the illusion of a folder hierarchy within a container by including slashes in the blob names.
 
@@ -442,7 +441,7 @@ If you're curious to see what some of the images look like, simply select a blob
 <a name="Summary"></a>
 ## Summary ##
 
-In this lab, you used perceptual image hashing to dedupe the images you identified through Bing Search in the previous lab. Then you retrieved the images and uploaded them to blob storage. You may now proceed to the next lab in this series — [Using the Microsoft Machine Learning Library for Apache Spark (MMLSpark) to Perform Image Classification, Part 3](../3%20-%20Predict) — to use these images to train a machine-learning model.
+In this lab, you used a combination of T-SQL and perceptual image hashing to dedupe the images you identified through Bing Image Search in the previous lab. Then you retrieved the images and uploaded them to blob storage. You may now proceed to the next lab in this series — [Using the Microsoft Machine Learning Library for Apache Spark (MMLSpark) to Perform Image Classification, Part 3](../3%20-%20Predict) — to use these images to train a machine-learning model.
 
 ---
 
