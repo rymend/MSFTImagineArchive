@@ -82,7 +82,7 @@ The Ubuntu Data Science Virtual Machine for Linux is a virtual-machine image tha
 
     _Opening the resource group_
 
-1. Wait until "Deploying" changes to "Succeeded" indicating that deployment has completed. Deployment typically takes 5 minutes or less. Periodically cick the **Refresh** button at the top of the blade to refresh the deployment status.
+1. Wait until "Deploying" changes to "Succeeded" indicating that deployment has completed. Deployment typically takes 5 minutes or less. Periodically click **Refresh** at the top of the blade to refresh the deployment status.
 
     ![Monitoring the deployment status](Images/deployment-succeeded.png)
 
