@@ -37,7 +37,7 @@ This hands-on lab includes the following exercises:
 - [Exercise 3: Create a storage account](#Exercise3)
 - [Exercise 4: Upload deduped images to blob storage](#Exercise4)
 
-Estimated time to complete this lab: **45** minutes.
+Estimated time to complete this lab: **40** minutes.
 
 <a name="Exercise1"></a>
 ## Exercise 1: Connect to Azure SQL from ML Workbench ##
