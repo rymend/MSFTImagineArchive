@@ -160,36 +160,20 @@ Jupyter notebooks are increasing a recommended way for data scientists to perfor
 
 	_Uploading a notebook_
 
-1. Open the notebook that you just uploaded.
+1. Open the notebook that you just uploaded. Then work your way from top to bottom, reading the comments and running each cell one at a time. If you prefer to run the entire notebook all at once, use the **Run All** command in the **Cells** menu.
 
+	![Running the Jupyter notebook](Images/painting-image-recognition.png)
 
+	_Running the Jupyter notebook_
 
+1. Once the final cell is executed, check the output to determine the model's accuracy in recognizing the artists of the test images presented to it. What is the model's accuracy?
 
-
-1. You may then open the notebook.  We recommend running the cells indivdiually as you are reading the text in the Jupyter notebook:  you may choose to **Run All** but please read through the text so that you can understand what deep learning is accomplishing.  Many comments also appear in the code allowing you to modify this template for other purposes later.
-
-	![tk](Images/painting-image-recognition.png)
-
-	_Screenshot of the Jupyter notebook_
-
-1.  For this lab, we used a Jupyter notebook originally written for virtual machines.  We made adaptations for a workflow which includes Azure Blob Storage.  The original tutorial only worked with GPU, but CNTK 2.3.1 allows transfer learning to work on CPUs (the only configuraion currently on HDInsight Spark).   Also, we added some code improvements:  for example, the following intermittent code error called for adding **.convert(RGBA)** when opening an image.  In practice, you may have to make modifications to this code as module APIs and hardware features evolve.
-
-	![tk](Images/bad-transparency-mask.png)
-
-	_Transparency Mask Error (Resolved)_
-
-1. The Jupyter notebook includes some choices for rerunning the deep learning:  try setting the **isFast** flag to **False** and allowing more epochs.  After changing the code, you will need to run that single cell, which you may do on the icon toolbar.  On our runs, we noticed that simply rerunning a model with the same hyperparameter settings would produce slightly different accuracy results.  Again, a cross-validation approach would be best to assure one of the reliability of the results.  
-
-	![tk](Images/isFast.png)
-
-	_Running a single cell_
-
-In this exercise, we took the images selected from Azure ML Workbench, and applied CNTK 2.3.1 using HDInsight Spark on Linux.  The final technique of Transfer Learning is one of the active areas of both application and research.  
+One of the code snippets near the top of the notebook defines a variable named ```isFast``` and defaults it to true, which limits the training run to 7 epochs (forward and backward passes through the network). You can set ```isFast``` to false to allow up to 20 epochs and potentially increase the accuracy of the model. Try setting ```isFast``` to false and rerunning the notebook. Does the accuracy change?
 
 <a name="Summary"></a>
 ## Summary ##
 
-CNTK Deep Learning may be accomplished through using HDInsight Spark.  In this lab, you saw how to upload and update the Python available using custom scripts.  Also, using Jupyter and Azure Blob Storage, you have tools to scale this concept to much larger projects than this lab.  In the next lab, we next turn to visualization.
+Now that you have a trained model, the next and final step is to operationalize it and use it in an app that takes images of famous paintings that you input and attempts to identify the artists of those paintings. You may now proceed to the next lab in this series — [Using the Microsoft Machine Learning Library for Apache Spark (MMLSpark) to Perform Image Classification, Part 4](../4%20-%20Visualize) — to put the model into production and write an app that utilizes it.
 
 ---
 
