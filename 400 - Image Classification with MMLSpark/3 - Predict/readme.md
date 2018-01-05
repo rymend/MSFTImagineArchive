@@ -38,7 +38,7 @@ This hands-on lab includes the following exercises:
 - [Exercise 2: Add MMLSpark and CNTK to the cluster](#Exercise2)
 - [Exercise 3: Use a Jupyter notebook to run Transfer Learning](#Exercise3)
 
-Estimated time to complete this lab: **45** minutes.
+Estimated time to complete this lab: **60** minutes.
 
 <a name="Exercise1"></a>
 ## Exercise 1: Provision an HDInsight Spark cluster ##
@@ -84,178 +84,41 @@ In this exercise, you provisioned an HDInsight Spark cluster on Azure. But befor
 <a name="Exercise2"></a>
 ## Exercise 2: Add MMLSpark and CNTK to the cluster ##
 
-MMLSpark is the generally recommended package for running CNTK since CNTK and OpenCV are already included (and used in this lab).  At present, the MMLSpark distribution does not have the latest CNTK version, which we will need to run batch normalization training on a CPU (only GPU works in earlier CNTK versions).  Never fear:  we can run an additional script to achieve that goal.
+In this exercise, you will run a script to install MMLSpark on the HDInsight cluster you created in the previous exercise. Then you will run another script to install the latest version of CNTK on the cluster. The version that comes with MMLSpark currently requires VMs with GPUs. The version that you will install works with or without GPUs.
 
-1. To install MMLSpark on an existing [HDInsight Spark
-Cluster](https://docs.microsoft.com/en-us/azure/hdinsight/), you can execute a
-script action on the cluster head and worker nodes.  For instructions on running
-script actions, see [this
-guide](https://docs.microsoft.com/en-us/azure/hdinsight/hdinsight-hadoop-customize-cluster-linux#use-a-script-action-during-cluster-creation). The script action url is:
-<https://mmlspark.azureedge.net/buildartifacts/0.10/install-mmlspark.sh>.
+1. In the blade for the "mmlsparklab-rg" resource group in the Azure Portal, click the cluster that you created in the previous exercise. Then click **Script actions** in the menu on the left, and click **+ Submit new** at the top of the blade.
 
-1. If you're using the Azure Portal to run the script action, go to `Script
-actions` → `Submit new` in the `Overview` section of your cluster blade.  In the
-`Bash script URI` field, input the script action URL provided above.  Mark the
-rest of the options as shown on the screenshot below.
+1. Select **Custom** as the script type, give the script a name, and paste the following URL into the **Bash script URI** box:
 
-	![tk](Images/MMLSparkInstall.png)
+	```
+	https://mmlspark.azureedge.net/buildartifacts/0.10/install-mmlspark.sh
+	```
 
-	_Submitting a Script Action to install MML Spark_
+	This script installs MMLSpark on the specified nodes in the cluster.
 
-1. Submit, and the cluster should finish configuring within 10 minutes or so.
+	Check the **Head** and **Worker** boxes to install MMLSpark on the cluster's head nodes and worker nodes. Check the **Perist this script action** box so you can easily rerun the script if you later add nodes to the cluster. Then click the **Create** button. This script typically takes about 5 minutes to run.
 
-1. Next, open a text editor and save a file called ```cntk-install.sh```, and paste in the following code.
+	![Installing MMLSpark on the cluster](Images/submit-script-action-1.png)
 
-    ```bash
-    #! /bin/bash
+	_Installing MMLSpark on the cluster_
 
-    # Install CNTK on every node. Skip if CNTK latest version is already installed
-    CNTK_VER="2.3.1"
-    CNTK_BASE_URL="https://cntk.ai/PythonWheel/CPU-Only"
-    CNTK_PY27_WHEEL="cntk-$CNTK_VER-cp27-cp27mu-linux_x86_64.whl"
-    CNTK_PY35_WHEEL="cntk-$CNTK_VER-cp35-cp35m-linux_x86_64.whl"
-    ANACONDA_BASEPATH="/usr/bin/anaconda"
+1. Wait for the script action to finish. (A green check mark will appear next to it under "SCRIPT ACTION HISTORY" when it completes successfully.) Then submit another script action using the following URL:
 
-    # Install prerequisites
-    sudo apt-get install -y openmpi-bin
+	```
+	https://topcs.blob.core.windows.net/public/install-cntk.sh
+	```
 
-    check_version_and_install() {
-     CNTK_WHEEL=$1
-     FIND_PKG=$(pip freeze | grep cntk)
-     if [[ $FIND_PKG == "cntk"* ]]; then
-       if [[ $FIND_PKG == *"$CNTK_VER" ]]; then
-         echo "CNTK latest version is already installed. Skipping..."
-       else
-         echo "Updating CNTK..."
-         pip install --upgrade --no-deps "$CNTK_BASE_URL/$CNTK_WHEEL"
-       fi
-     else
-       echo "Installing CNTK..."
-       pip install "$CNTK_BASE_URL/$CNTK_WHEEL"
-     fi
-    }
+	This script installs the CPU-only version of CNTK. Be sure to check the **Head** and **Worker** boxes as you did in the previous step to install CNTK on all the nodes in the cluster.
 
-    # Install CNTK in Python 2.7
-    source "$ANACONDA_BASEPATH/bin/activate"
-    check_version_and_install $CNTK_PY27_WHEEL
+	![Installing MMLSpark on the cluster](Images/submit-script-action-2.png)
 
-    # Install CNTK in Python 3.5
-    source "$ANACONDA_BASEPATH/bin/activate" py35
-    check_version_and_install $CNTK_PY35_WHEEL
+	_Installing MMLSpark on the cluster_
 
-    source "$ANACONDA_BASEPATH/bin/deactivate"
+1. Wait for the script action to finish, and confirm that it completed successfully. (This one, too, usually takes about 5 minutes to run.)
 
-    #Check if script action is running on head node. Exit otehrwise.
-    function get_headnodes
-    {
-        hdfssitepath=/etc/hadoop/conf/hdfs-site.xml
-        nn1=$(sed -n '/<name>dfs.namenode.http-address.mycluster.nn1/,/<\/value>/p' $hdfssitepath)
-        nn2=$(sed -n '/<name>dfs.namenode.http-address.mycluster.nn2/,/<\/value>/p' $hdfssitepath)
 
-        nn1host=$(sed -n -e 's/.*<value>\(.*\)<\/value>.*/\1/p' <<< $nn1 | cut -d ':' -f 1)
-        nn2host=$(sed -n -e 's/.*<value>\(.*\)<\/value>.*/\1/p' <<< $nn2 | cut -d ':' -f 1)
 
-        nn1hostnumber=$(sed -n -e 's/hn\(.*\)-.*/\1/p' <<< $nn1host)
-        nn2hostnumber=$(sed -n -e 's/hn\(.*\)-.*/\1/p' <<< $nn2host)
 
-        #only if both headnode hostnames could be retrieved, hostnames will be returned
-        #else nothing is returned
-        if [[ ! -z $nn1host && ! -z $nn2host ]]
-        then
-            if (( $nn1hostnumber < $nn2hostnumber )); then
-                            echo "$nn1host,$nn2host"
-            else
-                            echo "$nn2host,$nn1host"
-            fi
-        fi
-    }
-
-    function get_primary_headnode
-    {
-            headnodes=`get_headnodes`
-            echo "`(echo $headnodes | cut -d ',' -f 1)`"
-    }
-
-    PRIMARYHEADNODE=`get_primary_headnode`
-    fullHostName=$(hostname -f)
-    if [ "${fullHostName,,}" != "${PRIMARYHEADNODE,,}" ]; then
-        echo "$fullHostName is not primary headnode. Skipping ambari config..."
-        exit 0
-    fi
-
-    #Constants needed for changing ambari configs
-    ACTIVEAMBARIHOST=headnodehost
-    PORT=8080
-    USERID=$(echo -e "import hdinsight_common.Constants as Constants\nprint Constants.AMBARI_WATCHDOG_USERNAME" | python)
-    PASSWD=$(echo -e "import hdinsight_common.ClusterManifestParser as ClusterManifestParser\nimport hdinsight_common.Constants as Constants\nimport base64\nbase64pwd = ClusterManifestParser.parse_local_manifest().ambari_users.usersmap[Constants.AMBARI_WATCHDOG_USERNAME].password\nprint base64.b64decode(base64pwd)" | python)
-    CLUSTERNAME=$(echo -e "import hdinsight_common.ClusterManifestParser as ClusterManifestParser\nprint ClusterManifestParser.parse_local_manifest().deployment.cluster_name" | python)
-
-    # Stop and restart affected services
-    stopServiceViaRest() {
-     if [ -z "$1" ]; then
-       echo "Need service name to stop service"
-       exit 136
-     fi
-     SERVICENAME=$1
-     echo "Stopping $SERVICENAME"
-     curl -u "$USERID:$PASSWD" -i -H "X-Requested-By: ambari" -X PUT -d '{"RequestInfo": {"context" :"Stopping Service '"$SERVICENAME"' to install cntk"}, "Body": {"ServiceInfo": {"state": "INSTALLED"}}}' "http://$ACTIVEAMBARIHOST:$PORT/api/v1/clusters/$CLUSTERNAME/services/$SERVICENAME"
-    }
-
-    startServiceViaRest() {
-      if [ -z "$1" ]; then
-        echo "Need service name to start service"
-        exit 136
-      fi
-      sleep 2
-      SERVICENAME="$1"
-      echo "Starting $SERVICENAME"
-      startResult="$(curl -u $USERID:$PASSWD -i -H 'X-Requested-By: ambari' -X PUT -d '{"RequestInfo": {"context" :"Starting Service '"$SERVICENAME"' with cntk"}, "Body": {"ServiceInfo": {"state": "STARTED"}}}' http://$ACTIVEAMBARIHOST:$PORT/api/v1/clusters/$CLUSTERNAME/services/$SERVICENAME)"
-      if [[ "$startResult" == *"500 Server Error"* || "$startResult" == *"internal system exception occurred"* ]]; then
-        sleep 60
-        echo "Retry starting $SERVICENAME"
-        startResult="$(curl -u "$USERID:$PASSWD" -i -H "X-Requested-By: ambari" -X PUT -d '{"RequestInfo": {"context" :"Starting Service '"$SERVICENAME"' with cntk"}, "Body": {"ServiceInfo": {"state": "STARTED"}}}' http://$ACTIVEAMBARIHOST:$PORT/api/v1/clusters/$CLUSTERNAME/services/$SERVICENAME)"
-      fi
-      echo "$startResult"
-    }
-
-    # Stop affected services service
-    stopServiceViaRest LIVY
-    stopServiceViaRest JUPYTER
-
-    # Start affected services
-    startServiceViaRest LIVY
-    startServiceViaRest JUPYTER
-    ```
-
-1. Using the Azure web portal, upload this file into the ```images``` container created in lab two.
-
-	![tk](Images/select-blobs.png)
-
-	_Select Blobs in the Azure web portal_
-
-	![tk](Images/choose-container.png)
-
-	_Choose the container for uploading images_
-
-	![tk](Images/upload-script.png)
-
-	_Upload the script into the container for uploading images_
-
-	![tk](Images/upload-blob.png)
-
-	_Upload the script (as a **block blob**)_
-
-1. Once uploaded, then obtain the name of the script.  Tap the name of the script to open the **properties** window, and then press the copy icon to save the URL of the script.  
-
-	![tk](Images/full-script-url.png)
-
-	_Copy URL for the script_
-
-1. Similar to the MML Spark installation, run a Script Action for installing CNTK.
-
-	![tk](Images/CNTKSparkInstall.png)
-
-	_Installing CNTK 2.3.1 to the HDInsight Spark Cluster_
 
 1. The CNTK install script stops and starts the Jupyter and Livy services.  You will need those services running before proceeding, and sometimes it's a few moments after the interface shows that the script has completed.  To see the status of these services (and to start them manually if necessary), naviagate to <HDINSIGHT CLUSTERNAME>.azurehdinsight.net to see the status.  The dashboard should look similar to this screenshot.
 
