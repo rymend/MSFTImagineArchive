@@ -126,7 +126,7 @@ In this exercise, you will run a script to install MMLSpark on the HDInsight clu
 	https://CLUSTER_NAME.azurehdinsight.net
 	```
 
-1. When prompted, log in with the user name and password you specified in Exercise 1, Step 3. When the cluster's dashboard appears, make sure green check boxes appear next to Jupyter and Livy, as shown below.
+1. When prompted, log in with the user name and password you specified in Exercise 1, Step 3. When the cluster's dashboard appears, make sure green check marks appear next to Jupyter and Livy, as shown below.
 
 	![Using Ambari to monitor the cluster status](Images/ambari.png)
 
