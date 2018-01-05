@@ -27,6 +27,11 @@ The following are required to complete this hands-on lab:
 
 If you haven't completed the [previous lab in this series](../2%20-%20Process), you must do so before starting this lab.
 
+<a name="Resources"></a>
+### Resources ###
+
+[Click here](https://topcs.blob.core.windows.net/public/400-mmlspark-resources-03.zip) to download a zip file containing the resources used in this lab. Copy the contents of the zip file into a folder on your hard disk.
+
 ---
 
 <a name="Exercises"></a>
@@ -139,23 +144,27 @@ If Jupyter and Livy aren't checked, wait until they are. The cluster has now bee
 
 Jupyter notebooks are increasing a recommended way for data scientists to perform development, such as model building.  Individual notebooks may be saved, uploaded to another Jupyter installation; also, a notebook may be downloaded or printed or saved in other printable formats.  This task of building a deep learning model is appropriate for this task, and in this lab you will end up with a **model** file, which could be subsequently put into production.
 
-1. We have already prepared a Jupyter notebook for this lab.  You will need to upload this notebook to the appropriate location using Jupyter.  Navigate to the HDInsight cluster, and you will see the **Cluster dashboard** option.
+1. Return to the cluster in the Azure Portal. Click **Overview** on the left, and then click **Cluster dashboard**.
 
-	![tk](Images/choose-cluster-dashboard.png)
+	![Opening the cluster dashboard](Images/open-dashboard.png)
 
-	_Choose cluster dashboard_
+	_Opening the cluster dashboard_
 
-1. Choose Jupyter Notebook:  you may be asked to enter your HDInsight user id and password if you have not logged in.  *If you make a mistake on the username or password, you will see an error screen:  our best recommendation is to clear the web cache and open the window again.**
+1. In the "Cluster dashboards" blade, click **Jupyter Notebook**. If you are prompted to log in, do so using the user name and password you specified for the cluster in Exercise 1, Step 3.
 
-	![tk](Images/choose-jupyter.png)
+	> If you enter the wrong password, you may be temporarily locked out of the cluster. If this happens, open an in-private or incognito browser instance, return to the cluster in the Azure Portal, and try again.
 
-	_Open Jupyter_
+1. Click the **Upload** button and upload the notebook file named **Deep Transfer Learning.ipynb**, which is included in the [resources that accompany this lab](https://topcs.blob.core.windows.net/public/400-mmlspark-resources-03.zip).
 
-1. As mentioned, Jupyter is already running (as we know from the Ambari dashboard):  what we are doing is simply navigating to the top level of the notebook hierarchy.  Then choose, **Upload** and select the notebook named "Painting+Image+Recognition+with+Deep+Transfer+Learning.ipynb" in the **Resources** folder for this lab (Jupyter replaces spaces with the **+** character when downloading).
+	![Uploading a notebook](Images/upload-notebook.png)
 
-	![tk](Images/upload-jupyter-notebook.png)
+	_Uploading a notebook_
 
-	_Choosing to Upload a Jupyter notebook_
+1. Open the notebook that you just uploaded.
+
+
+
+
 
 1. You may then open the notebook.  We recommend running the cells indivdiually as you are reading the text in the Jupyter notebook:  you may choose to **Run All** but please read through the text so that you can understand what deep learning is accomplishing.  Many comments also appear in the code allowing you to modify this template for other purposes later.
 
