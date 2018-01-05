@@ -110,23 +110,29 @@ In this exercise, you will run a script to install MMLSpark on the HDInsight clu
 
 	This script installs the CPU-only version of CNTK. Be sure to check the **Head** and **Worker** boxes as you did in the previous step to install CNTK on all the nodes in the cluster.
 
-	![Installing MMLSpark on the cluster](Images/submit-script-action-2.png)
+	![Installing CNTK on the cluster](Images/submit-script-action-2.png)
 
-	_Installing MMLSpark on the cluster_
+	_Installing CNTK on the cluster_
 
-1. Wait for the script action to finish, and confirm that it completed successfully. (This one, too, usually takes about 5 minutes to run.)
+1. Wait for the script action to finish, and confirm that it completed successfully. (This one, too, usually takes about 5 minutes to run.) Here's what you'll see in the blade for the cluster when both scripts have completed:
 
+	![Script actions completed](Images/scripts-completed.png)
 
+	_Script actions completed_
 
+1. The CNTK install script stops and starts the cluster's [Jupyter](http://jupyter.org/) and [Livy](https://livy.incubator.apache.org/) services. To make sure these services are up and running, go to the following URL in your browser, substituting your cluster name for CLUSTER_NAME:
 
+	```
+	https://CLUSTER_NAME.azurehdinsight.net
+	```
 
-1. The CNTK install script stops and starts the Jupyter and Livy services.  You will need those services running before proceeding, and sometimes it's a few moments after the interface shows that the script has completed.  To see the status of these services (and to start them manually if necessary), naviagate to <HDINSIGHT CLUSTERNAME>.azurehdinsight.net to see the status.  The dashboard should look similar to this screenshot.
+1. When prompted, log in with the user name and password you specified in Exercise 1, Step 3. When the cluster's dashboard appears, make sure green check boxes appear next to Jupyter and Livy, as shown below.
 
-	![tk](Images/ambari.png)
+	![Using Ambari to monitor the cluster status](Images/ambari.png)
 
-	_Monitoring the HDInsight Spark cluster using Ambari_
+	_Using Ambari to monitor the cluster status_
 
-In this section, we used the script actions to customize the HDInsight Spark cluster.  Having performed this task, we are ready to run Spark to analyze our imaages with CNTK deep learning.
+If Jupyter and Livy aren't checked, wait until they are. The cluster has now been provisioned and configured with the software you need. The next step is to use it to build a machine-learning model.
 
 <a name="Exercise3"></a>
 ## Exercise 3: Use a Jupyter notebook to run Transfer Learning ##
