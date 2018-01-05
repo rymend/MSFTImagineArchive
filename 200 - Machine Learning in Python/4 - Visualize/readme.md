@@ -49,7 +49,7 @@ In this exercise, you will import Matplotlib into the Jupyter notebook you have 
 
 	_The FlightData notebook_
 
-1. Use the **Cell** -> **Run All** command to run the notebook. Then add a cell to the notebook and execute the following statements:
+1. Use the **Cell** -> **Run All** command to run the notebook. Then add a cell to the notebook and execute the following statements. Ignore any warning messages that are displayed related to font caching:
 
 	```python
 	%matplotlib inline

@@ -4,7 +4,7 @@ In the [previous lab](../2%20-%20Process), you uploaded a collection of images d
 
 In this lab, you will use these images to train and test a machine-learning model that can identify the artist of a painting by Picasso, Monet, and Van Gogh. The model will be built with the [Microsoft Cognitive Toolkit](https://www.microsoft.com/cognitive-toolkit/), also known as CNTK, and the [Microsoft Machine Learning Library for Apache Spark](https://github.com/Azure/mmlspark) (MMLSpark), which simplifies machine learning by abstracting many of Spark ML's lower-level APIs and providing near-seamless integration with the Cognitive Toolkit and other deep-learning libraries.
 
-Rather than train the model locally on your PC, you will train it on an [Azure HDInsight](https://azure.microsoft.com/services/hdinsight/) Spark cluster. In the real world, training sophisticated machine-learning models frequently requires more computing power than a single PC can provide. With HDInsight, you can spin up high-performance computing (HPC) clusters of any size, with or without GPUs, and use them to process massively large datasets in a fraction of the time that would be required on a single CPU.
+Rather than train the model locally on your PC, you will train it on an [Azure HDInsight](https://azure.microsoft.com/services/hdinsight/) Spark cluster. In the real world, training sophisticated machine-learning models frequently requires more computing power than a single PC can provide. With HDInsight, you can spin up high-performance computing (HPC) clusters of any size, with or without GPUs, and use them to process massively large datasets in a fraction of the time required on a single CPU.
 
 ![](Images/road-map-3.png)
 
