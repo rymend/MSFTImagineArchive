@@ -48,7 +48,7 @@ The [Azure Portal](https://portal.azure.com) allows you to perform basic storage
 
     _Adding a storage account_
 
-1. In the ensuing blade, enter a name for the new storage account in **Name** field. The name is important, because it forms one part of the URL through which blobs created under this account can be accessed.
+1. In the ensuing blade, enter a name for the new storage account in the **Name** field. The name is important, because it forms one part of the URL through which blobs created under this account can be accessed.
 
 	> Storage account names can be 3 to 24 characters in length and can only contain numbers and lowercase letters. In addition, the name you enter must be unique within Azure; if someone else has chosen the same name, you'll be notified that the name isn't available with a red exclamation mark in the **Name** field.
 

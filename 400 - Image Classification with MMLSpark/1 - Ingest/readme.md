@@ -135,7 +135,7 @@ In [Exercise 4](#Exercise4), you will use a Python script to search the Web for 
 	docker -v
 	```
 
-	If a Docker version number is displayed, then Docker is installed. If Docker not installed, you should restart your PC after installing it.
+	If a Docker version number is displayed, then Docker is installed. If Docker is not installed, you should restart your PC after installing it.
 
 1. Create a directory on your hard disk and name it anything you want. Then add a text file named **Dockerfile** (no file-name extension) to that directory and insert the following statements:
 

@@ -65,7 +65,7 @@ In this exercise, you will download the files created for the "One Convolution" 
 
 1. Create an empty subdirectory named "mnist" in the project directory.
 
-1. Create a subdirectory named "public" in the project directory and add an HTML file named **index.html** containing the following statements to the "public" directory;
+1. Create a subdirectory named "public" in the project directory and add an HTML file named **index.html** containing the following statements:
 
 	```html
 	<html>
@@ -292,7 +292,7 @@ In this exercise, you will download the files created for the "One Convolution" 
 	console.log("Listening on port " + port);
 	```
 
-	This file contains the code for the Node app. It uses the popular NPM package named [express](https://www.npmjs.com/package/express) to implement a minimalist Web server. Then it listens for HTTP requests, responds to requests for static file files in the "public" directory, and implements a REST method named ```testImage``` that invokes the CNTK model to identify the digit passed in the body of the request.
+	This file contains the code for the Node app. It uses the popular NPM package named [express](https://www.npmjs.com/package/express) to implement a minimalist Web server. Then it listens for HTTP requests, responds to requests for static files in the "public" directory, and implements a REST method named ```testImage``` that invokes the CNTK model to identify the digit passed in the body of the request.
 
 1. Add a file named **package.json** containing the following statements to the project directory:
 

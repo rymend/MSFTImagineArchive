@@ -325,7 +325,7 @@ CNTK supports many different types of neural networks. Some are better than othe
 	trainModel('02-OneConv.cntk')
 	```
 
-1. Run **train.py** and examine the output to determine how accurately the model is able to identify hand-written digits. Is this one more or less accurate than the "One Hidden Layer" network?
+1. Run **train.py** in a Docker container and examine the output to determine how accurately the model is able to identify hand-written digits. Is this one more or less accurate than the "One Hidden Layer" network?
 
 Rather than settle on the better of these two networks, let's train a third one and see how it compares. One of the benefits of CNTK is that you can easily experiment with different network types and the parameters that characterize them simply by varying the BrainScript passed to the ```cntk``` command.
 
@@ -441,9 +441,9 @@ In this exercise, you will train and score a third neural network and compare th
 	trainModel('06-OneConvRegrMultiNode.cntk')
 	```
 
-1. Run **train.py** and examine the output to determine how accurately the model is able to identify hand-written digits. Rather than present an ```err``` value, this model will present ```rmse```, which stands for [root mean square error](https://twitter.com/ClowESPN/status/939133034636414976). A simple way to compare ```rmse``` to ```err``` is to multiply the ```rmse``` value by 100, so that 0.02, for example, becomes 2%. Based on that, is this network more or less accurate than the other networks you trained?
+1. Run **train.py** in a Docker container and examine the output to determine how accurately the model is able to identify hand-written digits. Rather than present an ```err``` value, this model will present ```rmse```, which stands for [root mean square error](https://en.wikipedia.org/wiki/Root-mean-square_deviation). A simple way to compare ```rmse``` to ```err``` is to multiply the ```rmse``` value by 100, so that 0.02, for example, becomes 2%. Based on that, is this network more or less accurate than the other networks you trained?
 
-The [resources that accompany this lab](https://topcs.blob.core.windows.net/public/300-cntk-resources-03.zip) include the three BrainScript files that you used to train neural networks, and four more that you didn't use. Feel free to train additional networks if you would like using the extra files. For a great tutorial on training various types of machine-learning models with CNTK and additional insights into BrainScript, see https://github.com/Microsoft/CNTK/wiki/Tutorial.
+The [resources that accompany this lab](https://topcs.blob.core.windows.net/public/300-cntk-resources-03.zip) include the three BrainScript files that you used to train neural networks, and four more that you didn't use. Feel free to train additional networks using the extra files. For a great tutorial on training various types of machine-learning models with CNTK and additional insights into BrainScript, see https://github.com/Microsoft/CNTK/wiki/Tutorial.
 
 <a name="Summary"></a>
 ## Summary ##

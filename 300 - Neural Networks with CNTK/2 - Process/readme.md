@@ -51,7 +51,7 @@ In this exercise, you will install Azure Machine Learning Workbench and create a
 	docker -v
 	```
 
-	If a Docker version number is displayed, then Docker is installed. If Docker not installed, you should restart your PC after installing it.
+	If a Docker version number is displayed, then Docker is installed. If Docker is not installed, you should restart your PC after installing it.
 
 1. If Azure Machine Learning Workbench isn't installed on your computer, go to https://docs.microsoft.com/azure/machine-learning/preview/quickstart-installation and follow the instructions there to install it, create a Machine Learning Experimentation account, and sign in to Machine Learning Workbench for the first time. The experimentation account is required in order to use Azure Machine Learning Workbench.
 
@@ -111,7 +111,7 @@ The MNIST data that you uploaded to blob storage in the previous lab doesn't req
 
 	_Opening the storage account_
 
-1. Click the **Copy** button to the right of the first connection string to copy the storage account's connection string to the clipboard. This connection string allows scripts and programs to access blobs stored in the storage account, even if the blobs are private.
+1. Click **Access keys** in the menu on the left. Then click the **Copy** button to the right of the first connection string to copy the storage account's connection string to the clipboard. This connection string allows scripts and programs to access blobs stored in the storage account, even if the blobs are private.
 
 	![Copying the connection string](Images/copy-connection-string.png)
 
