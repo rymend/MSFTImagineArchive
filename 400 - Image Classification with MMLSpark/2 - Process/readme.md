@@ -232,10 +232,10 @@ In this exercise, you will run some Python code in Azure Machine Learning Workbe
 
 1. Replace the following values in **dedupe.py**. Then save the file.
 
-	- Replace SERVER_NAME on line 22 with the database server name
-	- Replace DATABASE_NAME on line 23 with the database name
-	- Replace ADMIN_USERNAME on line 24 with the database user name
-	- Replace ADMIN_PASSWORD on line 25 with the database password
+	- Replace SERVER_NAME on line 15 with the database server name
+	- Replace DATABASE_NAME on line 16 with the database name
+	- Replace ADMIN_USERNAME on line 17 with the database user name
+	- Replace ADMIN_PASSWORD on line 18 with the database password
 
 1. Use Machine Learning Workbench to run **dedupe.py** in a Docker container.
 
@@ -254,21 +254,7 @@ How do the row counts compare? How many images were eliminated by using the "DHa
 
 In this exercise, you will use the Azure CLI to create an Azure storage account to store the images listed in the database's "UniquePaintings" table. In the next lab, these images will be used to train a machine-learning model on an [Azure HDInsight](https://azure.microsoft.com/services/hdinsight/) cluster. Blob storage is a convenient medium for storing these images because HDInsight clusters can [access blobs seamlessly](https://docs.microsoft.com/azure/hdinsight/hdinsight-hadoop-use-blob-storage) using the [WASB](https://blogs.msdn.microsoft.com/cindygross/2015/02/04/understanding-wasb-and-hadoop-storage-in-azure/) extension to the Hadoop Distributed File System (HDFS).
 
-1. If the Azure CLI 2.0 isn't installed on your computer, go to https://docs.microsoft.com/cli/azure/install-azure-cli and install it now. You can determine whether the CLI is installed — and what version is installed — by opening a Command Prompt or terminal window and typing the following command:
-
-	```
-	az -v
-	```
-
-	If the CLI is installed, the version number will be displayed. If the version number is less than 2.0.23, **download and install the latest version**.
-
-	> As an alternative to installing the Azure CLI, you can use the [Azure Cloud Shell](https://azure.microsoft.com/features/cloud-shell/) available in the [Azure Portal](https://portal.azure.com). Simply open the portal in your browser and click the **Cloud Shell** button in the toolbar at the top of the page. One of the benefits of using the Cloud Shell is that you're *always* running the latest version.
-
-	![Opening the Azure Cloud Shell](Images/cloud-shell.png)
-
-	_Opening the Azure Cloud Shell_
-
-1. Use the following command to create a general-purpose storage account in the "mmlsparklab-rg" resource group. Replace ACCOUNT_NAME with the name you wish to assign the storage account. The account name must be unique within Azure, so if the command fails because the storage-account name is already in use, change the name and try again. In addition, storage-account names must be from 3 to 24 characters in length and can contain only numbers and lowercase letters.
+1. Open a command Prompt or terminal window (or the [Azure Cloud Shell](https://azure.microsoft.com/features/cloud-shell/)) and use the following command to create a general-purpose storage account in the "mmlsparklab-rg" resource group. Replace ACCOUNT_NAME with the name you wish to assign the storage account. The account name must be unique within Azure, so if the command fails because the storage-account name is already in use, change the name and try again. In addition, storage-account names must be from 3 to 24 characters in length and can contain only numbers and lowercase letters.
 
 	```
 	az storage account create --name ACCOUNT_NAME --resource-group mmlsparklab-rg --location southcentralus --kind Storage --sku Standard_LRS
@@ -407,11 +393,11 @@ In this exercise, you will run a Python script in Machine Learning Workbench tha
 
 1. Replace the following values in **upload.py**:
 
-	- Replace ACCOUNT_NAME on line 48 with the name of the storage account you created in the previous exercise 
-	- Replace SERVER_NAME on line 54 with the database server name
-	- Replace DATABASE_NAME on line 55 with the database name
-	- Replace ADMIN_USERNAME on line 56 with the database user name
-	- Replace ADMIN_PASSWORD on line 57 with the database password
+	- Replace ACCOUNT_NAME on line 40 with the name of the storage account you created in the previous exercise 
+	- Replace SERVER_NAME on line 46 with the database server name
+	- Replace DATABASE_NAME on line 47 with the database name
+	- Replace ADMIN_USERNAME on line 48 with the database user name
+	- Replace ADMIN_PASSWORD on line 49 with the database password
 
 1. Return to the Command Prompt or terminal window and use the following command to list the access keys for the storage account you created in the previous exercise, replacing ACCOUNT_NAME with the storage account's name:
 

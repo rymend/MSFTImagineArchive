@@ -55,6 +55,12 @@ In this exercise, you will use the Azure CLI to create an Azure SQL database in 
 
 	If the CLI is installed, the version number will be displayed. If the version number is less than 2.0.19, download and install the latest version.
 
+	> As an alternative to installing the Azure CLI, you can use the [Azure Cloud Shell](https://azure.microsoft.com/features/cloud-shell/) available in the [Azure Portal](https:portal.azure.com). Simply open the portal in your browser and click the Cloud Shell button in the toolbar at the top of the page. One of the benefits of using the Cloud Shell is that you're always running the latest version
+
+	![Opening the Azure Cloud Shell](Images/cloud-shell.png)
+
+	_Opening the Azure Cloud Shell_
+
 1. The next task is to create a resource group to hold the database and other Azure resources that you will create in this lab. Execute the following command in a Command Prompt window or terminal window to create a resource group named "mmlsparklab-rg" in Azure's South Central US region:
 
 	```
