@@ -127,7 +127,7 @@ Finish up by pasting the key that is on the clipboard into your favorite text ed
 <a name="Exercise3"></a>
 ## Exercise 3: Create a Docker container image ##
 
-In [Exercise 4](#Exercise4), you will use a Python script to search the Web for images of paintings by famous artists and write the results to the database you created in [Exercise 1](#Exercise1). Connecting to an Azure SQL database from Python requires an environment specially prepared with certain packages and drivers. In this exercise, you will create a custom Docker container image that has those packages and drivers installed. In the next exercise, you will use a container created from this image to host the Python code that connects to the database.
+In [Exercise 4](#Exercise4), you will use a Python script to search the Web for images of paintings by famous artists and write the results to the database you created in [Exercise 1](#Exercise1). The script will run in a Docker container and use a popular Python package named [pyodbc](https://github.com/mkleehammer/pyodbc) to connect to the database. That package only works, however, if the [Microsoft ODBC Driver for SQL Server](https://docs.microsoft.com/en-us/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server) is installed as well. In this exercise, you will create a Docker container image that includes the Microsoft ODBC Driver for SQL Server.
 
 1. If Docker isn't installed on your computer, go to https://www.docker.com/ and download and install [Docker for Windows](https://www.docker.com/docker-windows) or [Docker for Mac](https://www.docker.com/docker-mac). If you are not sure whether Docker is installed on your computer, open a Command Prompt or terminal window and type the following command:
 
@@ -135,7 +135,7 @@ In [Exercise 4](#Exercise4), you will use a Python script to search the Web for 
 	docker -v
 	```
 
-	If a Docker version number is displayed, then Docker is installed. If Docker is not installed, you should restart your PC after installing it.
+	If a Docker version number is displayed, then Docker is installed. If Docker is not installed, restart your PC after installing it.
 
 1. Create a directory on your hard disk and name it anything you want. Then add a text file named **Dockerfile** (no file-name extension) to that directory and insert the following statements:
 
@@ -145,28 +145,17 @@ In [Exercise 4](#Exercise4), you will use a Python script to search the Web for 
 	RUN apt-get update && apt-get install -y \
 	    curl apt-utils apt-transport-https debconf-utils gcc build-essential g++-5\
 	    && rm -rf /var/lib/apt/lists/* && \
-        curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - && \
-        curl https://packages.microsoft.com/config/ubuntu/16.04/prod.list > /etc/apt/sources.list.d/mssql-release.list && \
-        apt-get update && ACCEPT_EULA=Y apt-get install -y msodbcsql unixodbc-dev && \
-        apt-get update && ACCEPT_EULA=Y apt-get install -y mssql-tools && \
-        echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bashrc && \
-        /bin/bash -c "source ~/.bashrc" && \
-        apt-get install -y locales && \
-        echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
-        locale-gen && \
-        pip install --upgrade pip && \
-        pip install https://cntk.ai/PythonWheel/CPU-Only/cntk-2.3.1-cp35-cp35m-linux_x86_64.whl && \
-        pip install pyodbc && \
-        pip install dhash && \
-        pip install pillow && \
-        pip install sqlalchemy && \
-        pip install azure-storage-blob && \
-        pip install azure-storage-file && \
-        pip install azure-storage-queue && \
-        pip install scikit-image
+	    curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - && \
+	    curl https://packages.microsoft.com/config/ubuntu/16.04/prod.list > /etc/apt/sources.list.d/mssql-release.list && \
+	    apt-get update && ACCEPT_EULA=Y apt-get install -y msodbcsql unixodbc-dev && \
+	    apt-get update && ACCEPT_EULA=Y apt-get install -y mssql-tools && \
+	    echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bashrc && \
+	    /bin/bash -c "source ~/.bashrc" && \
+	    apt-get install -y locales && \
+	    echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && locale-gen
 	```
 
-	This **Dockerfile** contains instructions for building a Docker container image. It uses [microsoft/mmlspark](https://hub.docker.com/r/microsoft/mmlspark/) as the base image and adds several Python packages that permit Python scripts to access Azure SQL databases (as well as on-premises SQL Server databases) and Azure Storage. It also installs a version of the [Microsoft Cognitive Toolkit](https://www.microsoft.com/cognitive-toolkit/), also known as CNTK, that doesn't require a GPU, and packages that simplify image processing, including [Scikit-image](http://scikit-image.org/) and [dhash](https://pypi.python.org/pypi/dhash).
+	This **Dockerfile** contains instructions for building a Docker container image. It uses [microsoft/mmlspark](https://hub.docker.com/r/microsoft/mmlspark/) as the base image and adds the Ubuntu version of the Microsoft ODBC Driver for SQL Server.
 
 1. Open a Command Prompt or terminal window and navigate to the directory you created in the previous step (the directory that contains the **Dockerfile**). Then execute the following command to build a custom container image named ```spark-sql```:
 
@@ -229,40 +218,56 @@ In this exercise, you will use Azure Machine Learning Workbench to execute a Pyt
 
 1. Use the **File** > **Save** command to save the modified **docker.compute** file.
 
-1. Open **conda_dependencies.yml** for editing in Machine Learning Workbench. Then add the following lines to the ```- pip``` section of the file:
+1. Open **conda_dependencies.yml** for editing in Machine Learning Workbench. Add the following lines to the ```dependencies``` section, which starts on line 16:
 
 	```yml
 	- pyodbc
-	- dhash
 	- pillow
 	- sqlalchemy
-	- azure-storage-blob
-	- azure-storage-file
-	- azure-storage-queue
 	- scikit-image
 	```
 
-	The modified ```- pip``` section should look like this:
+	Then add these lines to the ```- pip``` section of the file:
 
 	```yml
-	- pip:
+	- dhash
+	- azure-storage-blob
+	- azure-storage-file
+	- azure-storage-queue
+	- https://cntk.ai/PythonWheel/CPU-Only/cntk-2.3.1-cp35-cp35m-linux_x86_64.whl
+	```
+
+	The modified ```dependencies``` section should look something like this:
+
+	```yml
+	dependencies:
+	  - pyodbc
+	  - pillow
+	  - sqlalchemy
+	  - scikit-image
+	
+	  # The python interpreter version.
+	  # Currently Azure ML Workbench only supports 3.5.2.
+	  - python=3.5.2
+	
+	  # Required for Jupyter Notebooks.
+	  - ipykernel=4.6.1
+	  
+	  - pip:
 	    # The API for Azure Machine Learning Model Management Service.
 	    # Details: https://github.com/Azure/Machine-Learning-Operationalization
 	    - azure-ml-api-sdk==0.1.0a10
-	    - pyodbc
 	    - dhash
-	    - pillow
-	    - sqlalchemy
 	    - azure-storage-blob
 	    - azure-storage-file
 	    - azure-storage-queue
-	    - scikit-image   
+	    - https://cntk.ai/PythonWheel/CPU-Only/cntk-2.3.1-cp35-cp35m-linux_x86_64.whl
 	
 	    # Helper utilities for dealing with Azure ML Workbench Assets.
 	    - https://azuremldownloads.blob.core.windows.net/wheels/latest/azureml.assets-1.0.0-py3-none-any.whl?sv=2016-05-31&si=ro-2017&sr=c&sig=xnUdTm0B%2F%2FfknhTaRInBXyu2QTTt8wA3OsXwGVgU%2BJk%3D
 	```
 
-	These additions expose the extra packages built into the container image to the Anaconda run-time installed with Workbench so the packages can be imported into Python scripts run in the container.
+	When you run this project, Azure Machine Learning Workbench builds a Docker image containing the packages listed in the ```dependencies``` section of **conda_dependencies.yml**. The packages you added include the database libraries [pyodbc](https://github.com/mkleehammer/pyodbc) and [SQLAlchemy](http://docs.sqlalchemy.org/en/latest/core/engines.html), imaging libraries named [Pillow](https://pypi.python.org/pypi/Pillow) and [Scikit-image](http://scikit-image.org/), libraries for interacting with Azure Storage, and a version of the [Microsoft Cognitive Toolkit](https://www.microsoft.com/en-us/research/product/cognitive-toolkit/) that doesn't require a GPU, among others.
 
 1. Use the **File** > **Save** command to save the modified **conda_dependencies.yml** file.
 
@@ -275,104 +280,115 @@ In this exercise, you will use Azure Machine Learning Workbench to execute a Pyt
 1. Open **load.py** for editing in Machine Learning Workbench and paste in the following Python code:
 
 	```python
-    import pyodbc 
-    import http.client, urllib.parse, json
-
-    # dhash and PIL for image feature generation
-    # https://pypi.python.org/pypi/dhash
-    # https://pypi.python.org/pypi/Pillow
-    import dhash
-    from PIL import Image
-
-    # BytesIO to obtain from URL
-    # https://wiki.python.org/moin/BytesIO
-    from io import BytesIO
-
-    # HTTP for humans
-    # https://pypi.python.org/pypi/requests
-    import requests
-
-    server = "SERVER_NAME.database.windows.net"
-    database = "DATABASE_NAME"
-    username = "ADMIN_USERNAME"
-    password = "ADMIN_PASSWORD" 
-
-    api_key = "API_KEY"
-    host = "api.cognitive.microsoft.com"
-    path = "/bing/v7.0/images/search"
-    max_results = 150
-
-    def bing_image_search(db_connection, artist_name):
-        headers = { "Ocp-Apim-Subscription-Key" : api_key}
-        conn = http.client.HTTPSConnection(host)
-        query = urllib.parse.quote(artist_name)
-        conn.request("GET", path + "?q=" + query + "&count=" +str(max_results), headers=headers)
-        response = conn.getresponse()
-
-        # Bytes Operations
-        # https://docs.python.org/3/library/stdtypes.html#bytes-and-bytearray-operations
-        result = response.read().decode(errors="replace")
-        paintings = json.loads(result)["value"]
-
-        # Artist values are the same for all paintings
-        artist_number = searchDictionary[artist_name]
-        # Remove spaces for later file processing
-        artist_name = artist_name.replace(" ", "")
-
-        for painting in paintings:
-            width = painting["thumbnail"]["width"]
-            height = painting["thumbnail"]["height"]
-            encodingFormat = painting["encodingFormat"]
-            name = painting["name"].replace("'", "''")
-            url = painting["thumbnailUrl"]
-            response = requests.get(url)
-            image = Image.open(BytesIO(response.content))
-            row8, col8 = dhash.dhash_row_col(image, size=8)
-            DHashHex8 = dhash.format_hex(row8, col8, size=8)
-            row7, col7 = dhash.dhash_row_col(image, size=7)
-            DHashHex7 = dhash.format_hex(row7, col7, size=7)
-            row6, col6 = dhash.dhash_row_col(image, size=6)
-            DHashHex6 = dhash.format_hex(row6, col6, size=6)
-            row5, col5 = dhash.dhash_row_col(image, size=5)
-            DHashHex5 = dhash.format_hex(row5, col5, size=5)
-            row4, col4 = dhash.dhash_row_col(image, size=4)
-            DHashHex4 = dhash.format_hex(row4, col4, size=4)
-            row3, col3 = dhash.dhash_row_col(image, size=3)
-            DHashHex3 = dhash.format_hex(row3, col3, size=3)     
-            row2, col2 = dhash.dhash_row_col(image, size=2)
-            DHashHex2 = dhash.format_hex(row2, col2, size=2)     
-            row1, col1 = dhash.dhash_row_col(image, size=1)
-            DHashHex1 = dhash.format_hex(row1, col1, size=1)                    
-            db_connection.execute("INSERT INTO Paintings (Artist, ArtistNumber, Width, Height, EncodingFormat, Name, URL, DHashHex8, DHashHex7, DHashHex6, DHashHex5, DHashHex4, DHashHex3, DHashHex2, DHashHex1) VALUES ('" + \
-                artist_name + "', " + str(artist_number) + ", " + str(width) + ", " + str(height) + ", '" + encodingFormat + "', '" + name + "', '" + url + "', '" + DHashHex8 + "', '" + DHashHex7 + "', '" + DHashHex6 + "', '" + DHashHex5 + "', '" + DHashHex4 + "', '" + DHashHex3 + "', '" + DHashHex2 + "', '" + DHashHex1 + "')")
-
-        db_connection.commit()
-
-    # Connect to the database
-    conn = pyodbc.connect("DRIVER={ODBC Driver 13 for SQL Server};SERVER=" + server + \
-        ";DATABASE=" + database + ";UID=" + username + ";PWD=" + password)
-
-    # Create a database table
-    conn.execute("DROP TABLE IF EXISTS Paintings")
-    conn.execute("CREATE TABLE Paintings (Artist VARCHAR(32), ArtistNumber INT, Width INT, Height INT, EncodingFormat VARCHAR(32), Name VARCHAR(255), URL VARCHAR(255), DHashHex8 VARCHAR(32), DHashHex7 VARCHAR(32), DHashHex6 VARCHAR(32), DHashHex5 VARCHAR(32), DHashHex4 VARCHAR(32), DHashHex3 VARCHAR(32), DHashHex2 VARCHAR(32), DHashHex1 VARCHAR(32));")
-    conn.commit()
-
-    # Use Bing Search to find images and populate the database
-    searchDictionary = {'Picasso Painting':0, 'Van Gogh Painting':1, 'Monet Painting':2}
-    for key, value in searchDictionary.items():
-        print('Searching Images for ' + key)
-        bing_image_search(conn, key)
+	# HTTP and JSON support
+	import http.client, urllib.parse, json, requests
+	
+	# SQL Alchemy for full relational power
+	# http://docs.sqlalchemy.org/en/latest/core/engines.html
+	from sqlalchemy import create_engine
+	import pyodbc
+	
+	# Pandas for DataFrame
+	# https://pypi.python.org/pypi/pandas
+	import pandas as pd
+	
+	# dhash and PIL for image feature generation
+	# https://pypi.python.org/pypi/dhash
+	# https://pypi.python.org/pypi/Pillow
+	import dhash
+	from PIL import Image
+	
+	# BytesIO to obtain from URL
+	# https://wiki.python.org/moin/BytesIO
+	from io import BytesIO
+	
+	server = "SERVER_NAME"
+	database = "DATABASE_NAME"
+	username = "ADMIN_USERNAME"
+	password = "ADMIN_PASSWORD"
+	
+	api_key = 'API_KEY'
+	host = 'api.cognitive.microsoft.com'
+	path = '/bing/v7.0/images/search'
+	max_results = 150
+	
+	def bing_image_search(df, dict, artist_name):
+	    headers = { 'Ocp-Apim-Subscription-Key' : api_key }
+	    conn = http.client.HTTPSConnection(host)
+	    query = urllib.parse.quote(artist_name)
+	    conn.request('GET', path + '?q=' + query + '&count=' +str(max_results), headers=headers)
+	    response = conn.getresponse()
+	
+	    # Bytes Operations
+	    # https://docs.python.org/3/library/stdtypes.html#bytes-and-bytearray-operations
+	    result = response.read().decode(errors='replace')
+	    paintings = json.loads(result)['value']
+	
+	    # Artist values are the same for all paintings
+	    artist_number = dict[artist_name]
+	
+	    # Remove spaces for later file processing
+	    artist_name = artist_name.replace(' ', '')
+	
+	    for painting in paintings:
+	        width = painting['thumbnail']['width']
+	        height = painting['thumbnail']['height']
+	        encodingFormat = painting['encodingFormat']
+	        name = painting['name'].replace("'", "''")
+	        url = painting['thumbnailUrl']
+	
+	        # Generate dhashes
+	        response = requests.get(url)
+	        image = Image.open(BytesIO(response.content))
+	        row8, col8 = dhash.dhash_row_col(image, size=8)
+	        DHashHex8 = dhash.format_hex(row8, col8, size=8)
+	        row7, col7 = dhash.dhash_row_col(image, size=7)
+	        DHashHex7 = dhash.format_hex(row7, col7, size=7)
+	        row6, col6 = dhash.dhash_row_col(image, size=6)
+	        DHashHex6 = dhash.format_hex(row6, col6, size=6)
+	        row5, col5 = dhash.dhash_row_col(image, size=5)
+	        DHashHex5 = dhash.format_hex(row5, col5, size=5)
+	        row4, col4 = dhash.dhash_row_col(image, size=4)
+	        DHashHex4 = dhash.format_hex(row4, col4, size=4)
+	        row3, col3 = dhash.dhash_row_col(image, size=3)
+	        DHashHex3 = dhash.format_hex(row3, col3, size=3)     
+	        row2, col2 = dhash.dhash_row_col(image, size=2)
+	        DHashHex2 = dhash.format_hex(row2, col2, size=2)     
+	        row1, col1 = dhash.dhash_row_col(image, size=1)
+	        DHashHex1 = dhash.format_hex(row1, col1, size=1)                    
+	
+	        # Add a row to the DataFrame
+	        df.loc[len(df.index)] = [artist_name, artist_number, width, height, encodingFormat, name, url, \
+	            DHashHex8, DHashHex7, DHashHex6, DHashHex5, DHashHex4, DHashHex3, DHashHex2, DHashHex1]
+	
+	# Use Bing Image Search to find images and build a DataFrame
+	searchDictionary = { 'Picasso Painting':0, 'Van Gogh Painting':1, 'Monet Painting':2 }
+	
+	df = pd.DataFrame(columns=['Artist', 'ArtistNumber', 'Width', 'Height', 'EncodingFormat', 'Name', 'URL',
+	    'DHashHex8', 'DHashHex7', 'DHashHex6', 'DHashHex5', 'DHashHex4', 'DHashHex3', 'DHashHex2', 'DHashHex1'])
+	
+	for key, value in searchDictionary.items():
+	    print('Searching Images for ' + key)
+	    bing_image_search(df, searchDictionary, key)
+	
+	# Write the DataFrame to the database
+	engine = create_engine('mssql+pyodbc://' + username + ':' + password + '@' + \
+	    server + '.database.windows.net:1433/' + database + '?driver=ODBC+Driver+13+for+SQL+Server')
+	
+	df.to_sql('Paintings', engine, if_exists='replace', index=False)
 	```
 
-	This script connects to the Azure SQL database and creates a table named "Paintings." It also invokes the Bing Image Search API three times to search the Web for images of paintings by famous artists, each time passing your Bing Search API key in an HTTP header. For each painting that it discovers, it creates a series of [perceptual image hashes](https://www.pyimagesearch.com/2017/11/27/image-hashing-opencv-python/) of various bit depths and writes the hashes to the "Paintings" table along with values denoting the image's width, height, URL, and artist. Perceptual hashes are usful for detecting images that are similar (but not necessarily identical) to each other, and are extremely useful for eliminating images that are too similar from image sets used to train image-classification models. You will learn more about perceptual image hashing in the next lab.
+	This script invokes the Bing Image Search API three times to search the Web for images of paintings by famous artists, each time passing your Bing Search API key in an HTTP header. For each painting that it finds, it creates a series of [perceptual image hashes](https://www.pyimagesearch.com/2017/11/27/image-hashing-opencv-python/) of various bit depths. Perceptual hashes are useful for detecting images that are similar (but not necessarily identical) to each other, and are extremely useful for eliminating images that are too similar from image sets used to train image-classification models. You will learn more about perceptual image hashing in the next lab.
+
+	Information about the images, including their widths, heights, URLs, and hashes, is assembled in memory in a [Pandas DataFrame](https://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html). Once the search is complete, the DataFrame is written to a table named "Paintings" in the Azure SQL database. The "Paintings" table is created if it doesn't exist, or replaced if it already exists.
 
 1. Replace the following values in **load.py**. Then save the file.
 
-	- Replace SERVER_NAME on line 18 with the server name you specified in Exercise 1, Step 3
-	- Replace DATABASE_NAME on line 19 with the database name you specified in Exercise 1, Step 5
-	- Replace ADMIN_USERNAME on line 20 with the server name you specified in Exercise 1, Step 3
-	- Replace ADMIN_PASSWORD on line 21 with the server name you specified in Exercise 1, Step 3
-	- Replace API_KEY on line 23 with the API key you copied in Exercise 2, Step 5
+	- Replace SERVER_NAME on line 23 with the server name you specified in Exercise 1, Step 3
+	- Replace DATABASE_NAME on line 24 with the database name you specified in Exercise 1, Step 5
+	- Replace ADMIN_USERNAME on line 25 with the server name you specified in Exercise 1, Step 3
+	- Replace ADMIN_PASSWORD on line 26 with the server name you specified in Exercise 1, Step 3
+	- Replace API_KEY on line 28 with the API key you copied in Exercise 2, Step 5
 
 1. Select **Docker** from the Run Configuration drop-down and **load.py** from the Script drop-down to configure Workbench to run **load.py** in a Docker container. Then click the **Run** button.
 
@@ -380,7 +396,7 @@ In this exercise, you will use Azure Machine Learning Workbench to execute a Pyt
 
 	_Running load.py_
 
-1. Wait for the run to complete and confirm that it completed successfully. It will probably take several minutes to run since it downloads a few hundred images and hashes them.
+1. Wait for the run to complete and confirm that it completed successfully. It will probably take several minutes to run the first time since a Docker container image has to be built from a remote base image.
 
 	![Successful run](Images/run-completed.png)
 
