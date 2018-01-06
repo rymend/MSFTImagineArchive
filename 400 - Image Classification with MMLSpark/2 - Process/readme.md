@@ -161,18 +161,11 @@ Now that you have a series of perceptual hashes for each image, a question arise
 <a name="Exercise2"></a>
 ## Exercise 2: Dedupe the images ##
 
-In this exercise, you will run some Python code in Azure Machine Learning Workbench to dedupe the images referenced in the database's "Painting" table. The outcome will be a new table in the database named "UniquePaintings" that lists only images that are relatively unique. The SQL logic enacted in the code will use the "DHashHex3" column in the "Paintings" table to identify images that are sufficiently unique.
+In this exercise, you will run some Python code in Azure Machine Learning Workbench to dedupe the images referenced in the database's "Paintings" table. The outcome will be a new table in the database named "UniquePaintings" containing only images that are relatively unique. The SQL logic enacted in the code will use the "DHashHex3" column in the "Paintings" table to identify images that are sufficiently unique.
 
 1. Add a file named **dedupe.py** to the project in Azure Machine Learning Workbench. Then open it for editing and paste in the following code:
 
 	```python
-	# Unique Paintings
-	#
-	# Use case:
-	# 1) pre-processing data with Python as Pandas
-	# 2) leverage dhash engine
-	# 3) achieving pre-processing in Azure ML Workbench
-	
 	# SQL Alchemy for full relational power
 	# http://docs.sqlalchemy.org/en/latest/core/engines.html
 	from sqlalchemy import create_engine
@@ -185,14 +178,20 @@ In this exercise, you will run some Python code in Azure Machine Learning Workbe
 	# Numpy
 	import numpy as np
 	
-	# Create Engine
+	# Create engine
 	# http://docs.sqlalchemy.org/en/latest/dialects/mssql.html#module-sqlalchemy.dialects.mssql.pyodbc
-	engine = create_engine("mssql+pyodbc://ADMIN_USERNAME:ADMIN_PASSWORD@SERVER_NAME.database.windows.net:1433/DATABASE_NAME?driver=ODBC+Driver+13+for+SQL+Server")
+	server = 'SERVER_NAME'
+	database = 'DATABASE_NAME'
+	username = 'ADMIN_USERNAME'
+	password = 'ADMIN_PASSWORD'
+	
+	engine = create_engine('mssql+pyodbc://' + username + ':' + password + '@' + \
+	    server + '.database.windows.net:1433/' + database + '?driver=ODBC+Driver+13+for+SQL+Server')
 	
 	# Custom SQL Query to remove duplicates
 	# Solution uses T-SQL window functions https://docs.microsoft.com/en-us/sql/t-sql/queries/select-over-clause-transact-sql
 	# Result set keeps the largest width image (then largest height) if the hash is equivalent
-	sql = "WITH RowTagging \
+	sql = 'WITH RowTagging \
 	    AS (SELECT [Artist], \
 	            [ArtistNumber], \
 	            [Width], \
@@ -212,13 +211,13 @@ In this exercise, you will run some Python code in Azure Machine Learning Workbe
 	        R.URL, \
 	        R.DHashHex3 \
 	    FROM RowTagging R \
-	    WHERE RowNumber = 1;"
+	    WHERE RowNumber = 1;'
 	
 	# Run SQL Query in SQL Azure, return results into Pandas DataFrame
 	# http://pandas.pydata.org/pandas-docs/stable/generated/pandas.read_sql.html
 	df = pd.read_sql(sql, engine)
-	print("Columns: ", list(df.columns.values))
-	print("DataFrame Shape: ", df.shape)
+	print('Columns: ', list(df.columns.values))
+	print('DataFrame Shape: ', df.shape)
 	
 	# Assign a random column using numpy
 	df['Random'] = np.random.rand(df.shape[0])
@@ -229,14 +228,14 @@ In this exercise, you will run some Python code in Azure Machine Learning Workbe
 	df.to_sql('UniquePaintings', engine, if_exists='replace', index=False)
 	```
 
-	This code uses a Python package named [SQLAlchemy](https://www.sqlalchemy.org/) to query the database and read the results into a [Pandas DataFrame](https://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html). In cases in which multiple images have the same dHash, the query uses T-SQL's [ROW_NUMBER](https://docs.microsoft.com/en-us/sql/t-sql/functions/row-number-transact-sql) function to exclude all but the largest of those images. The Python script then writes the resulting DataFrame to the database's "UniquePaintings" table, which gets created if it doesn't exist and replaced if it does.
+	This code queries the database's "Paintings" table and loads the results into a [Pandas DataFrame](https://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html). In cases in which multiple images have the same dHash, the query uses T-SQL's [ROW_NUMBER](https://docs.microsoft.com/en-us/sql/t-sql/functions/row-number-transact-sql) function to exclude all but the largest of those images. The script then writes the resulting DataFrame to a database table named "UniquePaintings."
 
-1. Replace the following values on line 22. Then save the file.
+1. Replace the following values in **dedupe.py**. Then save the file.
 
-	- Replace SERVER_NAME with the server name you specified in the previous lab
-	- Replace DATABASE_NAME with the database name you specified in the previous lab
-	- Replace ADMIN_USERNAME with the database user name you specified in the previous lab
-	- Replace ADMIN_PASSWORD with the database password you specified in the previous lab
+	- Replace SERVER_NAME on line 22 with the database server name
+	- Replace DATABASE_NAME on line 23 with the database name
+	- Replace ADMIN_USERNAME on line 24 with the database user name
+	- Replace ADMIN_PASSWORD on line 25 with the database password
 
 1. Use Machine Learning Workbench to run **dedupe.py** in a Docker container.
 
@@ -293,18 +292,10 @@ In this exercise, you will run a Python script in Machine Learning Workbench tha
 1. Add a file named **upload.py** to the project in Azure Machine Learning Workbench. Then open it for editing and paste in the following code:
 
 	```python
-	# Blob Upload
-	#
-	# Use case:
-	# 1) accessing Azure blob from Python in Workbench
-	# 2) using SQL Azure URLs as the source
-	# 3) sending a binary stream directly to Azure Blob
-	# 4) sending metadata files to the Azure Blob (map.txt and uniqueclasses.txt)
-	
 	from azure.storage.blob import BlockBlobService
 	
 	# Allows public access to the container
-	from azure.storage.blob import PublicAccess
+	# from azure.storage.blob import PublicAccess
 	
 	# Transfer objects to/from Azure Blob storage using Python: https://docs.microsoft.com/en-us/azure/storage/blobs/storage-quickstart-blobs-python
 	from azure.storage.blob import ContentSettings
@@ -346,7 +337,13 @@ In this exercise, you will run a Python script in Machine Learning Workbench tha
 	
 	# Create Engine
 	# http://docs.sqlalchemy.org/en/latest/dialects/mssql.html#module-sqlalchemy.dialects.mssql.pyodbc
-	engine = create_engine("mssql+pyodbc://ADMIN_USERNAME:ADMIN_PASSWORD@SERVER_NAME.database.windows.net:1433/DATABASE_NAME?driver=ODBC+Driver+13+for+SQL+Server")
+	server = 'SERVER_NAME'
+	database = 'DATABASE_NAME'
+	username = 'ADMIN_USERNAME'
+	password = 'ADMIN_PASSWORD'
+	
+	engine = create_engine('mssql+pyodbc://' + username + ':' + password + '@' + \
+	    server + '.database.windows.net:1433/' + database + '?driver=ODBC+Driver+13+for+SQL+Server')
 	
 	# Create Directory stem for HDInsight
 	azure_blob_root = 'wasbs://images@'+ myaccount + '.blob.core.windows.net/'
@@ -411,10 +408,10 @@ In this exercise, you will run a Python script in Machine Learning Workbench tha
 1. Replace the following values in **upload.py**:
 
 	- Replace ACCOUNT_NAME on line 48 with the name of the storage account you created in the previous exercise 
-	- Replace SERVER_NAME on line 54 with the server name you specified in the previous lab
-	- Replace DATABASE_NAME on line 54 with the database name you specified in the previous lab
-	- Replace ADMIN_USERNAME on line 54 with the database user name you specified in the previous lab
-	- Replace ADMIN_PASSWORD on line 54 with the database password you specified in the previous lab
+	- Replace SERVER_NAME on line 54 with the database server name
+	- Replace DATABASE_NAME on line 55 with the database name
+	- Replace ADMIN_USERNAME on line 56 with the database user name
+	- Replace ADMIN_PASSWORD on line 57 with the database password
 
 1. Return to the Command Prompt or terminal window and use the following command to list the access keys for the storage account you created in the previous exercise, replacing ACCOUNT_NAME with the storage account's name:
 
