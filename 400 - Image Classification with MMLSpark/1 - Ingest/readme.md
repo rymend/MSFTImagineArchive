@@ -302,10 +302,10 @@ In this exercise, you will use Azure Machine Learning Workbench to execute a Pyt
 	# https://wiki.python.org/moin/BytesIO
 	from io import BytesIO
 	
-	server = "SERVER_NAME"
-	database = "DATABASE_NAME"
-	username = "ADMIN_USERNAME"
-	password = "ADMIN_PASSWORD"
+	server = 'SERVER_NAME'
+	database = 'DATABASE_NAME'
+	username = 'ADMIN_USERNAME'
+	password = 'ADMIN_PASSWORD'
 	
 	api_key = 'API_KEY'
 	host = 'api.cognitive.microsoft.com'
