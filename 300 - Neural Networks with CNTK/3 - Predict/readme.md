@@ -80,7 +80,7 @@ One of the simplest network types is the "One Hidden Layer" network, which is no
 	block_blob_service.socket_timeout = 600
 
 	def trainModel(modelFile):
-	    modelDir = "models"
+	    modelDir = 'models'
 	    modelName = os.path.splitext(modelFile)[0].lower()
 	
 	    if not os.path.exists(os.path.join('.', modelDir)):
@@ -88,18 +88,17 @@ One of the simplest network types is the "One Hidden Layer" network, which is no
 	
 	    print('Training model ' + modelFile);
 	
-	    p = Popen(["cntk", "configFile=./" + modelFile], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+	    p = Popen(['cntk', 'configFile=./' + modelFile], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 	    std_out, std_err = p.communicate()
-	    print(std_err.decode("utf-8"))
-	    # call(["cntk", "configFile=./cntk/" + modelFile])
+	    print(std_err.decode('utf-8'))
 	    print('Uploading model ' + modelFile);
 	
-	    modelContainer = "models" #os.path.splitext(modelFile)[0].lower()
+	    modelContainer = 'models' #os.path.splitext(modelFile)[0].lower()
 	
 	    block_blob_service.create_container(modelContainer, metadata=None, public_access=None, fail_on_exist=False, timeout=None)
 	
 	    for filename in os.listdir(os.path.join('.', modelDir)):
-	        # copyfile('./Output/Models/' + filename, './outputs/Models/' +  modelName  + "/" + filename)
+	        # copyfile('./Output/Models/' + filename, './outputs/Models/' +  modelName  + '/' + filename)
 	        block_blob_service.create_blob_from_path(modelContainer, filename, os.path.join('.', modelDir, filename))
 	        os.remove(os.path.join('.', modelDir, filename))
 	        
