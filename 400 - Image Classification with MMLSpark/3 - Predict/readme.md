@@ -24,6 +24,10 @@ In this hands-on lab, you will learn how to:
 The following are required to complete this hands-on lab:
 
 - An active Microsoft Azure subscription. If you don't have one, [sign up for a free trial](http://aka.ms/WATK-FreeTrial).
+- A computer running Windows 10, Windows Server 2016, macOS Sierra, or macOS High Sierra
+- [Azure Machine Learning Workbench](https://docs.microsoft.com/en-us/azure/machine-learning/preview/quickstart-installation)
+- The [Azure CLI](https://docs.microsoft.com/cli/azure/install-azure-cli)
+- [Docker](https://www.docker.com/)
 
 If you haven't completed the [previous lab in this series](../2%20-%20Process), you must do so before starting this lab.
 
