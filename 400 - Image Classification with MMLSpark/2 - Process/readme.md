@@ -280,9 +280,6 @@ In this exercise, you will run a Python script in Machine Learning Workbench tha
 	```python
 	from azure.storage.blob import BlockBlobService
 	
-	# Allows public access to the container
-	# from azure.storage.blob import PublicAccess
-	
 	# Transfer objects to/from Azure Blob storage using Python: https://docs.microsoft.com/en-us/azure/storage/blobs/storage-quickstart-blobs-python
 	from azure.storage.blob import ContentSettings
 	
@@ -393,11 +390,11 @@ In this exercise, you will run a Python script in Machine Learning Workbench tha
 
 1. Replace the following values in **upload.py**:
 
-	- Replace ACCOUNT_NAME on line 40 with the name of the storage account you created in the previous exercise 
-	- Replace SERVER_NAME on line 46 with the database server name
-	- Replace DATABASE_NAME on line 47 with the database name
-	- Replace ADMIN_USERNAME on line 48 with the database user name
-	- Replace ADMIN_PASSWORD on line 49 with the database password
+	- Replace ACCOUNT_NAME on line 37 with the name of the storage account you created in the previous exercise 
+	- Replace SERVER_NAME on line 43 with the database server name
+	- Replace DATABASE_NAME on line 44 with the database name
+	- Replace ADMIN_USERNAME on line 45 with the database user name
+	- Replace ADMIN_PASSWORD on line 46 with the database password
 
 1. Return to the Command Prompt or terminal window and use the following command to list the access keys for the storage account you created in the previous exercise, replacing ACCOUNT_NAME with the storage account's name:
 
@@ -407,7 +404,7 @@ In this exercise, you will run a Python script in Machine Learning Workbench tha
 
 	Even though you made the "images" container that images will be uploaded to public, an access key is required to upload blobs to the container. You should treat access keys with great care and **never** give them to someone you don't trust.
 
-1. Copy the ```value``` property of either of the two keys that is displayed in the command output to the clipboard. Then replace ACCOUNT_KEY on line 49 of **upload.py** with the access key, and save the file.
+1. Copy the ```value``` property of either of the two keys that is displayed in the command output to the clipboard. Then replace ACCOUNT_KEY on line 38 of **upload.py** with the access key, and save the file.
 
 1. Use Machine Learning Workbench to run **upload.py** in a Docker container.
 
