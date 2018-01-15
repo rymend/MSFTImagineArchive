@@ -13,7 +13,7 @@ In this hands-on lab, you will learn how to:
 
 - Add a Jupyter notebook to an Azure Machine Learning Workbench project
 - Use a Jupyter notebook to train a neural network
-- Download a file from a Docker container to the local machine
+- Download a file from a Docker container
 
 <a name="Prerequisites"></a>
 ### Prerequisites ###
@@ -39,12 +39,12 @@ This hands-on lab includes the following exercises:
 - [Exercise 2: Use the notebook to train a model](#Exercise2)
 - [Exercise 3: Download the model file](#Exercise3)
 
-Estimated time to complete this lab: **60** minutes.
+Estimated time to complete this lab: **45** minutes.
 
 <a name="Exercise1"></a>
 ## Exercise 1: Create a Jupyter notebook ##
 
-In this exercise, you will add a Jupyter notebook to the project that you created in Azure Machine Learning Workbench in [Lab 1](../1%20-%20Ingest), and you will configure the notebook to run in a Docker container using the same Docker image that you used to execute Python code in previous labs.
+In this exercise, you will add a Jupyter notebook to the project that you created in Azure Machine Learning Workbench in [Lab 1](../1%20-%20Ingest), and you will configure the notebook to run code in a Docker container using the same Docker image that you used in previous labs.
 
 1. Open the "MMLSpark-Lab" project that you created in [Lab 1](../1%20-%20Ingest) in Azure Machine Learning Workbench. Click the notebook icon in the ribbon on the left, and then click the **+** sign and add a notebook named "Deep Transfer Learning" to the project.
 
@@ -60,11 +60,11 @@ In this exercise, you will add a Jupyter notebook to the project that you create
 
 1. In the "Kernel not found" dialog, select **MMLSpark-Lab docker** from the drop-down list and click **Set Kernel**.
 
+	> It is important that you select the Docker kernel and not the local kernel so code added to the notebook will execute in a Docker container that includes the necessary packages. 
+
 	![Selecting a notebook kernel](Images/set-kernel.png)
 
 	_Selecting a notebook kernel_
-
-	It is important that you select the Docker kernel and not the local kernel so the code you add to the notebook will execute in a Docker container that includes the same dependencies as the Docker containers you used in previous labs. 
 
 1. Once the notebook starts, confirm that the kernel being used is **MMLSpark-Lab docker**, as shown below. If it is not, use the **Kernel** > **Change Kernel** command to change to the **MMLSpark-Lab docker** kernel.
 
@@ -72,13 +72,17 @@ In this exercise, you will add a Jupyter notebook to the project that you create
 
 	_Confirming that the Docker kernel is being used_
 
-The notebook is now configured and ready to go. Let's use to train a machine-learning model.
+The notebook is now configured and ready to go. Let's use it to train a machine-learning model.
 
 <a name="Exercise2"></a>
 ## Exercise 2: Use the notebook to train a model ##
 
-In this exercise, you will run a script to install MMLSpark on the HDInsight cluster you created in the previous exercise. Then you will run another script to install the latest version of CNTK on the cluster. The version that comes with MMLSpark currently requires VMs with GPUs. The version that you will install works with or without GPUs.
+In this exercise, you will use the Jupyter notebook you created in the previous exercise to train an image-classification model. Rather than build the model from scratch, you will use [transfer learning](https://en.wikipedia.org/wiki/Transfer_learning) to refine a model that has already been trained to work with images. The pretrained model you will use is a [convolutional Deep Neural Network](https://en.wikipedia.org/wiki/Convolutional_neural_network) (DNN) named [ResNet_18](https://docs.microsoft.com/en-us/cognitive-toolkit/build-your-own-image-classifier-using-transfer-learning) that is provided with the [Microsoft Cognitive Toolkit](https://www.microsoft.com/cognitive-toolkit/), also known as CNTK.
 
+Building on a model that is already trained to understand an application domain — in this case, images — allows you to achieve higher accuracy with less training. Training an image classifier from scratch typically requires tens of thousands of images at a minimum. Refining a pretrained model to differentiate between images can require as few as a few dozen images
+
+> At the time of this writing, Azure Machine Learning Workbench was in preview and notebooks hosted in it are prone to crashing. If, during any of the steps in this exercise, the notebook stops working, use Workbench's **File** > **Open Command Prompt** command to open a command prompt and execute an ```az ml notebook start``` command. Then open the notebook in the browser instance that pops up. While not foolproof, running the notebook this way is much more likely to succeed than running it Workbench.
+	
 1. Add a cell to the notebook and enter the following Python code. Then press **Ctrl+Enter** to execute it.
 
 	```python
@@ -115,7 +119,7 @@ In this exercise, you will run a script to install MMLSpark on the HDInsight clu
 	}
 	```
 
-	This code imports the Python packages that will be used in the notebook, creates a Spark session that can be used to execute [PySpark](https://spark.apache.org/docs/0.9.0/python-programming-guide.html) commands in the container, and initializes the parameters that will be used to train the model. One of those parameters — ```max_epochs``` — determines how many forward and backward passes are made through the model as it is being trained. Setting this value to something higher than 7 could increase the accuracy of the model, but would also increase the training time. 
+	This code imports the Python packages that will be used in the notebook, creates a Spark session that can be used to execute [PySpark](https://spark.apache.org/docs/0.9.0/python-programming-guide.html) commands in the container, and defines the parameters used to train the model. One of those parameters — ```max_epochs``` — determines how many forward and backward passes are made through the model as it is being trained. Setting this value to something higher than 7 could increase the accuracy of the model, but would also increase the training time. 
 
 1. Add a cell to the notebook. Then enter and execute the following code to create a pair of directories in the container's file system if those directories don't already exist — one to hold the images used to train and test the model, and one to hold output:
 
@@ -154,14 +158,7 @@ In this exercise, you will run a script to install MMLSpark on the HDInsight clu
 	print ('output_path: ', Path(output_path).resolve())
 	```
 
-	Confirm that the two ```print``` statements at the end produce the following output:
-
-	```
-	datasets_path:  /Image/DataSets
-	output_path:  /azureml-run/temp/Output
-	```
-
-1. The next step is to copy the images that were downloaded from the Web and uploaded to blob storage in the [previous lab](../2%20-%20Process) to the file system inside the Docker container. To that end, paste the following code into a new notebook cell, replace ACCOUNT_NAME on line 1 with the name of the storage account that you created in Lab 2, and execute the code:
+1. The next step is to copy the images that were downloaded from the Web and uploaded to blob storage in the [previous lab](../2%20-%20Process) to the file system inside the Docker container that hosts the notebook. To that end, paste the following code into a new notebook cell, replace ACCOUNT_NAME on line 1 with the name of the storage account that you created in Lab 2, and execute the code:
 
 	> Note the ```wasbs``` protocol prefix in line 1. In a Spark container, blob storage is mapped to the Hadoop Distributed File System (HDFS) so blobs can be accessed using the same APIs used to access files in the local file system. ```wasbs``` is the protocol prefix used to leverage this mapping.
 
@@ -205,11 +202,9 @@ In this exercise, you will run a script to install MMLSpark on the HDInsight clu
 	print('Blobs transferred')
 	```
 
-	The transfer might take a few minutes to finish since a few hundred images are being copied from blob storage to the container's file system. Wait for "Blobs transferred" to appear in the output indicating that the transfer is complete before proceesing to the next step.
+	The transfer might take a few minutes to finish since a few hundred images are copied from blob storage to the container. Wait for "Blobs transferred" to appear in the output indicating that the transfer is complete before proceeding to the next step.
 
-1. Rather than build an image-classification model from scratch, you will use [transfer learning](https://en.wikipedia.org/wiki/Transfer_learning) to refine a model that has already been trained to work with images. The pretrained model you will use is a Convolution Deep Neural Network (DNN) named [ResNet_18](https://docs.microsoft.com/en-us/cognitive-toolkit/build-your-own-image-classifier-using-transfer-learning) that is provided with the [Microsoft Cognitive Toolkit](https://www.microsoft.com/cognitive-toolkit/), also known as CNTK. Building on a model that is already trained to understand an application domain — in this case, images — allows you to achieve higher accuracy with less training. Training an image classifier from scratch typically requires tens of thousands of images. Refining a pretrained model to differentiate between images can require as few as 10 to 20 images.
-
-	ResNet_18 comes in the form of a .model file that can be downloaded from the CNTK Web site. Add a new cell to the notebook and execute the following code to download the pretrained model:
+1. ResNet_18 comes in the form of a **.model** file that can be downloaded from the CNTK Web site. Add a new cell to the notebook and execute the following code to download the model file containing the pretrained model:
 
 	```python
 	def download_model(model_root = os.path.join(data_root, 'PretrainedModels')):
@@ -227,7 +222,7 @@ In this exercise, you will run a script to install MMLSpark on the HDInsight clu
 
 	This, too, might take a few minutes, depending on your connection speed. Wait for "Download complete" to appear in the output indicating that the download is complete before proceeding to the next step.
 
-1. tk.
+1. Add another cell to notebook and execute the following code to train the ResNet_18 model using the training images that were copied to the file system in the container:
 
 	```python
 	python_version = sys.version_info.major
@@ -386,11 +381,11 @@ In this exercise, you will run a script to install MMLSpark on the HDInsight clu
 	    print("Stored trained model at %s" % paintings_model['model_file'])   
 	```
 
-	tk.
+	The call to ```train_model``` will take a few minutes to execute. As it runs, you will see output apprising you of its progress. Wait until you see "Stored trained model..." at the end indicating that the training process has completed successfully. **PaintingsTransferLearning.model** is the model file that contains the trained model.
 
 	![Output from training the model](Images/training-output.png)
 
-1. tk.
+1. Before deploying a trained model. it is always wise to test it for accuracy. Add a new cell to the notebook and use the following statements to test the model using the test images that were copied from blob storage to the container's file system:
 
 	```python
 	# Evaluates a single image using the re-trained model
@@ -447,8 +442,7 @@ In this exercise, you will run a script to install MMLSpark on the HDInsight clu
 	                    correct_count += 1
 	
 	                if pred_count % 100 == 0:
-	                    print("Processed {0} samples ({1:.2%} correct)".format(pred_count, 
-	                                                                           (float(correct_count) / pred_count)))
+	                    print("Processed {0} samples ({1:.2%} correct)".format(pred_count, (float(correct_count) / pred_count)))
 	                if pred_count >= num_images:
 	                    break
 	    print ("{0} of {1} prediction were correct".format(correct_count, pred_count))
@@ -463,36 +457,36 @@ In this exercise, you will run a script to install MMLSpark on the HDInsight clu
 	print ("Prediction accuracy: {0:.2%}".format(float(predict_correct) / predict_total))
 	```
 
-	Check the output to determine the model's accuracy in recognizing the artists of the test images presented to it. What is the model's accuracy?
+1. Check the output to determine the model's accuracy in recognizing the artists of the test images presented to it. What is the model's accuracy?
 
-	![Output from testing the model](Images/testing-output.png)
+	Note that the accuracy could be different if you started over again with Lab 1 because the image search would probably yield a slightly different batch of images. Due to the nature of convolutional neural networks and the random seeds used to train them, the accuracy might even vary slightly from run to run with the same training and testing images. Generally speaking, for a model like this one, you would like to see an accuracy of 90% or higher. In your judgment, is the accuracy achieved here sufficient to put the trained model into production?
 
-TODO: Add closing.
+In this exercise, you used a set of images to train a pretrained model to differentiate between images representing paintings by famous artists. You did the training in a Docker container on your own PC. If you were building a model from scratch and training it with tens or hundreds of thousands of images on a single computer, training could take hours, days, or even weeks. The solution would be to run the training code on an [Azure HDInsight](https://azure.microsoft.com/services/hdinsight/) cluster containing multiple virtual machines equipped with GPUs. Fortunately, projects run from Azure Machine Learning Workbench can easily be run on HDInsight clusters. For more information, see https://docs.microsoft.com/en-us/azure/machine-learning/preview/tutorial-classifying-iris-part-2.
 
 <a name="Exercise3"></a>
 ## Exercise 3: Download the model file ##
 
-Jupyter notebooks are increasing a recommended way for data scientists to perform development, such as model building.  Individual notebooks may be saved, uploaded to another Jupyter installation; also, a notebook may be downloaded or printed or saved in other printable formats.  This task of building a deep learning model is appropriate for this task, and in this lab you will end up with a **model** file, which could be subsequently put into production.
+In order to deploy the trained model in the next lab, you need the model file that was generated in the Docker container. In this exercise, you will copy that file from the container to the local file system.
 
-1. tk.
+1. Open a Command Prompt or terminal window and execute the following command to list all running Docker containers:
 
 	```
 	docker ps
 	```
 
-	Copy container ID to clipboard.
+1. Find the container that hosts the notebook kernel. (Its name will be the name of the Azure Machine Learning Workbench project followed by an underscore and a series of numbers, as in "MMLSpark-Lab_1516028584552.") Then copy the container ID to clipboard.
 
-1. tk.
+	![Copying the container ID to the clipboard](Images/copy-container-id.png)
+
+	_Copying the container ID to the clipboard_
+
+1. Now use the following command to copy the model file from the container's file system to the local file system, replacing CONTAINER_ID with the container ID on the clipboard and LOCALPATH with the location in the local file system where you want the file to be copied (for example, "C:\Labs"):
 
 	```
-	docker cp CONTAINER_ID:/azureml-run/temp/Output/PaintingsTransferLearning.model C:\Labs
+	docker cp CONTAINER_ID:/azureml-run/temp/Output/PaintingsTransferLearning.model LOCALPATH
 	```
 
-	tk.
-
-1. Verify that the file was coped to the local file system.
-
-TODO: Add closing.
+Finish up by verifying that **PaintingsTransferLearning.model** was copied to the local file system. The file size should be approximately 60 MB.
 
 <a name="Summary"></a>
 ## Summary ##

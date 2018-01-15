@@ -264,10 +264,10 @@ In this exercise, you will use the Azure CLI to create an Azure storage account 
 1. Before you can upload blobs to a storage account, you must create a container to store them in. Use the following command to create a container named "images" in the storage account, replacing ACCOUNT_NAME with the name you assigned to the storage account in the previous step:
 
 	```
-	az storage container create --name images --account-name ACCOUNT_NAME --public-access blob
+	az storage container create --name images --account-name ACCOUNT_NAME --public-access container
 	```
 
-	The ```--public-access blob``` switch makes blobs in the container public so they can be read without access keys. This will come in handy when the blobs are accessed from HDInsight in the next lab.
+	The ```--public-access container``` switch makes the contents of the container public. This will come in handy when the blobs are accessed from a Spark container in the next lab.
 
 You now have a storage account for storing images and a container to store them in. The next step is to upload some images.
 
