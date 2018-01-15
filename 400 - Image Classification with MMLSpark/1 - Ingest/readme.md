@@ -239,8 +239,6 @@ In this exercise, you will use Azure Machine Learning Workbench to execute a Pyt
 	```yml
 	- dhash
 	- azure-storage-blob
-	- azure-storage-file
-	- azure-storage-queue
 	- https://cntk.ai/PythonWheel/CPU-Only/cntk-2.3.1-cp35-cp35m-linux_x86_64.whl
 	```
 
@@ -266,8 +264,6 @@ In this exercise, you will use Azure Machine Learning Workbench to execute a Pyt
 	    - azure-ml-api-sdk==0.1.0a10
 	    - dhash
 	    - azure-storage-blob
-	    - azure-storage-file
-	    - azure-storage-queue
 	    - https://cntk.ai/PythonWheel/CPU-Only/cntk-2.3.1-cp35-cp35m-linux_x86_64.whl
 	
 	    # Helper utilities for dealing with Azure ML Workbench Assets.
